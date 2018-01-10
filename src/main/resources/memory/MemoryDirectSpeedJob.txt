@@ -1,0 +1,23 @@
+# Job
+
+#X Array-size Profile
+Trials_lgMinX=5  #The starting X that is printed at the end.
+Trials_lgMaxX=26 #How high X goes
+Trials_XPPO=4   #The horizontal x-resolution
+
+#Trails Breakpoints Array-size related
+Trials_lgMinBpX=8   #start the downward slope of trials at this LgX
+Trials_lgMaxBpX=26  #stop the downward slope of trials at this LgX
+
+# Trials Profile
+Trials_lgMaxT=24  #Max trials at start (low counts)
+Trials_lgMinT=6  #Min trials at tail (high counts) 
+
+# Date-Time Profile
+TimeZone=PST
+TimeZoneOffset=-28800000 # offset in millisec
+FileNameDateFormat=yyyyMMdd'_'HHmmssz
+ReadableDateFormat=yyyy/MM/dd HH:mm:ss z
+
+#Job Profile
+JobProfile=com.yahoo.sketches.misc.performance.memory.MemoryDirectSpeedProfile

@@ -1,0 +1,14 @@
+Jobs
+
+Memory:
+src/main/resources/memory/HeapSpeedJob.txt
+src/main/resources/memory/UnsafeDirectSpeedJob.txt
+src/main/resources/memory/MemoryDirectSpeedJob.txt
+
+Unique Count:
+src/main/resources/uniquecount/HllAccuracyJob.txt
+src/main/resources/uniquecount/ThetaAccuracyJob.txt
+src/main/resources/uniquecount/HllSpeedJob.txt
+src/main/resources/uniquecount/ThetaSpeedJob.txt
+src/main/resources/uniquecount/HllSerDeJob.txt
+src/main/resources/uniquecount/ThetaSerDeJob.txt
