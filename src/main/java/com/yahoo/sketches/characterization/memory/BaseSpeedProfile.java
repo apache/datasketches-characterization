@@ -98,13 +98,13 @@ static class Point {
     println(Point.getHeader());
     final int maxX = 1 << lgMaxX;
     final int minX = 1 << lgMinX;
-    int lastX= 0;
+    int lastX = 0;
     while (lastX < maxX) {
       final int nextX = (lastX == 0) ? minX : pwr2LawNext(xPPO, lastX);
       lastX = nextX;
       final int trials = getNumTrials(nextX);
       configure(nextX);
-      Point p = new Point(nextX, trials);
+      final Point p = new Point(nextX, trials);
       //Do all write trials first
       p.sumWriteTrials_nS = 0;
       for (int t = 0; t < trials; t++) { //do # trials
