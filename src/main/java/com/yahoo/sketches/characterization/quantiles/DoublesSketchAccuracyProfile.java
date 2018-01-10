@@ -48,8 +48,8 @@ public class DoublesSketchAccuracyProfile extends QuantilesAccuracyProfile {
     for (int i = 0; i < inputValues.length; i++) {
       updateSketch.update(inputValues[i]);
     }
-    
-    DoublesSketch sketch = useCompact ? updateSketch.compact() : updateSketch;
+
+    final DoublesSketch sketch = useCompact ? updateSketch.compact() : updateSketch;
 
     // query sketch and gather results
     double maxError = 0;
@@ -75,13 +75,13 @@ public class DoublesSketchAccuracyProfile extends QuantilesAccuracyProfile {
 
   private static void shuffle(final double[] array) {
     for (int i = 0; i < array.length; i++) {
-      int r = rnd.nextInt(i + 1);
+      final int r = rnd.nextInt(i + 1);
       swap(array, i, r);
     }
   }
 
   private static void swap(final double[] array, final int i1, final int i2) {
-    double value = array[i1];
+    final double value = array[i1];
     array[i1] = array[i2];
     array[i2] = value;
   }

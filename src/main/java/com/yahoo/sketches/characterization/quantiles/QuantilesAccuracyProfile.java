@@ -11,7 +11,7 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
   Job job;
 
   @Override
-  public void start(Job job) {
+  public void start(final Job job) {
     this.job = job;
     doTrials();
   }
@@ -45,7 +45,9 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
   }
 
   abstract void configure(Properties props);
+
   abstract void prepareTrial(int streamLength);
+
   abstract double doTrial();
 
   private static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {

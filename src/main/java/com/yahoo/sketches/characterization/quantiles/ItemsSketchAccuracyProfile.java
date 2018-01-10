@@ -68,13 +68,13 @@ public class ItemsSketchAccuracyProfile extends QuantilesAccuracyProfile {
 
   private static void shuffle(final int[] array) {
     for (int i = 0; i < array.length; i++) {
-      int r = rnd.nextInt(i + 1);
+      final int r = rnd.nextInt(i + 1);
       swap(array, i, r);
     }
   }
 
   private static void swap(final int[] array, final int i1, final int i2) {
-    int value = array[i1];
+    final int value = array[i1];
     array[i1] = array[i2];
     array[i2] = value;
   }
