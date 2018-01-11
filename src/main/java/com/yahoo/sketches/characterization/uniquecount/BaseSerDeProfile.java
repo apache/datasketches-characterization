@@ -29,6 +29,7 @@ public abstract class BaseSerDeProfile implements JobProfile {
   int lgMaxBpU;
   double slope;
   int lgK;
+  Stats stats = new Stats();
 
   @Override
   public void start(final Job job) {
@@ -74,9 +75,6 @@ public abstract class BaseSerDeProfile implements JobProfile {
       final int nextU = (lastU == 0) ? minU : pwr2LawNext(uPPO, lastU);
       lastU = nextU;
       final int trials = getNumTrials(nextU);
-
-      //Build stats
-      final Stats stats = new Stats();
 
       double sumSerialzeTime_nS = 0;
       double sumDeserializeTime_nS = 0;
