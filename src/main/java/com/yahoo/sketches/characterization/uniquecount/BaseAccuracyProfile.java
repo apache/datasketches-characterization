@@ -12,6 +12,7 @@ import static com.yahoo.sketches.characterization.PerformanceUtil.FRACT_LEN;
 
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
+import com.yahoo.sketches.characterization.PerformanceUtil;
 import com.yahoo.sketches.characterization.Properties;
 import com.yahoo.sketches.quantiles.DoublesSketch;
 
@@ -72,11 +73,11 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   /**
    * Manages multiple trials for measuring accuracy.
    *
-   * <p>An accuracy trial is run along the count axis (X-axis) first.  The "points" along the X-axis
-   * where accuracy data is collected is controled by the data loaded into the CountAccuracyStats
+   * <p>An accuracy trial is run along the count axis (X-axis) first. The "points" along the X-axis
+   * where accuracy data is collected is controlled by the data loaded into the CountAccuracyStats
    * array. A single trial consists of a single sketch being updated with the Trials_lgMaxU unique
    * values, stopping at the configured x-axis points along the way where the accuracy is recorded
-   * into the corresponding stats array. Each stats array retains the distribtion of
+   * into the corresponding stats array. Each stats array retains the distribution of
    * the accuracies measured for all the trials at that x-axis point.
    *
    * <p>Because accuracy trials take a long time, this profile will output intermediate
@@ -225,7 +226,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
     final int uPPO = profile.uPPO;
     final int lgQK = profile.lgQK;
 
-    final int qLen = countPoints(lgMinU, lgMaxU, uPPO);
+    final int qLen = PerformanceUtil.countPoints(lgMinU, lgMaxU, uPPO);
     final AccuracyStats[] qArr = new AccuracyStats[qLen];
     int p = 1 << lgMinU;
     for (int i = 0; i < qLen; i++) {
@@ -233,17 +234,6 @@ public abstract class BaseAccuracyProfile implements JobProfile {
       p = pwr2LawNext(uPPO, p);
     }
     return qArr;
-  }
-
-  private static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {
-    int p = 1 << lgStart;
-    final int end = 1 << lgEnd;
-    int count = 0;
-    while (p <= end) {
-      p = pwr2LawNext(ppo, p);
-      count++;
-    }
-    return count;
   }
 
   /**

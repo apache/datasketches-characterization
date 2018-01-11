@@ -4,6 +4,7 @@ import static com.yahoo.sketches.Util.pwr2LawNext;
 
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
+import com.yahoo.sketches.characterization.PerformanceUtil;
 import com.yahoo.sketches.characterization.Properties;
 
 public abstract class QuantilesAccuracyProfile implements JobProfile {
@@ -31,7 +32,7 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
 
     job.println("StreamLength\tMaxError");
 
-    final int numSteps = countPoints(lgMinU, lgMaxU, uPPO);
+    final int numSteps = PerformanceUtil.countPoints(lgMinU, lgMaxU, uPPO);
     int streamLength = 1 << lgMinU;
     for (int i = 0; i < numSteps; i++) {
       prepareTrial(streamLength);
@@ -49,16 +50,5 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
   abstract void prepareTrial(int streamLength);
 
   abstract double doTrial();
-
-  private static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {
-    int p = 1 << lgStart;
-    final int end = 1 << lgEnd;
-    int count = 0;
-    while (p <= end) {
-      p = pwr2LawNext(ppo, p);
-      count++;
-    }
-    return count;
-  }
 
 }

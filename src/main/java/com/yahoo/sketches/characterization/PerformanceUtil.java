@@ -5,6 +5,8 @@
 
 package com.yahoo.sketches.characterization;
 
+import static com.yahoo.sketches.Util.pwr2LawNext;
+
 /**
  * @author Lee Rhodes
  */
@@ -22,5 +24,16 @@ public class PerformanceUtil {
   public static final double[] FRACTIONS =
     {0.0, M4SD, M3SD, M2SD, M1SD, MED, P1SD, P2SD, P3SD, P4SD, 1.0};
   public static final int FRACT_LEN = FRACTIONS.length;
+
+  public static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {
+    int p = 1 << lgStart;
+    final int end = 1 << lgEnd;
+    int count = 0;
+    while (p <= end) {
+      p = pwr2LawNext(ppo, p);
+      count++;
+    }
+    return count;
+  }
 
 }
