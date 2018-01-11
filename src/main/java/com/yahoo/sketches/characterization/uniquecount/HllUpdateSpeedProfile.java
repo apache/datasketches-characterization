@@ -44,7 +44,7 @@ public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
       sketch.update(++vIn);
     }
     final long updateTime_nS = System.nanoTime() - startUpdateTime_nS;
-    return updateTime_nS / uPerTrial;
+    return (double) updateTime_nS / uPerTrial;
   }
 
 }

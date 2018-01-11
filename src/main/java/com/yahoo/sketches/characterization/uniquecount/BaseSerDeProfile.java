@@ -52,9 +52,17 @@ public abstract class BaseSerDeProfile implements JobProfile {
     job.println(s);
   }
 
+  /**
+   * Configure the sketch
+   */
   abstract void configure();
 
-  abstract void doTrial(SerDeStats stats, int uPerTrial);
+  /**
+   * Populates the sketch with the given uPerTrial and loads the stats.
+   * @param stats the given stats class
+   * @param uPerTrial the given uniques per trial to be offered
+   */
+  abstract void doTrial(Stats stats, int uPerTrial);
 
   private void doTrials() {
     final int maxU = 1 << lgMaxU;
@@ -66,20 +74,21 @@ public abstract class BaseSerDeProfile implements JobProfile {
       final int nextU = (lastU == 0) ? minU : pwr2LawNext(uPPO, lastU);
       lastU = nextU;
       final int trials = getNumTrials(nextU);
-      //Build stats arr
-      final SerDeStats[] statsArr = new SerDeStats[trials];
-      for (int t = 0; t < trials; t++) {
-        final SerDeStats stats = statsArr[t];
-        if (stats == null) {
-          statsArr[t] = new SerDeStats();
-        }
-      }
 
-      System.gc();
+      //Build stats
+      final Stats stats = new Stats();
+
+      double sumSerialzeTime_nS = 0;
+      double sumDeserializeTime_nS = 0;
+      System.gc(); //much slower but cleaner plots
       for (int t = 0; t < trials; t++) {
-        doTrial(statsArr[t], nextU); //at this # of uniques
+        doTrial(stats, nextU); //at this # of uniques
+        sumSerialzeTime_nS += stats.serializeTime_nS;
+        sumDeserializeTime_nS += stats.deserializeTime_nS;
       }
-      process(statsArr, trials, nextU, dataStr);
+      final double meanSerializeTime_nS = sumSerialzeTime_nS / trials;
+      final double meanDeserializeTime_nS = sumDeserializeTime_nS / trials;
+      process(meanSerializeTime_nS, meanDeserializeTime_nS,trials, nextU, dataStr);
       println(dataStr.toString());
     }
   }
@@ -109,24 +118,15 @@ public abstract class BaseSerDeProfile implements JobProfile {
     return (int) pow(2.0, lgTrials);
   }
 
-  private static void process(final SerDeStats[] statsArr, final int trials, final int uPerTrial,
-      final StringBuilder dataStr) {
-    double sumSerTime_nS = 0;
-    double sumDeserTime_nS = 0;
-
-    for (int t = 0; t < trials; t++) {
-      sumSerTime_nS += statsArr[t].serializeTime_nS;
-      sumDeserTime_nS += statsArr[t].deserializeTime_nS;
-    }
-    final double meanSerTime_nS = sumSerTime_nS / trials;
-    final double meanDeserTime_ns = sumDeserTime_nS / trials;
+  private static void process(final double meanSerTime_nS, final double meanDeserTime_nS,
+      final int trials, final int uPerTrial, final StringBuilder dataStr) {
 
     //OUTPUT
     dataStr.setLength(0);
     dataStr.append(uPerTrial).append(TAB);
     dataStr.append(trials).append(TAB);
     dataStr.append(meanSerTime_nS).append(TAB);
-    dataStr.append(meanDeserTime_ns);
+    dataStr.append(meanDeserTime_nS);
   }
 
   private static String getHeader() {
@@ -138,4 +138,8 @@ public abstract class BaseSerDeProfile implements JobProfile {
     return sb.toString();
   }
 
+  static final class Stats {
+    double serializeTime_nS;
+    double deserializeTime_nS;
+  }
 }

@@ -44,10 +44,10 @@ public class ThetaSerDeProfile extends BaseSerDeProfile {
   }
 
   @Override
-  void doTrial(final SerDeStats stats, final int uPerTrial) {
+  void doTrial(final Stats stats, final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
 
-    for (int u = uPerTrial; u-- > 0;) {
+    for (int u = uPerTrial; u-- > 0;) { //populate the sketch
       sketch.update(++vIn);
     }
     final double est1 = sketch.getEstimate();
@@ -63,9 +63,8 @@ public class ThetaSerDeProfile extends BaseSerDeProfile {
     final double est2 = sketch2.getEstimate();
     assert est1 == est2;
 
-    final long serTime_nS = startDeSerTime_nS - startSerTime_nS;
-    final long deSerTime_nS = endDeTime_nS - startDeSerTime_nS;
-    stats.update(serTime_nS, deSerTime_nS);
+    stats.serializeTime_nS = startDeSerTime_nS - startSerTime_nS;
+    stats.deserializeTime_nS = endDeTime_nS - startDeSerTime_nS;
   }
 
 }

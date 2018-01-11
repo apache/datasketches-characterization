@@ -50,8 +50,16 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
     job.println(s);
   }
 
+  /**
+   * Configure the sketch
+   */
   abstract void configure();
 
+  /**
+   * Return the average update time per update for this trial
+   * @param uPerTrial the number of unique updates for this trial
+   * @return the average update time per update for this trial
+   */
   abstract double doTrial(final int uPerTrial);
 
   /**
@@ -71,16 +79,8 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
       final int nextU = (lastU == 0) ? minU : pwr2LawNext(uPPO, lastU);
       lastU = nextU;
       final int trials = getNumTrials(nextU);
-      //Build stats arr
-      final SpeedStats[] statsArr = new SpeedStats[trials];
-      for (int t = 0; t < trials; t++) { //fill the stats arr
-        SpeedStats stats = statsArr[t];
-        if (stats == null) {
-          stats = statsArr[t] = new SpeedStats();
-        }
-      }
 
-      System.gc();
+      System.gc(); //much slower but cleaner plots
       double sumUpdateTimePerU_nS = 0;
       for (int t = 0; t < trials; t++) {
         sumUpdateTimePerU_nS += doTrial(nextU);
