@@ -4,6 +4,7 @@ Memory:
 src/main/resources/memory/HeapSpeedJob.txt
 src/main/resources/memory/UnsafeDirectSpeedJob.txt
 src/main/resources/memory/MemoryDirectSpeedJob.txt
+src/main/resources/memory/HeapUtf8SpeedJob.txt
 
 Unique Count:
 src/main/resources/uniquecount/HllAccuracyJob.txt

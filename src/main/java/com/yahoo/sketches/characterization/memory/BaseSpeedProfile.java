@@ -54,12 +54,13 @@ static class Point {
   }
 
   public String getRow() {
+    final double lgArrLongs = Math.log(arrLongs) / LN2;
     final long numOps = (long)((double)trials * arrLongs);
     final double rTrial_nS = (double)sumReadTrials_nS / trials;
     final double wTrial_nS = (double)sumWriteTrials_nS / trials;
     final double rOp_nS = rTrial_nS / arrLongs;
     final double wOp_nS = wTrial_nS / arrLongs;
-    final double lgArrLongs = Math.log(arrLongs) / LN2;
+
     final String out = String.format("%6.2f\t%d\t%d\t%d\t%.1f\t%8.3f\t%.1f\t%8.3f",
         lgArrLongs, arrLongs, trials, numOps, rTrial_nS, rOp_nS, wTrial_nS, wOp_nS);
     return out;

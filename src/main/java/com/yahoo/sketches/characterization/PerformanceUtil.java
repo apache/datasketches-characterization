@@ -25,6 +25,14 @@ public class PerformanceUtil {
     {0.0, M4SD, M3SD, M2SD, M1SD, MED, P1SD, P2SD, P3SD, P4SD, 1.0};
   public static final int FRACT_LEN = FRACTIONS.length;
 
+  /**
+   * Counts the actual number of plotting points between lgStart and lgEnd assuming the given PPO.
+   * This is not a simple linear function due to points that may be skipped in the low range.
+   * @param lgStart Log2 of the starting value
+   * @param lgEnd Log2 of the ending value
+   * @param ppo the number of logrithmically evenly spaced points per octave.
+   * @return the actual number of plotting points between lgStart and lgEnd.
+   */
   public static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {
     int p = 1 << lgStart;
     final int end = 1 << lgEnd;
