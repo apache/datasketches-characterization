@@ -132,7 +132,7 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
   abstract void close();
 
   private void doTrials() {
-    println(Point.getHeader());
+    println(Point.getHeader()); //GG
     final int maxX = 1 << lgMaxX;
     final int minX = 1 << lgMinX;
     int lastX = 0;
@@ -144,14 +144,14 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
       point.clear();
       point.numCPPerTrial = nextX;
       point.trials = trials;
-      stats.cpArr = new int[nextX];
+      stats.cpArr = new int[nextX];  //GG
       // Do all trials
       System.gc();
       for (int t = 0; t < trials; t++) { // do # trials
         doTrial(stats); // a single trial encode
         point.update(stats);
       }
-      println(point.getRow()); //output summary of trail set at this X point
+      println(point.getRow()); //output summary of trail set at this X point //GG
     }
   }
 

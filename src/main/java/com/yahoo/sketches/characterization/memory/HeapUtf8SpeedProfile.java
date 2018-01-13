@@ -28,9 +28,9 @@ public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
     final int cpArrLen = cpArr.length;
 
     randCP.fillCodePointArray(cpArr);
-    final String javaStr = new String(cpArr, 0, cpArrLen); //Java String reference
+    final String javaStr = new String(cpArr, 0, cpArrLen); //Java String reference //GG-U
     final int javaStrLen = javaStr.length();
-    final byte[] javaByteArr; //byteArr reference
+    final byte[] javaByteArr;
     final int javaByteArrLen;
     final WritableMemory wMem;
     long startTime;
@@ -38,7 +38,7 @@ public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
 
     //measure Java encode time
     startTime = System.nanoTime();
-    javaByteArr = javaStr.getBytes(UTF_8); //Java byteArr reference
+    javaByteArr = javaStr.getBytes(UTF_8); //Java byteArr reference //GG-U
     stopTime = System.nanoTime();
     stats.javaEncodeTime_nS = stopTime - startTime;
 
@@ -53,8 +53,8 @@ public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
     checkStrings(javaStr2, javaStr);
 
     //prepare Memory measurements
-    wMem = WritableMemory.allocate(javaByteArrLen);
-    final StringBuilder sb = new StringBuilder(javaStrLen);
+    wMem = WritableMemory.allocate(javaByteArrLen); //GG
+    final StringBuilder sb = new StringBuilder(javaStrLen); //GG
 
     //measure Memory encode time
     startTime = System.nanoTime();
@@ -62,7 +62,7 @@ public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
     stopTime = System.nanoTime();
     stats.memEncodeTime_nS = stopTime - startTime;
 
-    checkMemBytes(Memory.wrap(javaByteArr), wMem);
+    checkMemBytes(Memory.wrap(javaByteArr), wMem); //GG
 
     //measure Memory decode time
     startTime = System.nanoTime();
@@ -70,7 +70,7 @@ public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
     stopTime = System.nanoTime();
     stats.memDecodeTime_nS = stopTime - startTime;
 
-    checkStrings(sb.toString(), javaStr);
+    checkStrings(sb.toString(), javaStr); //GG-U
 
   }
 
