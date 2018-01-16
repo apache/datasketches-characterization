@@ -58,7 +58,7 @@ public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
 
     //measure Memory encode time
     startTime = System.nanoTime();
-    wMem.putUtf8(0, javaStr);
+    wMem.putCharsToUtf8(0, javaStr);
     stopTime = System.nanoTime();
     stats.memEncodeTime_nS = stopTime - startTime;
 
@@ -66,7 +66,7 @@ public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
 
     //measure Memory decode time
     startTime = System.nanoTime();
-    wMem.getUtf8(0, sb, javaByteArrLen);
+    wMem.getCharsFromUtf8(0, javaByteArrLen, sb);
     stopTime = System.nanoTime();
     stats.memDecodeTime_nS = stopTime - startTime;
 
