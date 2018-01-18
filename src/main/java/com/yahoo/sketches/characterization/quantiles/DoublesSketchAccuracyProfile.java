@@ -73,7 +73,7 @@ public class DoublesSketchAccuracyProfile extends QuantilesAccuracyProfile {
 
   static final Random rnd = new Random();
 
-  private static void shuffle(final double[] array) {
+  static void shuffle(final double[] array) {
     for (int i = 0; i < array.length; i++) {
       final int r = rnd.nextInt(i + 1);
       swap(array, i, r);
