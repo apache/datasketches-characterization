@@ -23,17 +23,17 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
   }
 
   private void doTrials() {
-    final int lgMinU = Integer.parseInt(job.getProperties().mustGet("lgMin"));
-    final int lgMaxU = Integer.parseInt(job.getProperties().mustGet("lgMax"));
-    final int uPPO = Integer.parseInt(job.getProperties().mustGet("UPPO"));
+    final int lgMin = Integer.parseInt(job.getProperties().mustGet("lgMin"));
+    final int lgMax = Integer.parseInt(job.getProperties().mustGet("lgMax"));
+    final int ppo = Integer.parseInt(job.getProperties().mustGet("PPO"));
     final int numTrials = Integer.parseInt(job.getProperties().mustGet("trials"));
 
     configure(job.getProperties());
 
     job.println("StreamLength\tMaxError");
 
-    final int numSteps = PerformanceUtil.countPoints(lgMinU, lgMaxU, uPPO);
-    int streamLength = 1 << lgMinU;
+    final int numSteps = PerformanceUtil.countPoints(lgMin, lgMax, ppo);
+    int streamLength = 1 << lgMin;
     for (int i = 0; i < numSteps; i++) {
       prepareTrial(streamLength);
       double maxError = 0;
@@ -41,7 +41,7 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
         maxError = Math.max(maxError, doTrial());
       }
       println(streamLength + "\t" + String.format("%.2f", maxError * 100));
-      streamLength = pwr2LawNext(uPPO, streamLength);
+      streamLength = pwr2LawNext(ppo, streamLength);
     }
   }
 
