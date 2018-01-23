@@ -37,17 +37,20 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
     configure(lgK, numQueryValues, useDirect);
 
     // header
-    println("Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tRank\tSer\tDeser\tCompact\tQuant\tCDF\tRank\tSer\tDeser");
+    println("Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tRank"
+        + "\tSer\tDeser\tCompact\tQuant\tCDF\tRank\tSer\tDeser");
 
     int streamLength = minStreamLen;
     while (streamLength <= maxStreamLen) {
       prepareTrial(streamLength);
       final SpeedStats stats = new SpeedStats();
-      final int numTrials = getNumTrials(streamLength, lgMinStreamLen, lgMaxStreamLen, lgMinTrials, lgMaxTrials);
+      final int numTrials = getNumTrials(streamLength, lgMinStreamLen, lgMaxStreamLen,
+          lgMinTrials, lgMaxTrials);
       for (int i = 0; i < numTrials; i++) {
         doTrial(stats);
       }
-      println(String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
+      println(String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f"
+            + "\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
           streamLength,
           numTrials,
           (double) stats.buildTimeNs / numTrials,
@@ -71,7 +74,7 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
   abstract void configure(int lgK, int numQueryValues, boolean useDirect);
 
   abstract void prepareTrial(int streamLength);
- 
+
   abstract void doTrial(SpeedStats stats);
 
   static class SpeedStats {
@@ -90,10 +93,11 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
     long compactDeserializeTimeNs = 0;
   }
 
-  private static int getNumTrials(final int x, final int lgMinX, final int lgMaxX, final int lgMinTrials, final int lgMaxTrials) {
+  private static int getNumTrials(final int x, final int lgMinX, final int lgMaxX,
+      final int lgMinTrials, final int lgMaxTrials) {
     final double slope = (double) (lgMaxTrials - lgMinTrials) / (lgMinX - lgMaxX);
     final double lgX = Math.log(x) / JobProfile.LN2;
-    final double lgTrials = slope * lgX + lgMaxTrials;
+    final double lgTrials = (slope * lgX) + lgMaxTrials;
     return (int) Math.pow(2, lgTrials);
   }
 

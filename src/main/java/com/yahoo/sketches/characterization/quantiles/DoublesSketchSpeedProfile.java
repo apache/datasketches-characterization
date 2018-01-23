@@ -43,17 +43,22 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
     }
     Arrays.sort(queryValues);
     if (useDirect) {
-      updateSketchMemory = WritableMemory.wrap(new byte[DoublesSketch.getUpdatableStorageBytes(1 << lgK, streamLength)]);
-      compactSketchMemory = WritableMemory.wrap(new byte[DoublesSketch.getCompactStorageBytes(1 << lgK, streamLength)]);
+      updateSketchMemory = WritableMemory
+          .wrap(new byte[DoublesSketch.getUpdatableStorageBytes(1 << lgK, streamLength)]);
+      compactSketchMemory = WritableMemory
+          .wrap(new byte[DoublesSketch.getCompactStorageBytes(1 << lgK, streamLength)]);
     }
   }
 
+  @SuppressWarnings("unused")
   @Override
   void doTrial(final SpeedStats stats) {
     DoublesSketchAccuracyProfile.shuffle(inputValues);
 
     final long startBuild = System.nanoTime();
-    final UpdateDoublesSketch updateSketch = useDirect ? builder.build(updateSketchMemory) : builder.build();
+    final UpdateDoublesSketch updateSketch = useDirect
+        ? builder.build(updateSketchMemory)
+        : builder.build();
     final long stopBuild = System.nanoTime();
     stats.buildTimeNs += stopBuild - startBuild;
 
@@ -69,25 +74,25 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
       updateSketch.getQuantiles(numQueryValues);
       final long stopGetQuantiles = System.nanoTime();
       stats.updateGetQuantilesTimeNs += stopGetQuantiles - startGetQuantiles;
-  
+
       final long startGetCdf = System.nanoTime();
       updateSketch.getCDF(queryValues);
       final long stopGetCdf = System.nanoTime();
       stats.updateGetCdfTimeNs += stopGetCdf - startGetCdf;
-  
+
       final long startGetRank = System.nanoTime();
       for (final double value: queryValues) {
-        updateSketch.getRank(value); // this was not released yet
-        //final double estRank = updateSketch.getCDF(new double[] {value})[0];
+        //updateSketch.getRank(value); //TODO this was not released yet
+        final double estRank = updateSketch.getCDF(new double[] {value})[0];
       }
       final long stopGetRank = System.nanoTime();
       stats.updateGetRankTimeNs += stopGetRank - startGetRank;
-  
+
       final long startSerialize = System.nanoTime();
       final byte[] bytes = updateSketch.toByteArray();
       final long stopSerialize = System.nanoTime();
       stats.updateSerializeTimeNs += stopSerialize - startSerialize;
-  
+
       final WritableMemory mem = WritableMemory.wrap(bytes);
       final long startDeserialize = System.nanoTime();
       if (useDirect) {
@@ -100,7 +105,9 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
     }
 
     final long startCompact = System.nanoTime();
-    final DoublesSketch compactSketch = useDirect ? updateSketch.compact(compactSketchMemory) : updateSketch.compact();
+    final DoublesSketch compactSketch = useDirect
+        ? updateSketch.compact(compactSketchMemory)
+        : updateSketch.compact();
     final long stopCompact = System.nanoTime();
     stats.compactTimeNs += stopCompact - startCompact;
 
@@ -109,25 +116,25 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
       compactSketch.getQuantiles(numQueryValues);
       final long stopGetQuantiles = System.nanoTime();
       stats.compactGetQuantilesTimeNs += stopGetQuantiles - startGetQuantiles;
-  
+
       final long startGetCdf = System.nanoTime();
       compactSketch.getCDF(queryValues);
       final long stopGetCdf = System.nanoTime();
       stats.compactGetCdfTimeNs += stopGetCdf - startGetCdf;
-  
+
       final long startGetRank = System.nanoTime();
       for (final double value: queryValues) {
-        compactSketch.getRank(value); // this was not released yet
-        //final double estRank = compactSketch.getCDF(new double[] {value})[0];
+        //compactSketch.getRank(value); //TODO this was not released yet
+        final double estRank = compactSketch.getCDF(new double[] {value})[0];
       }
       final long stopGetRank = System.nanoTime();
       stats.compactGetRankTimeNs += stopGetRank - startGetRank;
-  
+
       final long startSerialize = System.nanoTime();
       final byte[] bytes = compactSketch.toByteArray();
       final long stopSerialize = System.nanoTime();
       stats.compactSerializeTimeNs += stopSerialize - startSerialize;
-  
+
       final Memory mem = Memory.wrap(bytes);
       final long startDeserialize = System.nanoTime();
       if (useDirect) {
