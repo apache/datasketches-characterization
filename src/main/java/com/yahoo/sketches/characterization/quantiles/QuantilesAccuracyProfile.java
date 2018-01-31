@@ -6,10 +6,14 @@ import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.PerformanceUtil;
 import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.quantiles.DoublesSketch;
+import com.yahoo.sketches.quantiles.DoublesSketchBuilder;
+import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
 
 public abstract class QuantilesAccuracyProfile implements JobProfile {
 
   Job job;
+  private DoublesSketchBuilder builder;
 
   @Override
   public void start(final Job job) {
@@ -28,19 +32,24 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
     final int ppo = Integer.parseInt(job.getProperties().mustGet("PPO"));
     final int numTrials = Integer.parseInt(job.getProperties().mustGet("trials"));
 
+    final int errorSketchLgK = Integer.parseInt(job.getProperties().mustGet("errLgK"));
+    final int errorPct = Integer.parseInt(job.getProperties().mustGet("errPct"));
+
+    builder = DoublesSketch.builder().setK(1 << errorSketchLgK);
+
     configure(job.getProperties());
 
-    job.println("StreamLength\tMaxError");
+    job.println("StreamLength\tError");
 
     final int numSteps = PerformanceUtil.countPoints(lgMin, lgMax, ppo);
     int streamLength = 1 << lgMin;
     for (int i = 0; i < numSteps; i++) {
       prepareTrial(streamLength);
-      double maxError = 0;
+      UpdateDoublesSketch rankErrorSketch = builder.build();
       for (int t = 0; t < numTrials; t++) {
-        maxError = Math.max(maxError, doTrial());
+        doTrial(rankErrorSketch);
       }
-      println(streamLength + "\t" + String.format("%.2f", maxError * 100));
+      println(streamLength + "\t" + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
       streamLength = pwr2LawNext(ppo, streamLength);
     }
   }
@@ -49,6 +58,6 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
 
   abstract void prepareTrial(int streamLength);
 
-  abstract double doTrial();
+  abstract void doTrial(UpdateDoublesSketch rankErrorSketch);
 
 }
