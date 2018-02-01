@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.yahoo.sketches.characterization.Properties;
 import com.yahoo.sketches.quantiles.ItemsSketch;
+import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
 
 public class ItemsSketchAccuracyProfile extends QuantilesAccuracyProfile {
 
@@ -35,7 +36,7 @@ public class ItemsSketchAccuracyProfile extends QuantilesAccuracyProfile {
   }
 
   @Override
-  double doTrial() {
+  void doTrial(final UpdateDoublesSketch rankErrorSketch) {
     shuffle(inputValues);
 
     // build sketch
@@ -57,11 +58,9 @@ public class ItemsSketchAccuracyProfile extends QuantilesAccuracyProfile {
         final double trueRank = (double) i / inputValues.length;
         //final double estRank = sketch.getRank(i); // this was not released yet
         final double estRank = sketch.getCDF(new Integer[] {i})[0];
-        maxError = Math.max(maxError, Math.abs(trueRank - estRank));
+        rankErrorSketch.update(Math.abs(trueRank - estRank));
       }
     }
-
-    return maxError;
   }
 
   static final Random rnd = new Random();
