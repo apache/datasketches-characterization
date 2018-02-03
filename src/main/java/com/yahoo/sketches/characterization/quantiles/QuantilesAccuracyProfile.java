@@ -45,11 +45,12 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
     int streamLength = 1 << lgMin;
     for (int i = 0; i < numSteps; i++) {
       prepareTrial(streamLength);
-      UpdateDoublesSketch rankErrorSketch = builder.build();
+      final UpdateDoublesSketch rankErrorSketch = builder.build();
       for (int t = 0; t < numTrials; t++) {
         doTrial(rankErrorSketch);
       }
-      println(streamLength + "\t" + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
+      println(streamLength + "\t"
+          + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
       streamLength = pwr2LawNext(ppo, streamLength);
     }
   }

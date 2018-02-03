@@ -181,7 +181,7 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
 
   @Override
   String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
-    return(String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d"
+    return (String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d"
       + "\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d",
       streamLength,
       numTrials,
