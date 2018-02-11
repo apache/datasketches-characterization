@@ -1,4 +1,4 @@
-/* <p>Copyright (c) 2005-2013, N. Lee Rhodes, Los Altos, California.
+/* <p>Copyright (c) 2005, Lee Rhodes, Los Altos, California.
  * All Rights Reserved.<br>
  * THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THE ECLIPSE PUBLIC
  * LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM
