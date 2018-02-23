@@ -40,7 +40,7 @@ public class DoublesSketchAccuracyProfile extends QuantilesAccuracyProfile {
   }
 
   @Override
-  void doTrial(final UpdateDoublesSketch rankErrorSketch) {
+  double doTrial() {
     shuffle(inputValues);
 
     // build sketch
@@ -52,20 +52,22 @@ public class DoublesSketchAccuracyProfile extends QuantilesAccuracyProfile {
     final DoublesSketch sketch = useCompact ? updateSketch.compact() : updateSketch;
 
     // query sketch and gather results
+    double maxRankError = 0;
     if (useBulk) {
       final double[] estRanks = sketch.getCDF(queryValues);
       for (int i = 0; i < inputValues.length; i++) {
         final double trueRank = (double) i / inputValues.length;
-        rankErrorSketch.update(Math.abs(trueRank - estRanks[i]));
+        maxRankError = Math.max(maxRankError, Math.abs(trueRank - estRanks[i]));
       }
     } else {
       for (int i = 0; i < inputValues.length; i++) {
         final double trueRank = (double) i / inputValues.length;
         //final double estRank = sketch.getRank(i); // this was not released yet
         final double estRank = sketch.getCDF(new double[] {i})[0];
-        rankErrorSketch.update(Math.abs(trueRank - estRank));
+        maxRankError = Math.max(maxRankError, Math.abs(trueRank - estRank));
       }
     }
+    return maxRankError;
   }
 
   static final Random rnd = new Random();
