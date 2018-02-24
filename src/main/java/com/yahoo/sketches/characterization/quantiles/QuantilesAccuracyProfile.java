@@ -47,7 +47,8 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
       prepareTrial(streamLength);
       final UpdateDoublesSketch rankErrorSketch = builder.build();
       for (int t = 0; t < numTrials; t++) {
-        doTrial(rankErrorSketch);
+        final double maxRankErrorInTrial = doTrial();
+        rankErrorSketch.update(maxRankErrorInTrial);
       }
       println(streamLength + "\t"
           + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
@@ -59,6 +60,6 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
 
   abstract void prepareTrial(int streamLength);
 
-  abstract void doTrial(UpdateDoublesSketch rankErrorSketch);
+  abstract double doTrial();
 
 }
