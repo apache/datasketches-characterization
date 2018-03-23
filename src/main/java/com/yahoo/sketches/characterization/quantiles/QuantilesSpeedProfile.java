@@ -31,10 +31,10 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
     final int lgMaxTrials = Integer.parseInt(job.getProperties().mustGet("lgMaxTrials"));
     final int lgMinTrials = Integer.parseInt(job.getProperties().mustGet("lgMinTrials"));
 
-    final int lgK = Integer.parseInt(job.getProperties().mustGet("lgK"));
+    final int k = Integer.parseInt(job.getProperties().mustGet("K"));
     final int numQueryValues = Integer.parseInt(job.getProperties().mustGet("numQueryValues"));
 
-    configure(lgK, numQueryValues, job.getProperties());
+    configure(k, numQueryValues, job.getProperties());
 
     println(getHeader());
 
@@ -51,7 +51,7 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
     }
   }
 
-  abstract void configure(int lgK, int numQueryValues, Properties properties);
+  abstract void configure(int k, int numQueryValues, Properties properties);
 
   abstract void prepareTrial(int streamLength);
 
