@@ -13,7 +13,7 @@ import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
 public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
 
   private static final Random rnd = new Random();
-  private int lgK;
+  private int k;
   private DoublesSketchBuilder builder;
   private double[] inputValues;
   private int numQueryValues;
@@ -37,13 +37,14 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
   long compactSerializeTimeNs;
   long compactDeserializeTimeNs;
   long compactSerializedSizeBytes;
+  long numRetainedItems;
 
   @Override
-  void configure(final int lgK, final int numQueryValues, final Properties properties) {
-    this.lgK = lgK;
+  void configure(final int k, final int numQueryValues, final Properties properties) {
+    this.k = k;
     this.numQueryValues = numQueryValues;
     useDirect = Boolean.parseBoolean(properties.mustGet("useDirect"));
-    builder = DoublesSketch.builder().setK(1 << lgK);
+    builder = DoublesSketch.builder().setK(k);
   }
 
   @Override
@@ -61,9 +62,9 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
     Arrays.sort(queryValues);
     if (useDirect) {
       updateSketchMemory = WritableMemory
-          .wrap(new byte[DoublesSketch.getUpdatableStorageBytes(1 << lgK, streamLength)]);
+          .wrap(new byte[DoublesSketch.getUpdatableStorageBytes(k, streamLength)]);
       compactSketchMemory = WritableMemory
-          .wrap(new byte[DoublesSketch.getCompactStorageBytes(1 << lgK, streamLength)]);
+          .wrap(new byte[DoublesSketch.getCompactStorageBytes(k, streamLength)]);
     }
     resetStats();
   }
@@ -170,19 +171,20 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
       // could record the last one since they must be the same
       // but let's average across all trials to see if there is an anomaly
       compactSerializedSizeBytes += bytes.length;
+      numRetainedItems += compactSketch.getRetainedItems();
     }
   }
 
   @Override
   String getHeader() {
     return "Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tRank\tSer\tDeser\tSize"
-        + "\tCompact\tQuant\tCDF\tRank\tSer\tDeser\tSize";
+        + "\tCompact\tQuant\tCDF\tRank\tSer\tDeser\tSize\tItems";
   }
 
   @Override
   String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
-    return (String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d"
-      + "\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d",
+    return String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d"
+      + "\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d",
       streamLength,
       numTrials,
       (double) buildTimeNs / numTrials,
@@ -199,8 +201,9 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
       (double) compactGetRankTimeNs / numTrials / numQueryValues,
       (double) compactSerializeTimeNs / numTrials,
       (double) compactDeserializeTimeNs / numTrials,
-      compactSerializedSizeBytes / numTrials
-    ));
+      compactSerializedSizeBytes / numTrials,
+      numRetainedItems / numTrials
+    );
   }
 
   private void resetStats() {
@@ -219,6 +222,7 @@ public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
     compactSerializeTimeNs = 0;
     compactDeserializeTimeNs = 0;
     compactSerializedSizeBytes = 0;
+    numRetainedItems = 0;
   }
 
 }

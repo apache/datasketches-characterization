@@ -1,30 +1,27 @@
 package com.yahoo.sketches.characterization.quantiles;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
-import com.yahoo.memory.WritableMemory;
-import com.yahoo.sketches.ArrayOfDoublesSerDe;
-import com.yahoo.sketches.ArrayOfItemsSerDe;
+import com.yahoo.memory.Memory;
 import com.yahoo.sketches.characterization.Properties;
-import com.yahoo.sketches.quantiles.ItemsSketch;
+import com.yahoo.sketches.kll.KllFloatsSketch;
 
-public class ItemsSketchSpeedProfile extends QuantilesSpeedProfile {
+public class KllFloatsSketchSpeedProfile extends QuantilesSpeedProfile {
 
-  private static final Comparator<Double> COMPARATOR = Comparator.naturalOrder();
-  private static final ArrayOfItemsSerDe<Double> SERDE = new ArrayOfDoublesSerDe();
   private static final Random rnd = new Random();
   private int k;
-  private double[] inputValues;
+  private float[] inputValues;
   private int numQueryValues;
-  private Double[] queryValues;
+  private float[] rankQueryValues;
+  private double[] quantileQueryValues;
 
   long buildTimeNs;
   long updateTimeNs;
+  long getQuantileTimeNs;
   long getQuantilesTimeNs;
-  long getCdfTimeNs;
   long getRankTimeNs;
+  long getCdfTimeNs;
   long serializeTimeNs;
   long deserializeTimeNs;
   long numRetainedItems;
@@ -39,26 +36,30 @@ public class ItemsSketchSpeedProfile extends QuantilesSpeedProfile {
   @Override
   void prepareTrial(final int streamLength) {
     // prepare input data
-    inputValues = new double[streamLength];
+    inputValues = new float[streamLength];
     for (int i = 0; i < streamLength; i++) {
-      inputValues[i] = rnd.nextDouble();
+      inputValues[i] = rnd.nextFloat();
     }
     // prepare query data that must be ordered
-    queryValues = new Double[numQueryValues];
+    quantileQueryValues = new double[numQueryValues];
     for (int i = 0; i < numQueryValues; i++) {
-      queryValues[i] = rnd.nextDouble();
+      quantileQueryValues[i] = rnd.nextDouble();
     }
-    Arrays.sort(queryValues);
+    Arrays.sort(quantileQueryValues);
+    rankQueryValues = new float[numQueryValues];
+    for (int i = 0; i < numQueryValues; i++) {
+      rankQueryValues[i] = rnd.nextFloat();
+    }
+    Arrays.sort(rankQueryValues);
     resetStats();
   }
 
-  @SuppressWarnings("unused")
   @Override
   void doTrial() {
-    DoublesSketchAccuracyProfile.shuffle(inputValues);
+    shuffle(inputValues);
 
     final long startBuild = System.nanoTime();
-    final ItemsSketch<Double> sketch = ItemsSketch.getInstance(k, COMPARATOR);
+    final KllFloatsSketch sketch = new KllFloatsSketch(k);
     final long stopBuild = System.nanoTime();
     buildTimeNs += stopBuild - startBuild;
 
@@ -69,73 +70,94 @@ public class ItemsSketchSpeedProfile extends QuantilesSpeedProfile {
     final long stopUpdate = System.nanoTime();
     updateTimeNs += stopUpdate - startUpdate;
 
+    final long startGetQuantile = System.nanoTime();
+    for (final double value: quantileQueryValues) {
+      sketch.getQuantile(value);
+    }
+    final long stopGetQuantile = System.nanoTime();
+    getQuantileTimeNs += stopGetQuantile - startGetQuantile;
+
     final long startGetQuantiles = System.nanoTime();
-    sketch.getQuantiles(numQueryValues);
+    sketch.getQuantiles(quantileQueryValues);
     final long stopGetQuantiles = System.nanoTime();
     getQuantilesTimeNs += stopGetQuantiles - startGetQuantiles;
 
-    final long startGetCdf = System.nanoTime();
-    sketch.getCDF(queryValues);
-    final long stopGetCdf = System.nanoTime();
-    getCdfTimeNs += stopGetCdf - startGetCdf;
-
     final long startGetRank = System.nanoTime();
-    for (final double value: queryValues) {
-      //sketch.getRank(value); //TODO this was not released yet
-      final double estRank = sketch.getCDF(new Double[] {value})[0];
+    for (final float value: rankQueryValues) {
+      sketch.getRank(value);
     }
     final long stopGetRank = System.nanoTime();
     getRankTimeNs += stopGetRank - startGetRank;
 
+    final long startGetCdf = System.nanoTime();
+    sketch.getCDF(rankQueryValues);
+    final long stopGetCdf = System.nanoTime();
+    getCdfTimeNs += stopGetCdf - startGetCdf;
+
     final long startSerialize = System.nanoTime();
-    final byte[] bytes = sketch.toByteArray(SERDE);
+    final byte[] bytes = sketch.toByteArray();
     final long stopSerialize = System.nanoTime();
     serializeTimeNs += stopSerialize - startSerialize;
 
-    final WritableMemory mem = WritableMemory.wrap(bytes);
+    final Memory mem = Memory.wrap(bytes);
     final long startDeserialize = System.nanoTime();
-    ItemsSketch.getInstance(mem, COMPARATOR, SERDE);
+    KllFloatsSketch.heapify(mem);
     final long stopDeserialize = System.nanoTime();
     deserializeTimeNs += stopDeserialize - startDeserialize;
 
     // could record the last one since they must be the same
     // but let's average across all trials to see if there is an anomaly
-    numRetainedItems += sketch.getRetainedItems();
-    serializedSizeBytes += bytes.length;
+    numRetainedItems += sketch.getNumRetained();
+    serializedSizeBytes += sketch.getSerializedSizeBytes();
   }
 
   @Override
   String getHeader() {
-    return "Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tRank\tSer\tDeser\tItems\tSize";
+    return "Stream\tTrials\tBuild\tUpdate\tQuant\tQuants\tRank\tCDF\tSer\tDeser\tItems\tSize";
   }
 
   @Override
   String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
-    return String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d",
+    return(String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d",
       streamLength,
       numTrials,
       (double) buildTimeNs / numTrials,
       (double) updateTimeNs / numTrials / streamLength,
+      (double) getQuantileTimeNs / numTrials / numQueryValues,
       (double) getQuantilesTimeNs / numTrials / numQueryValues,
-      (double) getCdfTimeNs / numTrials / numQueryValues,
       (double) getRankTimeNs / numTrials / numQueryValues,
+      (double) getCdfTimeNs / numTrials / numQueryValues,
       (double) serializeTimeNs / numTrials,
       (double) deserializeTimeNs / numTrials,
       numRetainedItems / numTrials,
       serializedSizeBytes / numTrials
-    );
+    ));
   }
 
   private void resetStats() {
     buildTimeNs = 0;
     updateTimeNs = 0;
+    getQuantileTimeNs = 0;
     getQuantilesTimeNs = 0;
-    getCdfTimeNs = 0;
     getRankTimeNs = 0;
+    getCdfTimeNs = 0;
     serializeTimeNs = 0;
     deserializeTimeNs = 0;
     numRetainedItems = 0;
     serializedSizeBytes = 0;
+  }
+
+  static void shuffle(final float[] array) {
+    for (int i = 0; i < array.length; i++) {
+      final int r = rnd.nextInt(i + 1);
+      swap(array, i, r);
+    }
+  }
+
+  private static void swap(final float[] array, final int i1, final int i2) {
+    final float value = array[i1];
+    array[i1] = array[i2];
+    array[i2] = value;
   }
 
 }
