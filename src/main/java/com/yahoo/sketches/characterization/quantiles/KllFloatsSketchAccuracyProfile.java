@@ -11,13 +11,11 @@ public class KllFloatsSketchAccuracyProfile extends QuantilesAccuracyProfile {
   private float[] inputValues;
   private float[] queryValues;
   private boolean useBulk;
-  private boolean measureRankError;
 
   @Override
   void configure(final Properties props) {
     k = Integer.parseInt(props.mustGet("K"));
     useBulk = Boolean.parseBoolean(props.mustGet("useBulk"));
-    measureRankError = Boolean.parseBoolean(props.mustGet("rank"));
   }
 
   @Override
