@@ -45,7 +45,6 @@ public class KllFloatsSketchSpeedProfile extends QuantilesSpeedProfile {
     for (int i = 0; i < numQueryValues; i++) {
       quantileQueryValues[i] = rnd.nextDouble();
     }
-    Arrays.sort(quantileQueryValues);
     rankQueryValues = new float[numQueryValues];
     for (int i = 0; i < numQueryValues; i++) {
       rankQueryValues[i] = rnd.nextFloat();
@@ -56,8 +55,6 @@ public class KllFloatsSketchSpeedProfile extends QuantilesSpeedProfile {
 
   @Override
   void doTrial() {
-    shuffle(inputValues);
-
     final long startBuild = System.nanoTime();
     final KllFloatsSketch sketch = new KllFloatsSketch(k);
     final long stopBuild = System.nanoTime();
