@@ -58,8 +58,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         
         <!-- Dependencies -->
-        <memory.version>0.10.4</memory.version>
-		<sketches-core.version>0.10.3</sketches-core.version>
+        <memory.version>0.10.3</memory.version>
+		<sketches-core.version>0.11.0</sketches-core.version>
         <testng.version>6.13.1</testng.version>
         
         <!-- Maven Plugins -->
