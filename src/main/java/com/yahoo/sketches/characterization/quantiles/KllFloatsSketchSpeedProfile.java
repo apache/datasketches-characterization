@@ -115,7 +115,7 @@ public class KllFloatsSketchSpeedProfile extends QuantilesSpeedProfile {
 
   @Override
   String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
-    return(String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d",
+    return String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d",
       streamLength,
       numTrials,
       (double) buildTimeNs / numTrials,
@@ -128,7 +128,7 @@ public class KllFloatsSketchSpeedProfile extends QuantilesSpeedProfile {
       (double) deserializeTimeNs / numTrials,
       numRetainedItems / numTrials,
       serializedSizeBytes / numTrials
-    ));
+    );
   }
 
   private void resetStats() {
