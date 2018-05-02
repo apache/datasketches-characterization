@@ -1,15 +1,23 @@
 Jobs
 
 Memory:
-src/main/resources/memory/HeapSpeedJob.txt
-src/main/resources/memory/UnsafeDirectSpeedJob.txt
-src/main/resources/memory/MemoryDirectSpeedJob.txt
-src/main/resources/memory/HeapUtf8SpeedJob.txt
+src/main/resources/memory/HeapSpeedJob.conf
+src/main/resources/memory/UnsafeDirectSpeedJob.conf
+src/main/resources/memory/MemoryDirectSpeedJob.conf
+src/main/resources/memory/HeapUtf8SpeedJob.conf
 
 Unique Count:
-src/main/resources/uniquecount/HllAccuracyJob.txt
-src/main/resources/uniquecount/ThetaAccuracyJob.txt
-src/main/resources/uniquecount/HllSpeedJob.txt
-src/main/resources/uniquecount/ThetaSpeedJob.txt
-src/main/resources/uniquecount/HllSerDeJob.txt
-src/main/resources/uniquecount/ThetaSerDeJob.txt
+src/main/resources/uniquecount/HllAccuracyJob.conf
+src/main/resources/uniquecount/ThetaAccuracyJob.conf
+src/main/resources/uniquecount/HllSpeedJob.conf
+src/main/resources/uniquecount/ThetaSpeedJob.conf
+src/main/resources/uniquecount/HllSerDeJob.conf
+src/main/resources/uniquecount/ThetaSerDeJob.conf
+
+Quantiles:
+DoublesSketchAccuracyJob.conf
+DoublesSketchSpeedJob.conf
+ItemsSketchAccuracyJob.conf
+ItemsSketchSpeedJob.conf
+KllFloatsSketchAccuracyJob.conf
+KllFloatsSketchSpeedJob.conf
