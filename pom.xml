@@ -59,7 +59,7 @@
         
         <!-- Dependencies -->
         <memory.version>0.10.4</memory.version>
-		<sketches-core.version>0.11.0</sketches-core.version>
+        <sketches-core.version>0.11.1</sketches-core.version>
         <testng.version>6.13.1</testng.version>
         
         <!-- Maven Plugins -->
