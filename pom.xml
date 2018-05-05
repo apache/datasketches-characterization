@@ -102,7 +102,7 @@
     <scm>
         <connection>scm:git:ssh://git@github.com/DataSketches/sketches-core.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/DataSketches/sketches-core.git</developerConnection>
-        <url>https://github.com/DataSketches/sketches-core.git</url>
+        <url>https://github.com/DataSketches/sketches-core</url>
         <tag>HEAD</tag>
     </scm>
 
