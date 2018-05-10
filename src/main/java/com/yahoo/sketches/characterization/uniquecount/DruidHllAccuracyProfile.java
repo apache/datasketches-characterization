@@ -5,8 +5,8 @@
 
 package com.yahoo.sketches.characterization.uniquecount;
 
-import io.druid.hll.HyperLogLogCollector;
-import io.druid.hll.HyperLogLogHash;
+import com.yahoo.sketches.characterization.uniquecount.druidhll.HyperLogLogCollector;
+import com.yahoo.sketches.characterization.uniquecount.druidhll.HyperLogLogHash;
 
 public class DruidHllAccuracyProfile extends BaseAccuracyProfile {
 
