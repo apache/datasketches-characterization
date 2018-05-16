@@ -136,7 +136,6 @@
 	    <dependency>
 	      <groupId>com.yahoo.datasketches</groupId>
 	      <artifactId>sketches-core</artifactId>
-          <classifier>with-shaded-memory</classifier>
 	      <version>${sketches-core.version}</version>
 	    </dependency>
 
