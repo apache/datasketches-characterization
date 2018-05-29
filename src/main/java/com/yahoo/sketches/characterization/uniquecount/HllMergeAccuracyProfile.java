@@ -38,7 +38,7 @@ public class HllMergeAccuracyProfile implements JobProfile {
     final int distinctKeysPerSketch = Integer.parseInt(job.getProperties().mustGet("distinctKeysPerSketch"));
     final double trueCount = numSketches * distinctKeysPerSketch;
     double sumEstimates = 0;
-    double sumErrors = 0;
+    double sumOfSquaredDeviationsFromTrueCount = 0;
 
     for (int t = 0; t < numTrials; t++) {
       Union union = new Union(lgK);
@@ -52,12 +52,15 @@ public class HllMergeAccuracyProfile implements JobProfile {
       }
       final double estimatedCount = union.getResult().getEstimate();
       sumEstimates += estimatedCount;
-      final double relativeError = Math.abs(trueCount - estimatedCount) / trueCount;
-      sumErrors += relativeError;
+      sumOfSquaredDeviationsFromTrueCount += (estimatedCount - trueCount) * (estimatedCount - trueCount);
     }
+    final double meanEstimate = sumEstimates / numTrials;
+    final double meanRelativeError = meanEstimate / trueCount - 1;
+    final double relativeStandardError = Math.sqrt(sumOfSquaredDeviationsFromTrueCount / numTrials) / trueCount;
     println("True count: " + trueCount);
-    println("Mean estimate: " + sumEstimates / numTrials);
-    println("Mean Relative Error: " + sumErrors / numTrials);
+    println("Mean estimate: " + meanEstimate);
+    println("Mean Relative Error: " + meanRelativeError);
+    println("Relative Standard Error: " + relativeStandardError);
   }
 
 }
