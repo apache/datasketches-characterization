@@ -15,7 +15,7 @@ import com.yahoo.memory.WritableMemory;
  * @author Lee Rhodes
  */
 public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
-  RandomCodePoints randCP = new RandomCodePoints(false);
+  RandomCodePoints randCP = new RandomCodePoints(false); //only with Memory 0.10.4 and later
 
   @Override
   void configure() {
