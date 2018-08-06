@@ -15,6 +15,7 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
   Job job;
   private DoublesSketchBuilder builder;
 
+  //JobProfile
   @Override
   public void start(final Job job) {
     this.job = job;
@@ -22,9 +23,16 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
   }
 
   @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
+
+  @Override
   public void println(final String s) {
     job.println(s);
   }
+  //end JobProfile
 
   private void doTrials() {
     final int lgMin = Integer.parseInt(job.getProperties().mustGet("lgMin"));

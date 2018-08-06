@@ -36,6 +36,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   boolean getSize = false;
   AccuracyStats[] qArr;
 
+  //JobProfile
   @Override
   public void start(final Job job) {
     this.job = job;
@@ -55,12 +56,21 @@ public abstract class BaseAccuracyProfile implements JobProfile {
     getSize = (getSizeStr == null) ? false : Boolean.parseBoolean(getSizeStr);
     configure();
     doTrials();
+    shutdown();
+    cleanup();
   }
+
+  @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
 
   @Override
   public void println(final String s) {
     job.println(s);
   }
+  //end JobProfile
 
   abstract void configure();
 

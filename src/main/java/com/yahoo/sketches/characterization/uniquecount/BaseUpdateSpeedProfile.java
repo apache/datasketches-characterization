@@ -29,6 +29,7 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
   int lgMaxBpU;
   double slope;
 
+  //JobProfile
   @Override
   public void start(final Job job) {
     this.job = job;
@@ -46,9 +47,16 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
   }
 
   @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
+
+  @Override
   public void println(final String s) {
     job.println(s);
   }
+  //end JobProfile
 
   /**
    * Configure the sketch

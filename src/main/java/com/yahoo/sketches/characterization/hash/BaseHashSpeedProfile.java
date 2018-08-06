@@ -62,6 +62,7 @@ static class Point {
   }
 }
 
+  //JobProfile
   @Override
   public void start(final Job job) {
     this.job = job;
@@ -79,9 +80,16 @@ static class Point {
   }
 
   @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
+
+  @Override
   public void println(final String s) {
     job.println(s);
   }
+  //end JobProfile
 
   abstract void configure();
 

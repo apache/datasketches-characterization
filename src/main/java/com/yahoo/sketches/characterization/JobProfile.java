@@ -23,6 +23,16 @@ public interface JobProfile {
   void start(Job job);
 
   /**
+   * Allows for smooth shutdown of multiple threads
+   */
+  void shutdown();
+
+  /**
+   * Performs any cleanup if necessary after the job completes
+   */
+  void cleanup();
+
+  /**
    * For sending output to a file and/or to stdOut.
    * @param s the string to output
    */
