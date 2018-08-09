@@ -58,9 +58,12 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
 
   @Override
   void doTrial() {
+    final int k = 1 << lgK;
+    int k2 = 2*k;
     final int qArrLen = qArr.length;
-    localSketch.reset(); //reuse the same sketches
-    sharedSketch.reset();
+    //reuse the same sketches
+    sharedSketch.reset(); // reset shared sketch first
+    localSketch.reset();  // local sketch reset is reading the theta from shared sketch
     int lastUniques = 0;
     for (int i = 0; i < qArrLen; i++) {
       final AccuracyStats q = qArr[i];
@@ -70,7 +73,16 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
       }
       lastUniques += delta;
       if (rebuild) { sharedSketch.rebuild(); } //Resizes down to k. Only useful with QSSketch
-      q.update(sharedSketch.getEstimate());
+      try {
+        if(k2-- > 0) {
+          // for the first 2k updates -
+          // wait to allow concurrent background propagation to complete
+          Thread.sleep(1);
+        }
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      q.update(sharedSketch.getEstimationSnapshot());
       if (getSize) {
         q.bytes = sharedSketch.compact().toByteArray().length;
       }
