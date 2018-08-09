@@ -74,9 +74,10 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
       lastUniques += delta;
       if (rebuild) { sharedSketch.rebuild(); } //Resizes down to k. Only useful with QSSketch
       try {
-        if (k2-- > 0) {
+        if (k2 > 0) {
           // for the first 2k updates -
-          // wait to allow concurrent background propagation to complete
+          // wait 1ms to allow concurrent background propagation to complete
+          k2--;
           Thread.sleep(1);
         }
       } catch (final InterruptedException e) {
