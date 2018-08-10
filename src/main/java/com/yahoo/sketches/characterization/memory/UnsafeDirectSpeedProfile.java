@@ -10,7 +10,7 @@ import static com.yahoo.memory.UnsafeUtil.unsafe;
 /**
  * @author Lee Rhodes
  */
-//@SuppressWarnings("restriction")
+@SuppressWarnings("restriction")
 public class UnsafeDirectSpeedProfile extends BaseSpeedProfile {
   int arrLongs;
   long address;
