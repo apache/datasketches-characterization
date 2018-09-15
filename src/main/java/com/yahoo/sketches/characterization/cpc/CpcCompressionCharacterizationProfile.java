@@ -11,34 +11,41 @@ import java.io.PrintWriter;
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.Properties;
-import com.yahoo.sketches.cpc.StreamingValidation;
+import com.yahoo.sketches.cpc.CompressionCharacterization;
 
 /**
  * @author Lee Rhodes
  */
-public class CpcStreamingValidationProfile implements JobProfile {
+public class CpcCompressionCharacterizationProfile implements JobProfile {
   Job job;
   Properties prop;
 
-  int lgMinK; //For each K to
-  int lgMaxK;
-  int trials;
-  int ppoN;
+  int lgMinK;
+  int lgMaxK; //inclusive
+  int lgMinT;
+  int lgMaxT;
+  int lgMulK;
+  int uPPO;
+  int incLgK;
   PrintStream ps;
   PrintWriter pw;
 
   @Override
   public void start(final Job job) {
     this.job = job;
-    pw = job.getPrintWriter();
-    ps = System.out;
     prop = job.getProperties();
+
     lgMinK = Integer.parseInt(prop.mustGet("lgMinK"));
     lgMaxK = Integer.parseInt(prop.mustGet("lgMaxK"));
-    trials = Integer.parseInt(prop.mustGet("trials"));
-    ppoN = Integer.parseInt(prop.mustGet("ppoN"));
-    final StreamingValidation sVal = new StreamingValidation(lgMinK, lgMaxK, trials, ppoN, ps, pw);
-    sVal.start();
+    lgMaxT = Integer.parseInt(prop.mustGet("Trials_lgMaxT"));
+    incLgK = Integer.parseInt(prop.mustGet("incLgK"));
+    uPPO = Integer.parseInt(prop.mustGet("uPPO"));
+    ps = System.out;
+    pw = job.getPrintWriter();
+
+    final CompressionCharacterization cc = new CompressionCharacterization(
+        lgMinK, lgMaxK, lgMinT, lgMaxT, lgMulK, uPPO, incLgK, ps, pw);
+    cc.start();
   }
 
   @Override
