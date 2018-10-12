@@ -9,8 +9,8 @@ import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 
 import com.yahoo.memory.WritableDirectHandle;
 import com.yahoo.memory.WritableMemory;
-import com.yahoo.sketches.theta.ConcurrentDirectThetaSketch;
 import com.yahoo.sketches.theta.ConcurrentThetaBuilder;
+import com.yahoo.sketches.theta.SharedThetaSketch;
 import com.yahoo.sketches.theta.Sketch;
 import com.yahoo.sketches.theta.UpdateSketch;
 
@@ -18,15 +18,15 @@ import com.yahoo.sketches.theta.UpdateSketch;
  * @author Lee Rhodes
  */
 public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
-  private ConcurrentDirectThetaSketch sharedSketch;
+  private SharedThetaSketch sharedSketch;
   private UpdateSketch localSketch;
   private int sharedLgK;
   private int localLgK;
   private int cacheLimit;
   private boolean ordered;
-  private int poolThreads;
   private boolean offHeap;
   private boolean rebuild; //Theta QS Sketch Accuracy
+  private boolean sharedIsDirect;
   private WritableDirectHandle wdh;
   private WritableMemory wmem;
 
@@ -38,9 +38,9 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     localLgK = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_localLgK"));
     cacheLimit = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_cacheLimit"));
     ordered = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_ordered"));
-    poolThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_poolThreads"));
     offHeap = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_offHeap"));
     rebuild = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_rebuild"));
+    sharedIsDirect = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_sharedIsDirect"));
 
     final int maxSharedUpdateBytes = Sketch.getMaxUpdateSketchBytes(1 << sharedLgK);
 
@@ -58,9 +58,11 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
 
   @Override
   void doTrial() {
+    final int k = 1 << lgK;
+    int k2 = 2 * k;
     final int qArrLen = qArr.length;
     //reuse the same sketches
-    sharedSketch.reset(); // reset shared sketch first
+    sharedSketch.resetShared(); // reset shared sketch first
     localSketch.reset();  // local sketch reset is reading the theta from shared sketch
     int lastUniques = 0;
     for (int i = 0; i < qArrLen; i++) {
@@ -70,11 +72,20 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
         localSketch.update(++vIn);
       }
       lastUniques += delta;
-      if (rebuild) { sharedSketch.rebuild(); } //Resizes down to k. Only useful with QSSketch
-      busyWaitMicros(10);
+      if (rebuild) { sharedSketch.rebuildShared(); } //Resizes down to k. Only useful with QSSketch
+      try {
+        if (k2 > 0) {
+          // for the first 2k updates -
+          // wait 1ms to allow concurrent background propagation to complete
+          k2--;
+          Thread.sleep(1);
+        }
+      } catch (final InterruptedException e) {
+        e.printStackTrace();
+      }
       q.update(sharedSketch.getEstimationSnapshot());
       if (getSize) {
-        q.bytes = sharedSketch.compact().toByteArray().length;
+        q.bytes = sharedSketch.compactShared().toByteArray().length;
       }
     }
   }
@@ -86,11 +97,6 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     }
   }
 
-  private static void busyWaitMicros(final long micros) {
-    final long waitUntil = System.nanoTime() + (micros * 1_000);
-    while (waitUntil > System.nanoTime()) { }
-  }
-
   //configures builder for both local and shared
   ConcurrentThetaBuilder configureBuilder() {
     final ConcurrentThetaBuilder bldr = new ConcurrentThetaBuilder();
@@ -99,7 +105,7 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     bldr.setSeed(DEFAULT_UPDATE_SEED);
     bldr.setCacheLimit(cacheLimit);
     bldr.setPropagateOrderedCompact(ordered);
-    bldr.setPoolThreads(poolThreads);
+    bldr.setSharedIsDirect(sharedIsDirect);
     return bldr;
   }
 
