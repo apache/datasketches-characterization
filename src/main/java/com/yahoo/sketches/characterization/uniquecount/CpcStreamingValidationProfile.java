@@ -3,7 +3,7 @@
  * Apache License 2.0. See LICENSE file at the project root for terms.
  */
 
-package com.yahoo.sketches.characterization.cpc;
+package com.yahoo.sketches.characterization.uniquecount;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -11,37 +11,34 @@ import java.io.PrintWriter;
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.Properties;
-import com.yahoo.sketches.cpc.QuickMergingValidation;
+import com.yahoo.sketches.cpc.StreamingValidation;
 
 /**
  * @author Lee Rhodes
  */
-public class CpcQuickMergingValidationProfile implements JobProfile {
-
+public class CpcStreamingValidationProfile implements JobProfile {
   Job job;
   Properties prop;
 
-  int lgMinK;
-  int lgMaxK; //inclusive
-  int incLgK;
+  int lgMinK; //For each K to
+  int lgMaxK;
+  int trials;
+  int ppoN;
   PrintStream ps;
   PrintWriter pw;
 
   @Override
   public void start(final Job job) {
     this.job = job;
+    pw = job.getPrintWriter();
+    ps = System.out;
     prop = job.getProperties();
-
     lgMinK = Integer.parseInt(prop.mustGet("lgMinK"));
     lgMaxK = Integer.parseInt(prop.mustGet("lgMaxK"));
-    incLgK = Integer.parseInt(prop.mustGet("incLgK"));
-
-    ps = System.out;
-    pw = job.getPrintWriter();
-
-    final QuickMergingValidation mv = new QuickMergingValidation(
-        lgMinK, lgMaxK, incLgK, ps, pw);
-    mv.start();
+    trials = Integer.parseInt(prop.mustGet("trials"));
+    ppoN = Integer.parseInt(prop.mustGet("ppoN"));
+    final StreamingValidation sVal = new StreamingValidation(lgMinK, lgMaxK, trials, ppoN, ps, pw);
+    sVal.start();
   }
 
   @Override
@@ -52,4 +49,5 @@ public class CpcQuickMergingValidationProfile implements JobProfile {
 
   @Override
   public void println(final String s) {}
+
 }

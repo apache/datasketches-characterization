@@ -3,7 +3,7 @@
  * Apache License 2.0. See LICENSE file at the project root for terms.
  */
 
-package com.yahoo.sketches.characterization.cpc;
+package com.yahoo.sketches.characterization.uniquecount;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -11,34 +11,44 @@ import java.io.PrintWriter;
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.Properties;
-import com.yahoo.sketches.cpc.StreamingValidation;
+import com.yahoo.sketches.cpc.CompressionCharacterization;
 
 /**
  * @author Lee Rhodes
  */
-public class CpcStreamingValidationProfile implements JobProfile {
+public class CpcCompressionCharacterizationProfile implements JobProfile {
   Job job;
   Properties prop;
 
-  int lgMinK; //For each K to
-  int lgMaxK;
-  int trials;
-  int ppoN;
+  int lgMinK;
+  int lgMaxK; //inclusive
+  int lgMinT;
+  int lgMaxT;
+  int lgMulK;
+  int uPPO;
+  int incLgK;
   PrintStream ps;
   PrintWriter pw;
 
   @Override
   public void start(final Job job) {
     this.job = job;
-    pw = job.getPrintWriter();
-    ps = System.out;
     prop = job.getProperties();
+
     lgMinK = Integer.parseInt(prop.mustGet("lgMinK"));
     lgMaxK = Integer.parseInt(prop.mustGet("lgMaxK"));
-    trials = Integer.parseInt(prop.mustGet("trials"));
-    ppoN = Integer.parseInt(prop.mustGet("ppoN"));
-    final StreamingValidation sVal = new StreamingValidation(lgMinK, lgMaxK, trials, ppoN, ps, pw);
-    sVal.start();
+    lgMinT = Integer.parseInt(prop.mustGet("lgMinT"));
+    lgMaxT = Integer.parseInt(prop.mustGet("lgMaxT"));
+    lgMulK = Integer.parseInt(prop.mustGet("lgMulK"));
+    uPPO = Integer.parseInt(prop.mustGet("uPPO"));
+    incLgK = Integer.parseInt(prop.mustGet("incLgK"));
+
+    ps = System.out;
+    pw = job.getPrintWriter();
+
+    final CompressionCharacterization cc = new CompressionCharacterization(
+        lgMinK, lgMaxK, lgMinT, lgMaxT, lgMulK, uPPO, incLgK, ps, pw);
+    cc.start();
   }
 
   @Override
