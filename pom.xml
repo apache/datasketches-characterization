@@ -59,7 +59,7 @@
         
         <!-- Dependencies -->
         <memory.version>0.12.0</memory.version>
-        <sketches-core.version>0.12.0</sketches-core.version>
+        <sketches-core.version>0.12.1-SNAPSHOT</sketches-core.version>
         <testng.version>6.14.3</testng.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
 
