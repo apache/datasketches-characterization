@@ -29,38 +29,38 @@ public abstract class BaseHashSpeedProfile implements JobProfile {
   int lgMaxBpX;
   double slope;
 
-static class Point {
-  int iterX;
-  int trials;
-  long sumTrials_nS = 0;
+  static class Point {
+    int iterX;
+    int trials;
+    long sumTrials_nS = 0;
 
-  Point(final int arrLongs, final int trials) {
-    iterX = arrLongs;
-    this.trials = trials;
+    Point(final int arrLongs, final int trials) {
+      iterX = arrLongs;
+      this.trials = trials;
+    }
+
+    public static String getHeader() {
+      final String s =
+            "LgIter" + TAB
+          + "Iterations" + TAB
+          + "Trials" + TAB
+          + "#Ops" + TAB
+          + "AvgTrial_nS" + TAB
+          + "AvgOp_nS";
+      return s;
+    }
+
+    public String getRow() {
+      final double lgArrLongs = Math.log(iterX) / LN2;
+      final long numOps = (long)((double)trials * iterX);
+      final double trial_nS = (double)sumTrials_nS / trials;
+      final double op_nS = trial_nS / iterX;
+
+      final String out = String.format("%6.2f\t%d\t%d\t%d\t%.1f\t%8.3f",
+          lgArrLongs, iterX, trials, numOps, trial_nS, op_nS);
+      return out;
+    }
   }
-
-  public static String getHeader() {
-    final String s =
-          "LgIter" + TAB
-        + "Iterations" + TAB
-        + "Trials" + TAB
-        + "#Ops" + TAB
-        + "AvgTrial_nS" + TAB
-        + "AvgOp_nS";
-    return s;
-  }
-
-  public String getRow() {
-    final double lgArrLongs = Math.log(iterX) / LN2;
-    final long numOps = (long)((double)trials * iterX);
-    final double trial_nS = (double)sumTrials_nS / trials;
-    final double op_nS = trial_nS / iterX;
-
-    final String out = String.format("%6.2f\t%d\t%d\t%d\t%.1f\t%8.3f",
-        lgArrLongs, iterX, trials, numOps, trial_nS, op_nS);
-    return out;
-  }
-}
 
   //JobProfile
   @Override
