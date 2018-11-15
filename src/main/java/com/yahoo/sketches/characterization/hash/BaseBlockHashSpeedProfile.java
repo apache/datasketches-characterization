@@ -29,6 +29,10 @@ public abstract class BaseBlockHashSpeedProfile implements JobProfile {
   int lgMaxBpX; //longs for reducing T
   double slope;
   Point p;
+  long trialMemHash = 0;
+  long trialArrHash = 0;
+  long trialOldHash = 0;
+  long sumHash = 0;
 
   static class Point {
     int longsX  ;
@@ -37,55 +41,80 @@ public abstract class BaseBlockHashSpeedProfile implements JobProfile {
     long sumTrialsFill_nS = 0;
     long sumTrialsMemHash_nS = 0;
     long sumTrialsArrHash_nS = 0;
+    long sumTrialsOldHash_nS = 0;
+    long sumHash = 0;
 
     Point(final int longsX, final int trials) {
       this.longsX = longsX;
       this.trials = trials;
     }
 
+    public void reset(final int longsX, final int trials) {
+      this.longsX = longsX;
+      this.trials = trials;
+      sumTrials_nS = 0;
+      sumTrialsFill_nS = 0;
+      sumTrialsMemHash_nS = 0;
+      sumTrialsArrHash_nS = 0;
+      sumTrialsOldHash_nS = 0;
+    }
+
     public static String getHeader() {
       final String s =
-            "LgBytes" + TAB
-          + "Trials" + TAB
-          + "Trial_nS" + TAB
-          + "Fill_nS" + TAB
-          + "Mem_nS" + TAB
-          + "Arr_nS" + TAB
-          + "Fill_B/S" + TAB
-          + "Mem_B/S" + TAB
-          + "Arr_B/S";
+            "LgLongs " + TAB
+          + "Trials  " + TAB
+          + "Total_mS" + TAB
+          + "LFill_nS" + TAB
+          + "LMemH_nS" + TAB
+          + "LArrH_nS" + TAB
+          + "LOldH_nS" + TAB
+          + "Fill_MB/S" + TAB
+          + "MemH_MB/S" + TAB
+          + "ArrH_MB/S" + TAB
+          + "OldH_MB/S" + TAB
+          + "SumHash";
       return s;
     }
 
     public String getRow() {
-      final long bytesX = longsX << 3;
-      final double lgBytesX = Math.log(bytesX) / LN2;
-      final double avgTrial_nS = (double)sumTrials_nS / trials;
-      final double avgTrialFill_nS = (double)sumTrialsFill_nS / trials;
-      final double avgTrialMemHash_nS = (double)sumTrialsMemHash_nS / trials;
-      final double avgTrialArrHash_nS = (double)sumTrialsArrHash_nS / trials;
-      final double fillBytesPerSec = bytesX / (avgTrialFill_nS / 1e9);
-      final double memHashBytesPerSec = bytesX / (avgTrialMemHash_nS / 1e9);
-      final double arrHashBytesPerSec = bytesX / (avgTrialArrHash_nS / 1e9);
+      //final long bytesX = longsX << 3;
+      final double trialsLongs = trials * longsX;
+      final double lgLongsX = Math.log(longsX) / LN2;
+      final double total_mS = sumTrials_nS / 1e6;
+      final double avgLongFill_nS = sumTrialsFill_nS / trialsLongs;
+      final double avgLongMemHash_nS = sumTrialsMemHash_nS / trialsLongs;
+      final double avgLongArrHash_nS = sumTrialsArrHash_nS / trialsLongs;
+      final double avgLongOldHash_nS = sumTrialsOldHash_nS / trialsLongs;
+      final double fillMBPerSec = 8 / (avgLongFill_nS / 1e3);
+      final double memHashMBPerSec = 8 / (avgLongMemHash_nS / 1e3);
+      final double arrHashMBPerSec = 8 / (avgLongArrHash_nS / 1e3);
+      final double oldHashMBPerSec = 8 / (avgLongOldHash_nS / 1e3);
       final String out = String.format(
           "%9.2f\t"  //LgBytes
-        + "%d\t"     //Trials
-        + "%d\t"     //Trail ns
-        + "%d\t"     //Fill ns
-        + "%d\t"     //Mem ns
-        + "%d\t"     //Arr ns
-        + "%9.0f\t"  //Fill rate
-        + "%9.0f\t"  //Mem rate
-        + "%9.0f\t", //Arr rate
-          lgBytesX,
+        + "%9d\t"    //Trials
+        + "%9.3f\t"  //Total ms
+        + "%9.3f\t"  //LFill ns
+        + "%9.3f\t"  //LMem ns
+        + "%9.3f\t"  //LArr ns
+        + "%9.3f\t"  //LOld ns
+        + "%9.2f\t"  //Fill rate
+        + "%9.2f\t"  //Mem rate
+        + "%9.2f\t"  //Arr rate
+        + "%9.2f\t"  //Old rate
+        + "%16s",    //sumHash
+          lgLongsX,
           trials,
-          avgTrial_nS,
-          avgTrialFill_nS,
-          avgTrialMemHash_nS,
-          avgTrialArrHash_nS,
-          fillBytesPerSec,
-          memHashBytesPerSec,
-          arrHashBytesPerSec);
+          total_mS,
+          avgLongFill_nS,
+          avgLongMemHash_nS,
+          avgLongArrHash_nS,
+          avgLongOldHash_nS,
+          fillMBPerSec,
+          memHashMBPerSec,
+          arrHashMBPerSec,
+          oldHashMBPerSec,
+          Long.toHexString(sumHash)
+          );
       return out;
     }
   }
@@ -103,7 +132,7 @@ public abstract class BaseBlockHashSpeedProfile implements JobProfile {
     lgMinBpX = Integer.parseInt(prop.mustGet("Trials_lgMinBpX"));
     lgMaxBpX = Integer.parseInt(prop.mustGet("Trials_lgMaxBpX"));
     slope = (double) (lgMaxT - lgMinT) / (lgMinBpX - lgMaxBpX);
-    doTrials();
+    doPoints();
     close();
   }
 
@@ -125,21 +154,26 @@ public abstract class BaseBlockHashSpeedProfile implements JobProfile {
 
   abstract void close();
 
-  private void doTrials() { //per row
+  private void doPoints() { //does all points
     println(Point.getHeader());
     final int maxLongsX = 1 << lgMaxX;
     final int minLongsX = 1 << lgMinX;
     int lastLongsX = 0;
-    while (lastLongsX < maxLongsX) {
+    p = new Point(0, 0);
+    while (lastLongsX < maxLongsX) { //
       final int nextLongsX = (lastLongsX == 0) ? minLongsX : pwr2LawNext(xPPO, lastLongsX);
       lastLongsX = nextLongsX;
       final int trials = getNumTrials(nextLongsX);
-      p = new Point(nextLongsX, trials);
+      p.reset(nextLongsX, trials);
       configure();
       //Do all trials
-      p.sumTrials_nS  = 0; //total time for #trials at nextX iterations
-      for (int t = 0; t < trials; t++) { //do trials
+      p.sumTrials_nS  = 0; //total time for #trials at nextLongsX
+      for (int t = 0; t < trials; t++) {
         doTrial();
+        if ((trialMemHash != trialArrHash) && (trialMemHash != trialOldHash)) {
+          throw new IllegalStateException("Hash checksums do not match!");
+        }
+        p.sumHash += trialOldHash;
       }
       println(p.getRow());
     }

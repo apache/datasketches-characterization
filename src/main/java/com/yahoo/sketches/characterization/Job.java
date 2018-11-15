@@ -201,7 +201,8 @@ public class Job {
     final String profileStr = prop.mustGet("JobProfile");
     final JobProfile profile;
     try {
-      profile = (JobProfile) Class.forName(profileStr).newInstance();
+      final Class<?> clazz = Class.forName(profileStr);
+      profile = (JobProfile) clazz.newInstance();
     } catch (final Exception e) {
       throw new RuntimeException("Cannot instantiate " + profileStr + "\n" + e);
     }

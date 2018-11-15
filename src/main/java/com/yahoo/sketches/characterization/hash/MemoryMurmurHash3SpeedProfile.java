@@ -5,21 +5,22 @@
 
 package com.yahoo.sketches.characterization.hash;
 
-import static com.yahoo.sketches.hash.MemoryMurmurHash3.hash;
-
 import com.yahoo.memory.WritableMemory;
+import com.yahoo.sketches.hash.MemoryMurmurHash3;
+import com.yahoo.sketches.hash.MurmurHash3;
 
 /**
  * @author Lee Rhodes
  */
 public class MemoryMurmurHash3SpeedProfile extends BaseBlockHashSpeedProfile {
   long[] in;
-  WritableMemory wmem = WritableMemory.wrap(in);
+  WritableMemory wmem;
   final long[] out = new long[2];
 
   @Override
-  void configure() { //for all trials
+  void configure() { //for all trials at a point
     in = new long[p.longsX];
+    wmem = WritableMemory.wrap(in);
   }
 
   @Override
@@ -29,36 +30,50 @@ public class MemoryMurmurHash3SpeedProfile extends BaseBlockHashSpeedProfile {
   void doTrial() {
     final int longsX = p.longsX;
     final long startTrial_nS = System.nanoTime();
+    long myVin = vIn;
     long start;
     long stop;
-    long trialSumMem = 0;
-    long trialSumArr = 0;
+    long memHash = 0; //checksums
+    long arrHash = 0;
+    long oldHash = 0;
+    long fill_nS = 0;
+    long memHash_nS = 0;
+    long arrHash_nS = 0;
+    long oldHash_nS = 0;
 
     start = System.nanoTime(); //fill
     for (int i = 0; i < longsX; i++) {
-      in[i] = vIn++;
+      in[i] = myVin++;
     }
     stop = System.nanoTime();
-    p.sumTrialsFill_nS += stop - start;
+    fill_nS = stop - start;
 
     start = System.nanoTime(); //Memory hash
-    for (long i = 0; i < longsX; i++) {
-      trialSumMem += hash(wmem, 0, longsX << 3, 0L, out)[0];
-    }
+    memHash = MemoryMurmurHash3.hash(wmem, 0, longsX << 3, 0L, out)[0];
     stop = System.nanoTime();
-    p.sumTrialsMemHash_nS += stop - start;
+    memHash_nS = stop - start;
 
     start = System.nanoTime(); //long[] hash
-    for (long i = 0; i < longsX; i++) {
-      trialSumArr += hash(in, 0, longsX, 0L, out)[0];
-    }
+    arrHash = MemoryMurmurHash3.hash(in, 0, longsX, 0L, out)[0];
     stop = System.nanoTime();
-    p.sumTrialsArrHash_nS += stop - start;
+    arrHash_nS = stop - start;
+
+    start = System.nanoTime(); //old hash
+    oldHash = MurmurHash3.hash(in, 0)[0];
+    stop = System.nanoTime();
+    oldHash_nS = stop - start;
 
     p.sumTrials_nS += System.nanoTime() - startTrial_nS;
-    if (trialSumMem != trialSumArr) {
-      throw new IllegalStateException("Hash sums do not match!");
-    }
-    return;
+
+    //update parent
+    trialMemHash = memHash;
+    trialArrHash = arrHash;
+    trialOldHash = oldHash;
+
+    vIn = myVin;
+    p.sumTrialsFill_nS += fill_nS;
+    p.sumTrialsMemHash_nS += memHash_nS;
+    p.sumTrialsArrHash_nS += arrHash_nS;
+    p.sumTrialsOldHash_nS += oldHash_nS;
   }
 }
