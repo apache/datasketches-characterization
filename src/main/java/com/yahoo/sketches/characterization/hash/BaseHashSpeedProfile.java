@@ -28,38 +28,24 @@ public abstract class BaseHashSpeedProfile implements JobProfile {
   int lgMinBpX; //for reducing T
   int lgMaxBpX;
   double slope;
+  BasePoint p;
 
-  static class Point {
-    int iterX;
+  abstract class BasePoint {
+    int x;
     int trials;
-    long sumTrials_nS = 0;
+    long sumTrials_nS;
 
-    Point(final int arrLongs, final int trials) {
-      iterX = arrLongs;
+    BasePoint(final int x, final int trials) {
+      this.x = x;
       this.trials = trials;
+      sumTrials_nS = 0;
     }
 
-    public static String getHeader() {
-      final String s =
-            "LgIter" + TAB
-          + "Iterations" + TAB
-          + "Trials" + TAB
-          + "#Ops" + TAB
-          + "AvgTrial_nS" + TAB
-          + "AvgOp_nS";
-      return s;
-    }
+    public abstract void reset(final int x, final int trials);
 
-    public String getRow() {
-      final double lgArrLongs = Math.log(iterX) / LN2;
-      final long numOps = (long)((double)trials * iterX);
-      final double trial_nS = (double)sumTrials_nS / trials;
-      final double op_nS = trial_nS / iterX;
+    public abstract String getHeader();
 
-      final String out = String.format("%6.2f\t%d\t%d\t%d\t%.1f\t%8.3f",
-          lgArrLongs, iterX, trials, numOps, trial_nS, op_nS);
-      return out;
-    }
+    public abstract String getRow();
   }
 
   //JobProfile
@@ -75,7 +61,7 @@ public abstract class BaseHashSpeedProfile implements JobProfile {
     lgMinBpX = Integer.parseInt(prop.mustGet("Trials_lgMinBpX"));
     lgMaxBpX = Integer.parseInt(prop.mustGet("Trials_lgMaxBpX"));
     slope = (double) (lgMaxT - lgMinT) / (lgMinBpX - lgMaxBpX);
-    doTrials();
+    doPoints();
     close();
   }
 
@@ -93,12 +79,12 @@ public abstract class BaseHashSpeedProfile implements JobProfile {
 
   abstract void configure();
 
-  abstract long[] doTrial(long number, long start);
+  abstract void doTrial();
 
   abstract void close();
 
-  private void doTrials() {
-    println(Point.getHeader());
+  void doPoints() { //does all points
+    println(p.getHeader());
     final int maxX = 1 << lgMaxX;
     final int minX = 1 << lgMinX;
     int lastX = 0;
@@ -106,15 +92,13 @@ public abstract class BaseHashSpeedProfile implements JobProfile {
       final int nextX = (lastX == 0) ? minX : pwr2LawNext(xPPO, lastX);
       lastX = nextX;
       final int trials = getNumTrials(nextX);
-      final Point p = new Point(nextX, trials);
+      p.reset(nextX, trials);
+      configure();
 
       //Do all trials
-      long start = 0;
-      p.sumTrials_nS  = 0; //total time for #trials at nextX iterations
-      for (int t = 0; t < trials; t++) { //do trials
-        start += nextX;
-        final long[] out = doTrial(nextX, start); //iterate nextX times
-        p.sumTrials_nS += out[0];
+      p.sumTrials_nS  = 0; //total time for #trials at nextX
+      for (int t = 0; t < trials; t++) {
+        doTrial();
       }
       println(p.getRow());
     }
