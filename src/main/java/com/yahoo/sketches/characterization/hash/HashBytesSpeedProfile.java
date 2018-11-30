@@ -7,7 +7,7 @@ package com.yahoo.sketches.characterization.hash;
 
 import com.yahoo.memory.Memory;
 import com.yahoo.memory.WritableMemory;
-import com.yahoo.sketches.hash.MemoryMurmurHash3;
+import com.yahoo.sketches.hash.MurmurHash3v2;
 import com.yahoo.sketches.hash.XxHash;
 
 /**
@@ -133,7 +133,7 @@ public class HashBytesSpeedProfile extends BaseHashSpeedProfile {
     fill_nS = stop - start;
 
     start = stop; //Memory hash
-    memHash = MemoryMurmurHash3.hash(wmem, 0, bytesX, seed, out)[0];
+    memHash = MurmurHash3v2.hash(wmem, 0, bytesX, seed, out)[0];
     stop = System.nanoTime();
     memHash_nS = stop - start;
 

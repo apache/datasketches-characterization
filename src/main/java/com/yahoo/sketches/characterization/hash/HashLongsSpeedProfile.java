@@ -5,7 +5,7 @@
 
 package com.yahoo.sketches.characterization.hash;
 
-import com.yahoo.sketches.hash.MemoryMurmurHash3;
+import com.yahoo.sketches.hash.MurmurHash3v2;
 import com.yahoo.sketches.hash.MurmurHash3;
 import com.yahoo.sketches.hash.XxHash;
 
@@ -112,7 +112,7 @@ public class HashLongsSpeedProfile extends BaseHashSpeedProfile {
 
     start = System.nanoTime();
     for (long i = 0; i < longsX; i++) {
-      memHash += MemoryMurmurHash3.hash(myVin++, seed, hashOut)[0];
+      memHash += MurmurHash3v2.hash(myVin++, seed, hashOut)[0];
     }
     stop = System.nanoTime();
     memHash_nS = stop - start;
@@ -131,6 +131,8 @@ public class HashLongsSpeedProfile extends BaseHashSpeedProfile {
     }
     stop = System.nanoTime();
     oldHash_nS = stop - start;
+
+    assert memHash == oldHash;
 
     ((Point)p).sumHash += otherHash + memHash + oldHash;
 
