@@ -5,8 +5,8 @@
 
 package com.yahoo.sketches.characterization.hash;
 
-import com.yahoo.sketches.hash.MurmurHash3v2;
 import com.yahoo.sketches.hash.MurmurHash3;
+import com.yahoo.sketches.hash.MurmurHash3v2;
 import com.yahoo.sketches.hash.XxHash;
 
 /**
