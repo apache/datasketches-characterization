@@ -5,7 +5,8 @@
 
 package com.yahoo.sketches.characterization.hash;
 
-import com.yahoo.memory.Memory;
+import static com.yahoo.memory.UnsafeUtil.unsafe;
+
 import com.yahoo.memory.WritableMemory;
 import com.yahoo.sketches.hash.MurmurHash3v2;
 import com.yahoo.sketches.hash.XxHash;
@@ -155,31 +156,33 @@ public class HashBytesSpeedProfile extends BaseHashSpeedProfile {
     vIn = myVin;
   }
 
-  private static final long readMem(final Memory mem) {
+  @SuppressWarnings("restriction")
+  private static final long readMem(final WritableMemory wmem) {
     long sumInput = 0;
-    long rem = mem.getCapacity();
-    long off = 0;
+    long rem = wmem.getCapacity();
+    long cumOff = wmem.getCumulativeOffset();
+    final Object unsafeObj = wmem.getArray();
     while (rem >= 32L) {
-      sumInput += mem.getLong(off);
-      sumInput += mem.getLong(off + 8L);
-      sumInput += mem.getLong(off + 16L);
-      sumInput += mem.getLong(off + 24L);
-      off += 32L;
+      sumInput += unsafe.getLong(unsafeObj, cumOff);
+      sumInput += unsafe.getLong(unsafeObj, cumOff + 8L);
+      sumInput += unsafe.getLong(unsafeObj, cumOff + 16L);
+      sumInput += unsafe.getLong(unsafeObj, cumOff + 24L);
+      cumOff += 32L;
       rem -= 32L;
     }
     while (rem >= 8L) {
-      sumInput += mem.getLong(off);
-      off += 8L;
+      sumInput += unsafe.getLong(unsafeObj, cumOff);
+      cumOff += 8L;
       rem -= 8L;
     }
     if (rem >= 4L) {
-      sumInput += mem.getInt(off);
-      off += 4L;
+      sumInput += unsafe.getInt(unsafeObj, cumOff);
+      cumOff += 4L;
       rem -= 4L;
     }
     while (rem > 0) {
-      sumInput += mem.getByte(off);
-      off++;
+      sumInput += unsafe.getByte(unsafeObj, cumOff);
+      cumOff++;
       rem--;
     }
     return sumInput;
