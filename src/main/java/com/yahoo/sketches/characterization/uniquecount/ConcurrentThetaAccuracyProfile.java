@@ -71,16 +71,6 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
       }
       lastUniques += delta;
       if (rebuild) { sharedSketch.rebuildShared(); } //Resizes down to k. Only useful with QSSketch
-      try {
-        if (k2 > 0) {
-          // for the first 2k updates -
-          // wait 1ms to allow concurrent background propagation to complete
-          k2--;
-          busyWaitMicros(1);
-        }
-      } catch (final InterruptedException e) {
-        e.printStackTrace();
-      }
       q.update(sharedSketch.getEstimationSnapshot());
       if (getSize) {
         q.bytes = sharedSketch.compactShared().toByteArray().length;
@@ -93,11 +83,6 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     if (wdh != null) {
       wdh.close();
     }
-  }
-
-  private static void busyWaitMicros(final long micros) {
-    final long waitUntil = System.nanoTime() + (micros * 1_000);
-    while (waitUntil > System.nanoTime()) { }
   }
 
   //configures builder for both local and shared
