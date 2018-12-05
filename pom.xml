@@ -139,6 +139,13 @@
 	      <version>${sketches-core.version}</version>
 	    </dependency>
 
+        <dependency>
+            <groupId>com.yahoo.datasketches</groupId>
+            <artifactId>sketches-core</artifactId>
+            <version>${sketches-core.version}</version>
+            <type>test-jar</type>
+        </dependency>
+
         <!-- Test Scope -->
         <dependency>
             <groupId>org.testng</groupId>
