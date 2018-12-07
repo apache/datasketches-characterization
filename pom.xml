@@ -75,6 +75,7 @@
         <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
         <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
         <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
+        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
@@ -137,13 +138,6 @@
             <version>${sketches-core.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.yahoo.datasketches</groupId>
-            <artifactId>sketches-core</artifactId>
-            <version>${sketches-core.version}</version>
-            <type>test-jar</type>
-        </dependency>
-
         <!-- Druid HLL -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -152,6 +146,14 @@
         </dependency>
 
         <!-- Test Scope -->
+        <dependency>
+            <groupId>com.yahoo.datasketches</groupId>
+            <artifactId>sketches-core</artifactId>
+            <version>${sketches-core.version}</version>
+            <type>test-jar</type>
+        </dependency>
+
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
