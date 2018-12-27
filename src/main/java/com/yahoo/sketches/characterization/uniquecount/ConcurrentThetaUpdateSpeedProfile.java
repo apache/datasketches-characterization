@@ -1,4 +1,12 @@
+/*
+ * Copyright 2018, Yahoo! Inc. Licensed under the terms of the
+ * Apache License 2.0. See LICENSE file at the project root for terms.
+ */
+
 package com.yahoo.sketches.characterization.uniquecount;
+
+import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
+
 
 import com.yahoo.memory.WritableDirectHandle;
 import com.yahoo.memory.WritableMemory;
@@ -6,8 +14,6 @@ import com.yahoo.sketches.theta.ConcurrentThetaBuilder;
 import com.yahoo.sketches.theta.SharedThetaSketch;
 import com.yahoo.sketches.theta.Sketch;
 import com.yahoo.sketches.theta.UpdateSketch;
-
-import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 
 /**
  * @author eshcar
