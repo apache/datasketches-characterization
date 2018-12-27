@@ -8,7 +8,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class LockBasedThetaUpdateSpeedProfile extends ThetaUpdateSpeedProfile {
   private ReentrantReadWriteLock lock_ = new ReentrantReadWriteLock();
 
-  @Override double doTrial(int uPerTrial) {
+  @Override
+  double doTrial(final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
     final long startUpdateTime_nS = System.nanoTime();
 

@@ -7,7 +7,6 @@ package com.yahoo.sketches.characterization.uniquecount;
 
 import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 
-
 import com.yahoo.memory.WritableDirectHandle;
 import com.yahoo.memory.WritableMemory;
 import com.yahoo.sketches.theta.ConcurrentThetaBuilder;
@@ -33,7 +32,8 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   /**
    * Configure the sketch
    */
-  @Override void configure() {
+  @Override
+  void configure() {
     //Configure Sketches
     sharedLgK = Integer.parseInt(prop.mustGet("LgK"));
     localLgK = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_localLgK"));
@@ -63,7 +63,8 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
    * @param uPerTrial the number of unique updates for this trial
    * @return the average update time per update for this trial
    */
-  @Override double doTrial(int uPerTrial) {
+  @Override
+  double doTrial(final int uPerTrial) {
     //reuse the same sketches
     sharedSketch.resetShared(); // reset shared sketch first
     localSketch.reset();  // local sketch reset is reading the theta from shared sketch
