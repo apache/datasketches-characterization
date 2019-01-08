@@ -18,7 +18,6 @@ public class DruidHllAccuracyProfile extends BaseAccuracyProfile {
 
   @Override
   void configure() {
-    //Configure Sketch
     final String useStringStr = prop.get("Trials_string");
     useString = (useStringStr == null) ? false : Boolean.parseBoolean(useStringStr);
   }
@@ -49,7 +48,7 @@ public class DruidHllAccuracyProfile extends BaseAccuracyProfile {
     }
   }
 
-  private static void longToByteArray(long value, final byte[] bytes) {
+  static void longToByteArray(long value, final byte[] bytes) {
     for (int i = 7; i >= 0; i--) {
       bytes[i] = (byte) value;
       value >>>= 8;
