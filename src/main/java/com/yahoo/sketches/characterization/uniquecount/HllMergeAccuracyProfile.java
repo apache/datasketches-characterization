@@ -41,10 +41,10 @@ public class HllMergeAccuracyProfile implements JobProfile {
     double sumOfSquaredDeviationsFromTrueCount = 0;
 
     for (int t = 0; t < numTrials; t++) {
-      Union union = new Union(lgK);
+      final Union union = new Union(lgK);
 
       for (int s = 0; s < numSketches; s++) {
-        HllSketch sketch = new HllSketch(lgK);
+        final HllSketch sketch = new HllSketch(lgK);
         for (int k = 0; k < distinctKeysPerSketch; k++) {
           sketch.update(key++);
         }
@@ -55,8 +55,9 @@ public class HllMergeAccuracyProfile implements JobProfile {
       sumOfSquaredDeviationsFromTrueCount += (estimatedCount - trueCount) * (estimatedCount - trueCount);
     }
     final double meanEstimate = sumEstimates / numTrials;
-    final double meanRelativeError = meanEstimate / trueCount - 1;
-    final double relativeStandardError = Math.sqrt(sumOfSquaredDeviationsFromTrueCount / numTrials) / trueCount;
+    final double meanRelativeError = (meanEstimate / trueCount) - 1;
+    final double relativeStandardError
+      = Math.sqrt(sumOfSquaredDeviationsFromTrueCount / numTrials) / trueCount;
     println("True count: " + trueCount);
     println("Mean estimate: " + meanEstimate);
     println("Mean Relative Error: " + meanRelativeError);

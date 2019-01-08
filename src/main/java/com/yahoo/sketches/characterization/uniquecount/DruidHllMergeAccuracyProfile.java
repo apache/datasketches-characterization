@@ -43,10 +43,10 @@ public class DruidHllMergeAccuracyProfile implements JobProfile {
     double sumOfSquaredDeviationsFromTrueCount = 0;
 
     for (int t = 0; t < numTrials; t++) {
-      HyperLogLogCollector union = HyperLogLogCollector.makeLatestCollector();
+      final HyperLogLogCollector union = HyperLogLogCollector.makeLatestCollector();
 
       for (int s = 0; s < numSketches; s++) {
-        HyperLogLogCollector sketch = HyperLogLogCollector.makeLatestCollector();
+        final HyperLogLogCollector sketch = HyperLogLogCollector.makeLatestCollector();
         for (int k = 0; k < distinctKeysPerSketch; k++) {
           DruidHllAccuracyProfile.longToByteArray(key++, bytes);
           sketch.add(hash.hash(bytes));
@@ -58,8 +58,9 @@ public class DruidHllMergeAccuracyProfile implements JobProfile {
       sumOfSquaredDeviationsFromTrueCount += (estimatedCount - trueCount) * (estimatedCount - trueCount);
     }
     final double meanEstimate = sumEstimates / numTrials;
-    final double meanRelativeError = meanEstimate / trueCount - 1;
-    final double relativeStandardError = Math.sqrt(sumOfSquaredDeviationsFromTrueCount / numTrials) / trueCount;
+    final double meanRelativeError = (meanEstimate / trueCount) - 1;
+    final double relativeStandardError
+      = Math.sqrt(sumOfSquaredDeviationsFromTrueCount / numTrials) / trueCount;
     println("True count: " + trueCount);
     println("Mean estimate: " + meanEstimate);
     println("Mean Relative Error: " + meanRelativeError);
