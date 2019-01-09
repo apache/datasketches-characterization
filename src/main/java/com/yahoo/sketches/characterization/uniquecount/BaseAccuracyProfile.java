@@ -10,6 +10,8 @@ import static com.yahoo.sketches.Util.pwr2LawNext;
 import static com.yahoo.sketches.characterization.PerformanceUtil.FRACTIONS;
 import static com.yahoo.sketches.characterization.PerformanceUtil.FRACT_LEN;
 
+import java.io.PrintWriter;
+
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.PerformanceUtil;
@@ -21,6 +23,7 @@ import com.yahoo.sketches.quantiles.DoublesSketch;
  */
 public abstract class BaseAccuracyProfile implements JobProfile {
   Job job;
+  PrintWriter pw;
   Properties prop;
   long vIn = 0;
   int lgMinT;
@@ -36,9 +39,11 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   boolean getSize = false;
   AccuracyStats[] qArr;
 
+  //JobProfile
   @Override
   public void start(final Job job) {
     this.job = job;
+    pw = job.getPrintWriter();
     prop = job.getProperties();
     lgMinT = Integer.parseInt(prop.mustGet("Trials_lgMinT"));
     lgMaxT = Integer.parseInt(prop.mustGet("Trials_lgMaxT"));
@@ -55,12 +60,22 @@ public abstract class BaseAccuracyProfile implements JobProfile {
     getSize = (getSizeStr == null) ? false : Boolean.parseBoolean(getSizeStr);
     configure();
     doTrials();
+    shutdown();
+    cleanup();
   }
 
   @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
+
+  @Override
   public void println(final String s) {
-    job.println(s);
+    System.out.println(s);
+    pw.println(s);
   }
+  //end JobProfile
 
   abstract void configure();
 

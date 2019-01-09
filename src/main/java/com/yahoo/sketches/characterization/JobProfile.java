@@ -8,7 +8,7 @@ package com.yahoo.sketches.characterization;
 import static java.lang.Math.log;
 
 /**
- *
+ * Note all JobProfiles must have a public default or empty constructor.
  * @author Lee Rhodes
  */
 public interface JobProfile {
@@ -23,9 +23,20 @@ public interface JobProfile {
   void start(Job job);
 
   /**
-   * For sending output to a file and/or to stdOut.
-   * @param s the string to output
+   * Allows for smooth shutdown of multiple threads
+   */
+  void shutdown();
+
+  /**
+   * Performs any cleanup if necessary after the job completes
+   */
+  void cleanup();
+
+  /**
+   * For sending a string to the configured PrintStream "out", which may be a file
+   * and/or to stdOut.
+   * A line separator is added at the end.
+   * @param s the string to send to the configured PrintStream "out".
    */
   void println(String s);
-
 }

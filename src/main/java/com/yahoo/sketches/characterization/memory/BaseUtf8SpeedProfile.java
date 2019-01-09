@@ -102,6 +102,7 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
     }
   }
 
+  //JobProfile
   @Override
   public void start(final Job job) {
     this.job = job;
@@ -121,9 +122,16 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
   }
 
   @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
+
+  @Override
   public void println(final String s) {
     job.println(s);
   }
+  //end JobProfile
 
   abstract void configure();
 

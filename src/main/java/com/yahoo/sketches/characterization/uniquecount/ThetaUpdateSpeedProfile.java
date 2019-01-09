@@ -16,7 +16,7 @@ import com.yahoo.sketches.theta.UpdateSketchBuilder;
  * @author Lee Rhodes
  */
 public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
-  private UpdateSketch sketch;
+  protected UpdateSketch sketch;
 
   @Override
   void configure() {

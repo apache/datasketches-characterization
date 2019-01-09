@@ -26,7 +26,7 @@ public class Job {
   private static final String LS = System.getProperty("line.separator");
   private Properties prop;
   //Output to File
-  private PrintWriter out = null;
+  private PrintWriter pw = null;
   //Date-Time
   private SimpleDateFormat fileSimpleDateFmt;  //used in the filename
   private SimpleDateFormat readableSimpleDateFmt; //for human readability
@@ -38,21 +38,24 @@ public class Job {
   /**
    * Build properties and run the Job Profile
    *
-   * @param jobFileName the name of the file containing the properties for the JobProfile to
-   * be run.
+   * @param jobConfigureFileName the name of the text configuration file containing the properties for the
+   * JobProfile to be run.
    */
-  public Job(final String jobFileName) {
-    if (!isFileValid(jobFileName)) {
-      throw new IllegalArgumentException("File not valid. " + jobFileName);
+  public Job(final String jobConfigureFileName) {
+    if (!isFileValid(jobConfigureFileName)) {
+      throw new IllegalArgumentException("File not valid. " + jobConfigureFileName);
     }
-    final String jobStr = Files.fileToString(jobFileName); //includes line feeds
-    prop = parseJobProperties(jobStr);
+    final String jobConfStr = Files.fileToString(jobConfigureFileName); //includes line feeds
+    prop = parseJobProperties(jobConfStr);
 
     profile = createJobProfile();
     profileName = profile.getClass().getSimpleName();
 
     setDateFormats();
-    configurePrintWriter();
+    pw = configurePrintWriter();
+    if (pw == null) {
+      throw new IllegalStateException("Could not configure PrintWriter.");
+    }
 
     println("START JOB " + profileName );
     println(prop.extractKvPairs(LS));
@@ -69,9 +72,8 @@ public class Job {
     println("Total Job Time        : " + milliSecToString(testTime_mS));
     println("END JOB " + profileName +  LS + LS);
     flush();
-    if (out != null) {
-      out.close();
-    }
+    pw.close();
+
   }
 
   /**
@@ -106,18 +108,18 @@ public class Job {
    */
   public final void println(final String s) {
     System.out.println(s);
-    if (out != null) {
-      out.println(s);
-    }
+    pw.println(s);
   }
 
   /**
    * Flush any buffered output to the configured PrintWriter.
    */
   public final void flush() {
-    if (out != null) {
-      out.flush();
-    }
+    pw.flush();
+  }
+
+  public final PrintWriter getPrintWriter() {
+    return pw;
   }
 
   /**
@@ -196,12 +198,13 @@ public class Job {
   }
 
   private final JobProfile createJobProfile() {
-    final String sketchStr = prop.mustGet("JobProfile");
+    final String profileStr = prop.mustGet("JobProfile");
     final JobProfile profile;
     try {
-      profile = (JobProfile) Class.forName(sketchStr).newInstance();
+      final Class<?> clazz = Class.forName(profileStr);
+      profile = (JobProfile) clazz.newInstance();
     } catch (final Exception e) {
-      throw new RuntimeException("Cannot instantiate " + sketchStr + "\n" + e);
+      throw new RuntimeException("Cannot instantiate " + profileStr + "\n" + e);
     }
     return profile;
   }
@@ -209,24 +212,24 @@ public class Job {
   /**
    * Called from constructor to configure the Print Writer
    */
-  private final void configurePrintWriter() {
+  private final PrintWriter configurePrintWriter() {
     //create file name
     gc.setTimeInMillis(System.currentTimeMillis());
     final String nowStr = fileSimpleDateFmt.format(gc.getTime());
 
     final String outputFileName = profileName + nowStr + ".txt";
     prop.put("OutputFileName", outputFileName);
-    out = openPrintWriter(outputFileName);
+    return openPrintWriter(outputFileName);
   }
 
   /**
-   * The JVM may call this method to closes the PrintWriter resource.
+   * The JVM may call this method to close the PrintWriter resource.
    */
   @Override
   protected void finalize() throws Throwable {
     try {
-      if (out != null) {
-        out.close(); // close open files
+      if (pw != null) {
+        pw.close(); // close open files
       }
     } finally {
       super.finalize();
@@ -234,8 +237,8 @@ public class Job {
   }
 
   /**
-   * Run from the command line
-   * @param args Argument zero is the command file
+   * Run multiple jobs from the command line
+   * @param args the configuration file names to be run
    */
   @SuppressWarnings("unused")
   public static void main(final String[] args) {
