@@ -4,8 +4,8 @@ import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 
 import com.yahoo.memory.WritableDirectHandle;
 import com.yahoo.memory.WritableMemory;
+import com.yahoo.sketches.theta.ConcurrentSharedThetaSketch;
 import com.yahoo.sketches.theta.ConcurrentThetaBuilder;
-import com.yahoo.sketches.theta.SharedThetaSketch;
 import com.yahoo.sketches.theta.Sketch;
 import com.yahoo.sketches.theta.UpdateSketch;
 
@@ -13,7 +13,7 @@ import com.yahoo.sketches.theta.UpdateSketch;
  * @author eshcar
  */
 public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
-  private SharedThetaSketch sharedSketch;
+  private ConcurrentSharedThetaSketch sharedSketch;
   private UpdateSketch localSketch;
   private int sharedLgK;
   private int localLgK;
