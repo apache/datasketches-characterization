@@ -60,6 +60,7 @@
         <!-- Dependencies -->
         <memory.version>0.12.1</memory.version>
         <sketches-core.version>0.12.1-SNAPSHOT</sketches-core.version>
+        <guava.version>25.0-jre</guava.version>
         <testng.version>6.14.3</testng.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
 
@@ -136,6 +137,14 @@
             <version>${sketches-core.version}</version>
         </dependency>
 
+        <!-- Druid HLL -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <!-- Test Scope -->
         <dependency>
             <groupId>com.yahoo.datasketches</groupId>
             <artifactId>sketches-core</artifactId>
