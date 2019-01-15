@@ -7,6 +7,7 @@ package com.yahoo.sketches.characterization.uniquecount;
 
 import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 
+
 import com.yahoo.memory.WritableDirectHandle;
 import com.yahoo.memory.WritableMemory;
 import com.yahoo.sketches.theta.Sketch;
