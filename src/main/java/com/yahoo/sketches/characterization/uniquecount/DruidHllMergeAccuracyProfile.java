@@ -32,6 +32,12 @@ public class DruidHllMergeAccuracyProfile implements JobProfile {
     job.println(s);
   }
 
+  @Override
+  public void shutdown() { }
+
+  @Override
+  public void cleanup() { }
+
   private void runMergeTrials() {
     long key = random.nextLong();
 
