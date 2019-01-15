@@ -44,6 +44,8 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
     slope = (double) (lgMaxT - lgMinT) / (lgMinBpU - lgMaxBpU);
     configure();
     doTrials();
+    shutdown();
+    cleanup();
   }
 
   @Override

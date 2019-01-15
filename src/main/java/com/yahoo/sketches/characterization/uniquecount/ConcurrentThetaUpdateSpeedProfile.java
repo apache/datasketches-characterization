@@ -1,19 +1,23 @@
+/*
+ * Copyright 2018, Yahoo! Inc. Licensed under the terms of the
+ * Apache License 2.0. See LICENSE file at the project root for terms.
+ */
+
 package com.yahoo.sketches.characterization.uniquecount;
 
 import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 
 import com.yahoo.memory.WritableDirectHandle;
 import com.yahoo.memory.WritableMemory;
-import com.yahoo.sketches.theta.ConcurrentSharedThetaSketch;
-import com.yahoo.sketches.theta.ConcurrentThetaBuilder;
 import com.yahoo.sketches.theta.Sketch;
 import com.yahoo.sketches.theta.UpdateSketch;
+import com.yahoo.sketches.theta.UpdateSketchBuilder;
 
 /**
  * @author eshcar
  */
 public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
-  private ConcurrentSharedThetaSketch sharedSketch;
+  private UpdateSketch sharedSketch;
   private UpdateSketch localSketch;
   private int sharedLgK;
   private int localLgK;
@@ -45,10 +49,10 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     } else {
       wmem = WritableMemory.allocate(maxSharedUpdateBytes);
     }
-    final ConcurrentThetaBuilder bldr = configureBuilder();
+    final UpdateSketchBuilder bldr = configureBuilder();
     //must build shared first
-    sharedSketch = bldr.build(wmem);
-    localSketch = bldr.build();
+    sharedSketch = bldr.buildShared(wmem);
+    localSketch = bldr.buildLocal(sharedSketch);
 
   }
 
@@ -61,7 +65,7 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   @Override
   double doTrial(final int uPerTrial) {
     //reuse the same sketches
-    sharedSketch.resetShared(); // reset shared sketch first
+    sharedSketch.reset(); // reset shared sketch first
     localSketch.reset();  // local sketch reset is reading the theta from shared sketch
     final long startUpdateTime_nS = System.nanoTime();
 
@@ -73,8 +77,8 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   }
 
   //configures builder for both local and shared
-  ConcurrentThetaBuilder configureBuilder() {
-    final ConcurrentThetaBuilder bldr = new ConcurrentThetaBuilder();
+  UpdateSketchBuilder configureBuilder() {
+    final UpdateSketchBuilder bldr = new UpdateSketchBuilder();
     bldr.setSharedLogNominalEntries(sharedLgK);
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
