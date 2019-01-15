@@ -9,16 +9,15 @@ import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 
 import com.yahoo.memory.WritableDirectHandle;
 import com.yahoo.memory.WritableMemory;
-import com.yahoo.sketches.theta.ConcurrentThetaBuilder;
-import com.yahoo.sketches.theta.SharedThetaSketch;
 import com.yahoo.sketches.theta.Sketch;
 import com.yahoo.sketches.theta.UpdateSketch;
+import com.yahoo.sketches.theta.UpdateSketchBuilder;
 
 /**
  * @author Lee Rhodes
  */
 public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
-  private SharedThetaSketch sharedSketch;
+  private UpdateSketch sharedSketch;
   private UpdateSketch localSketch;
   private int sharedLgK;
   private int localLgK;
@@ -50,17 +49,17 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     } else {
       wmem = WritableMemory.allocate(maxSharedUpdateBytes);
     }
-    final ConcurrentThetaBuilder bldr = configureBuilder();
+    final UpdateSketchBuilder bldr = configureBuilder();
     //must build shared first
-    sharedSketch = bldr.build(wmem);
-    localSketch = bldr.build();
+    sharedSketch = bldr.buildShared(wmem);
+    localSketch = bldr.buildLocal(sharedSketch);
   }
 
   @Override
   void doTrial() {
     final int qArrLen = qArr.length;
     //reuse the same sketches
-    sharedSketch.resetShared(); // reset shared sketch first
+    sharedSketch.reset(); // reset shared sketch first
     localSketch.reset();  // local sketch reset is reading the theta from shared sketch
     int lastUniques = 0;
     for (int i = 0; i < qArrLen; i++) {
@@ -70,10 +69,10 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
         localSketch.update(++vIn);
       }
       lastUniques += delta;
-      if (rebuild) { sharedSketch.rebuildShared(); } //Resizes down to k. Only useful with QSSketch
-      q.update(sharedSketch.getEstimationSnapshot());
+      if (rebuild) { sharedSketch.rebuild(); } //Resizes down to k. Only useful with QSSketch
+      q.update(sharedSketch.getEstimate());
       if (getSize) {
-        q.bytes = sharedSketch.compactShared().toByteArray().length;
+        q.bytes = sharedSketch.compact().toByteArray().length;
       }
     }
   }
@@ -86,8 +85,8 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
   }
 
   //configures builder for both local and shared
-  ConcurrentThetaBuilder configureBuilder() {
-    final ConcurrentThetaBuilder bldr = new ConcurrentThetaBuilder();
+  UpdateSketchBuilder configureBuilder() {
+    final UpdateSketchBuilder bldr = new UpdateSketchBuilder();
     bldr.setSharedLogNominalEntries(sharedLgK);
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
