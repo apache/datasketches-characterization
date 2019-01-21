@@ -2,6 +2,7 @@
  * Copyright 2018, Yahoo! Inc. Licensed under the terms of the
  * Apache License 2.0. See LICENSE file at the project root for terms.
  */
+
 package com.yahoo.sketches.characterization.concurrent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,9 +23,9 @@ public abstract class ConcurrentTestThread extends Thread {
   private AtomicBoolean paused = new AtomicBoolean(false);
   private long done;
 
-  public ConcurrentTestThread(ConcurrentTestContext context) {
+  public ConcurrentTestThread(final ConcurrentTestContext context) {
     this.context = context;
-    this.done = 0;
+    done = 0;
   }
 
   @Override
@@ -36,13 +37,16 @@ public abstract class ConcurrentTestThread extends Thread {
         doWork();
         done++;
       }
-      if(resumed.get() && (paused.get() || done == numOpsToDo.get())) {
+      if (resumed.get() && (paused.get() || (done == numOpsToDo.get()))) {
         resumed.set(false);
         context.done(getIndex(), done);
       }
     }
   }
 
+  /**
+   * Reset this ConcurrentTestThread
+   */
   public void reset() {
     resumed.set(false);
     paused.set(false);
@@ -50,7 +54,7 @@ public abstract class ConcurrentTestThread extends Thread {
     done = 0;
   }
 
-  public void resumeThread(long uPerThread) {
+  public void resumeThread(final long uPerThread) {
     numOpsToDo.set(uPerThread);
     resumed.set(true);
   }
@@ -64,7 +68,7 @@ public abstract class ConcurrentTestThread extends Thread {
   }
 
   protected abstract void doWork();
-  protected abstract int getIndex();
 
+  protected abstract int getIndex();
 
 }

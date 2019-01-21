@@ -9,7 +9,6 @@ import static com.yahoo.sketches.Util.DEFAULT_UPDATE_SEED;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-
 import com.yahoo.memory.WritableDirectHandle;
 import com.yahoo.memory.WritableMemory;
 import com.yahoo.sketches.characterization.concurrent.ConcurrentTestContext;
@@ -24,9 +23,6 @@ import com.yahoo.sketches.theta.UpdateSketchBuilder;
  * @author eshcar
  */
 public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedProfile {
-
-  private static final int WRITER_INDEX = 0;
-  private static final int READER_INDEX = 1;
 
   private UpdateSketch sharedSketch;
   private ReentrantReadWriteLock lock;
@@ -75,12 +71,12 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     //must build shared first
     sharedSketch = bldr.buildShared(wmem);
     if (!isThreadSafe) {
-      this.lock = new ReentrantReadWriteLock();
+      lock = new ReentrantReadWriteLock();
     }
     ctx = new ConcurrentTestContext();
     for (int i = 0; i < numWriterThreads; i++) {
-      WriterThread writer;
-      if(writesRatio != 0) {
+      final WriterThread writer;
+      if (writesRatio != 0) {
         if (isThreadSafe) {
           writer = new ReaderWriterThread(bldr, i, writesRatio);
         } else {
@@ -96,7 +92,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
       ctx.addWriterThread(writer);
     }
     for (int i = 0; i < numReaderThreads; i++) {
-      ReaderThread reader;
+      final ReaderThread reader;
       if (isThreadSafe) {
         reader  = new BackgroundReaderThread();
       } else {
@@ -115,7 +111,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
    * @return the average update time per update for this trial
    */
   @Override
-  double doTrial(int uPerTrial) {
+  double doTrial(final int uPerTrial) {
     //reuse the same sketches
     sharedSketch.reset(); // reset shared sketch first
     ctx.reset();  // reset local sketches
@@ -145,8 +141,8 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     ctx.stopAllThreads();
   }
 
-  protected boolean doSomethingWithEstimate(double est) {
-    return est<1000;
+  protected boolean doSomethingWithEstimate(final double est) {
+    return est < 1000;
   }
 
   private ReentrantReadWriteLock.WriteLock getWriteLock() {
@@ -167,18 +163,18 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     private final int jump;
 
     //c-tor for thread-safe (concurrent) sketch
-    public WriterThread(UpdateSketchBuilder bldr, long start) {
+    public WriterThread(final UpdateSketchBuilder bldr, final long start) {
       this(start);
       local = bldr.buildLocal(sharedSketch);
     }
 
     //c-tor for lock-based sketch
-    public WriterThread(UpdateSketch sketch, long start) {
+    public WriterThread(final UpdateSketch sketch, final long start) {
       this(start);
       local = sketch;
     }
 
-    private WriterThread(long start) {
+    private WriterThread(final long start) {
       super(ctx);
       this.start = start;
       i = start;
@@ -188,7 +184,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     @Override
     public void doWork() {
       local.update(i);
-      i+=jump;
+      i += jump;
     }
 
     @Override
@@ -204,7 +200,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     }
 
     protected double getWrites() {
-      return (double)i/jump;
+      return (double)i / jump;
     }
   }
 
@@ -239,7 +235,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
       try {
         Thread.sleep(1);
         super.doWork();
-      } catch (InterruptedException e) {
+      } catch (final InterruptedException e) {
         e.printStackTrace();
       }
     }
@@ -255,7 +251,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
         Thread.sleep(1);
         getReadLock().lock();
         super.doWork();
-      } catch (InterruptedException e) {
+      } catch (final InterruptedException e) {
         e.printStackTrace();
       } finally {
         getReadLock().unlock();
@@ -267,20 +263,20 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
    *  Thread safe read-write thread
    */
   protected class ReaderWriterThread extends WriterThread {
-    private final double writesRatio;
+    private final double myWritesRatio;
     private double reads;
 
-    public ReaderWriterThread(UpdateSketchBuilder bldr, long start, double writesRatio) {
+    public ReaderWriterThread(final UpdateSketchBuilder bldr, final long start, final double writesRatio) {
       super(bldr, start);
-      this.writesRatio = writesRatio;
-      this.reads = 0;
+      myWritesRatio = writesRatio;
+      reads = 0;
     }
 
     @Override
     public void doWork() {
-      double writes = getWrites();
-      double reads = getReads();
-      if (writes / (writes + reads) < writesRatio) {
+      final double writes = getWrites();
+      final double reads = getReads();
+      if ((writes / (writes + reads)) < myWritesRatio) {
         super.doWork();
       } else {
         doSomethingWithEstimate(sharedSketch.getEstimate());
@@ -309,7 +305,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
    */
   protected class LockBasedWriterThread extends WriterThread {
 
-    public LockBasedWriterThread(long start) {
+    public LockBasedWriterThread(final long start) {
       super(sharedSketch, start);
     }
 
@@ -323,24 +319,25 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
       }
     }
   }
+
   /**
    * Lock-based Reader-Writer thread
    */
   protected class LockBasedReaderWriterThread extends LockBasedWriterThread {
-
-    private final double writesRatio;
+    private final double myWritesRatio;
     private double reads;
-    public LockBasedReaderWriterThread(long start, double writesRatio) {
+
+    public LockBasedReaderWriterThread(final long start, final double writesRatio) {
       super(start);
-      this.writesRatio = writesRatio;
-      this.reads = 0;
+      myWritesRatio = writesRatio;
+      reads = 0;
     }
 
     @Override
     public void doWork() {
-      double writes = getWrites();
-      double reads = getReads();
-      if (writes / (writes + reads) < writesRatio) {
+      final double writes = getWrites();
+      final double reads = getReads();
+      if ((writes / (writes + reads)) < myWritesRatio) {
         super.doWork();
       } else {
         try {

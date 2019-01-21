@@ -2,6 +2,7 @@
  * Copyright 2018, Yahoo! Inc. Licensed under the terms of the
  * Apache License 2.0. See LICENSE file at the project root for terms.
  */
+
 package com.yahoo.sketches.characterization.concurrent;
 
 import java.util.ArrayList;
@@ -31,6 +32,9 @@ public class ConcurrentTestContext {
   private long startTimeNS;
   private AtomicLong totalTimeNS = new AtomicLong();
 
+  /**
+   * Construct a ConcurrentTestContext
+   */
   public ConcurrentTestContext() {
     testThreadsList = new ArrayList<>(NUM_THREAD_TYPES);
     for (int i = 0; i < NUM_THREAD_TYPES; i++) {
@@ -43,16 +47,19 @@ public class ConcurrentTestContext {
     doneThreads = new int[]{0, 0};
   }
 
-  public synchronized void addWriterThread(ConcurrentTestThread t) {
+  public synchronized void addWriterThread(final ConcurrentTestThread t) {
     testThreadsList.get(WRITER_INDEX).add(t);
     numWriteThreads++;
   }
 
-  public synchronized void addReaderThread(ConcurrentTestThread t) {
+  public synchronized void addReaderThread(final ConcurrentTestThread t) {
     testThreadsList.get(READER_INDEX).add(t);
     numReaderThreads++;
   }
 
+  /**
+   * Start all threads
+   */
   public void startThreads() {
     for (int i = 0; i < NUM_THREAD_TYPES; i++) {
       for (ConcurrentTestThread t : testThreadsList.get(i)) {
@@ -61,6 +68,9 @@ public class ConcurrentTestContext {
     }
   }
 
+  /**
+   * Reset this context
+   */
   public synchronized void reset() {
     for (int i = 0; i < NUM_THREAD_TYPES; i++) {
       for (ConcurrentTestThread t : testThreadsList.get(i)) {
@@ -70,13 +80,17 @@ public class ConcurrentTestContext {
     for (int i = 0; i < NUM_THREAD_TYPES; i++) {
       perThreadTypeCounter.set(i, 0L);
     }
-    doneThreads[WRITER_INDEX]=0;
-    doneThreads[READER_INDEX]=0;
+    doneThreads[WRITER_INDEX] = 0;
+    doneThreads[READER_INDEX] = 0;
     totalTimeNS.set(0);
 
   }
 
-  public void doTrial(long uPerTrial) {
+  /**
+   * Do a single trial
+   * @param uPerTrial number of uniques per trial
+   */
+  public void doTrial(final long uPerTrial) {
     long uPerThread = uPerTrial / numWriteThreads;
     uPerThread = Math.max(uPerThread, 1);
     //start counting time
@@ -90,11 +104,14 @@ public class ConcurrentTestContext {
     }
   }
 
+  /**
+   * Wait for all threads
+   */
   public void waitForAll() {
-    while (doneThreads[WRITER_INDEX] < numWriteThreads || doneThreads[READER_INDEX] < numReaderThreads) {
+    while ((doneThreads[WRITER_INDEX] < numWriteThreads) || (doneThreads[READER_INDEX] < numReaderThreads)) {
       try {
         Thread.sleep(1);
-      } catch (InterruptedException e) {
+      } catch (final InterruptedException e) {
         e.printStackTrace();
       }
     }
@@ -103,20 +120,30 @@ public class ConcurrentTestContext {
   public long getNumWrites() {
     return getThreadTypeCounter(WRITER_INDEX);
   }
+
+  /**
+   * Gets the total time in nanoseconds
+   * @return total time nanoseconds
+   */
   public long getTotalTimeNS() { return totalTimeNS.get(); }
-  private long getThreadTypeCounter(int index) {
+
+  /**
+   * Gets the Thread-type counter
+   * @param index the counter index
+   */
+  private long getThreadTypeCounter(final int index) {
     return perThreadTypeCounter.get(index);
   }
 
 
-  synchronized void done(int index, long done) {
-    if(doneThreads[WRITER_INDEX] == 0) {
+  synchronized void done(final int index, final long done) {
+    if (doneThreads[WRITER_INDEX] == 0) {
       pauseAllThreads();
     }
-    long l = perThreadTypeCounter.get(index);
-    perThreadTypeCounter.set(index, l+done);
+    final long l = perThreadTypeCounter.get(index);
+    perThreadTypeCounter.set(index, l + done);
     doneThreads[index]++;
-    if(doneThreads[WRITER_INDEX] == numWriteThreads) {
+    if (doneThreads[WRITER_INDEX] == numWriteThreads) {
       //done - take time
       totalTimeNS.set(System.nanoTime() - startTimeNS);
     }
@@ -126,13 +153,16 @@ public class ConcurrentTestContext {
   private void pauseAllThreads() {
     for (int i = 0; i < NUM_THREAD_TYPES; i++) {
       for (ConcurrentTestThread t : testThreadsList.get(i)) {
-        if(!t.equals(Thread.currentThread())) {
+        if (!t.equals(Thread.currentThread())) {
           t.pauseThread();
         }
       }
     }
   }
 
+  /**
+   * Stop all threads
+   */
   public void stopAllThreads() {
     for (int i = 0; i < NUM_THREAD_TYPES; i++) {
       for (ConcurrentTestThread t : testThreadsList.get(i)) {
