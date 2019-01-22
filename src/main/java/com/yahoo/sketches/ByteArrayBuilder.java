@@ -1,11 +1,6 @@
-/* <p>Copyright (c) 2005, Lee Rhodes, Los Altos, California.
- * All Rights Reserved.<br>
- * THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THE ECLIPSE PUBLIC
- * LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM
- * CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.</p>
- * <p>You should have received a copy of the Eclipse Public License, v1.0 along
- * with this program.  Otherwise, a copy can be obtained from
- * http://www.eclipse.org/org/documents/epl-v10.php.</p>
+/*
+ * Copyright 2015, Yahoo! Inc.
+ * Licensed under the terms of the Apache License 2.0. See LICENSE file at the project root for terms.
  */
 
 package com.yahoo.sketches;
