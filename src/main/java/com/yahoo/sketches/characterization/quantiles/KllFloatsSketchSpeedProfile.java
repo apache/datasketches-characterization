@@ -7,7 +7,7 @@ import com.yahoo.memory.Memory;
 import com.yahoo.sketches.characterization.Properties;
 import com.yahoo.sketches.kll.KllFloatsSketch;
 
-public class KllFloatsSketchSpeedProfile extends QuantilesSpeedProfile {
+public class KllFloatsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
   private static final Random rnd = new Random();
   private int k;

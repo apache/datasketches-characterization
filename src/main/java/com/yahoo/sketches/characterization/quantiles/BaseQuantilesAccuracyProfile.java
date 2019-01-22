@@ -10,7 +10,7 @@ import com.yahoo.sketches.quantiles.DoublesSketch;
 import com.yahoo.sketches.quantiles.DoublesSketchBuilder;
 import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
 
-public abstract class QuantilesAccuracyProfile implements JobProfile {
+public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
 
   Job job;
   private DoublesSketchBuilder builder;

@@ -6,7 +6,7 @@ import java.util.Random;
 import com.yahoo.sketches.characterization.Properties;
 import com.yahoo.sketches.quantiles.ItemsSketch;
 
-public class ItemsSketchAccuracyProfile extends QuantilesAccuracyProfile {
+public class ItemsSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
 
   private int lgK;
   private int[] inputValues;

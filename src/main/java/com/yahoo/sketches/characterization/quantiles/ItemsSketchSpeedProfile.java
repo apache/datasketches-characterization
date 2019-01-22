@@ -10,7 +10,7 @@ import com.yahoo.sketches.ArrayOfItemsSerDe;
 import com.yahoo.sketches.characterization.Properties;
 import com.yahoo.sketches.quantiles.ItemsSketch;
 
-public class ItemsSketchSpeedProfile extends QuantilesSpeedProfile {
+public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
   private static final Comparator<Double> COMPARATOR = Comparator.naturalOrder();
   private static final ArrayOfItemsSerDe<Double> SERDE = new ArrayOfDoublesSerDe();

@@ -5,7 +5,7 @@ import java.util.Random;
 import com.yahoo.sketches.characterization.Properties;
 import com.yahoo.sketches.kll.KllFloatsSketch;
 
-public class KllFloatsSketchAccuracyProfile extends QuantilesAccuracyProfile {
+public class KllFloatsSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
 
   private int k;
   private float[] inputValues;

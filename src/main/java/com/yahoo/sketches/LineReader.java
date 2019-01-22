@@ -11,9 +11,9 @@ import java.io.IOException;
 
 public class LineReader {
   // private static final String LS = System.getProperty("line.separator");
-  private int lineNo_ = 0;
-  private String inFile_ = null;
-  private BufferedReader bufReaderIn_;
+  private int lineNo = 0;
+  private String inFile = null;
+  private BufferedReader bufReaderIn;
 
   /**
    * Constructor.
@@ -24,9 +24,9 @@ public class LineReader {
     if ((inFile == null) || inFile.isEmpty()) {
       throw new IllegalArgumentException("Input file is null or empty.");
     }
-    inFile_ = inFile;
+    this.inFile = inFile;
     try {
-      bufReaderIn_ = new BufferedReader(new FileReader(inFile));
+      bufReaderIn = new BufferedReader(new FileReader(inFile));
     } catch (final IOException e) {
       throw new RuntimeException(e);
     }
@@ -48,14 +48,14 @@ public class LineReader {
     String line;
     int ctr = 0;
     try {
-      while ((line = bufReaderIn_.readLine()) != null) {
-        lineNo_++; // external, file line number, starts with 1
-        ctr++; // internal used for completion
+      while ((line = bufReaderIn.readLine()) != null) {
+        lineNo++; // external, file line number, starts with 1
+        ctr++;    // internal, used for completion
         if (line.length() == 0) {
           continue;
         }
         // Callback
-        processLine.process(line, lineNo_);
+        processLine.process(line, lineNo);
         ret = true;
         if (lines <= 0) {
           continue;
@@ -70,11 +70,11 @@ public class LineReader {
   }
 
   public String getFileName() {
-    return inFile_;
+    return inFile;
   }
 
   public int getLastLineNumberRead() {
-    return lineNo_;
+    return lineNo;
   }
 
 }

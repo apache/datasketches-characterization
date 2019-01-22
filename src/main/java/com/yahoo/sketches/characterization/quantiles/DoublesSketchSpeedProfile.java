@@ -10,7 +10,7 @@ import com.yahoo.sketches.quantiles.DoublesSketch;
 import com.yahoo.sketches.quantiles.DoublesSketchBuilder;
 import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
 
-public class DoublesSketchSpeedProfile extends QuantilesSpeedProfile {
+public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
   private static final Random rnd = new Random();
   private int k;

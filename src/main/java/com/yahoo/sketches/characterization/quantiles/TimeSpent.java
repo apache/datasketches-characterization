@@ -17,103 +17,114 @@ import com.yahoo.sketches.quantiles.DoublesSketch;
 import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
 
 public class TimeSpent {
-  String fileName_;
-  LineReader reader_;
-  UpdateDoublesSketch qs_;
-  int reportInterval_ = 10000000;
-  int numRanks_;
-  int k_;
-  long n_;
-  long startTime_;
-  long endReadTime_;
-  long endAnalTime_;
+  String srcFileName;
+  LineReader lineReader;
+  UpdateDoublesSketch sketch;
+  int reportInterval; //prints number of lines read to console every reportInterval lines.
+  int numRanks; //number of linearly spaced ranks between zero and one.
+  int ppOoM; //number of split-points per Order-Of-Magnitude (OOM).
+  int k; //size of sketch
+  long n; //number of non-empty lines read
+  long startTime;
+  long endReadTime;
+  long endAnalTime;
 
   // Callback
   class Process implements ProcessLine {
 
     @Override
     public void process(final String strArr0, final int lineNo) {
-      if ((lineNo % reportInterval_) == 0) {
+      if ((lineNo % reportInterval) == 0) {
         println("" + lineNo);
       }
       final long v = Long.parseLong(strArr0);
       if (v == 0) {
         return;
       }
-      qs_.update(v);
+      sketch.update(v);
     }
   }
 
   // Constructor
   /**
    * blah
-   * @param fileName blah
-   * @param reportInterval blah
-   * @param numRanks blah
-   * @param k blah
+   * @param srcFileName the input file name as a full path plus name.
+   * @param reportInterval prints number of lines read to console every reportInterval lines.
+   * @param numRanks number of linearly spaced ranks between zero and one.
+   * @param ppOoM number of exponential split-points per Order-Of-Magnitude (OOM).
+   * @param k the size of the sketch.
    */
-  public TimeSpent(final String fileName, final int reportInterval, final int numRanks, final int k) {
-    fileName_ = fileName;
-    reader_ = new LineReader(fileName);
-    reportInterval_ = reportInterval;
-    numRanks_ = numRanks;
-    k_ = k;
-    qs_ = DoublesSketch.builder().setK(k).build();
+  public TimeSpent(final String srcFileName, final int reportInterval, final int numRanks,
+      final int ppOoM, final int k) {
+    this.srcFileName = srcFileName;
+    lineReader = new LineReader(srcFileName);
+    this.reportInterval = reportInterval;
+    this.numRanks = numRanks;
+    this.ppOoM = ppOoM;
+    this.k = k;
+    sketch = DoublesSketch.builder().setK(k).build();
   }
 
   /**
-   * blah
-   * @param lines blah
+   * Reads the input file as strings separted by line separator.
    */
-  public void readFile(final int lines) {
-    startTime_ = System.currentTimeMillis();
-    reader_.read(lines, new Process());
-    endReadTime_ = System.currentTimeMillis();
+  public void readFile() {
+    startTime = System.currentTimeMillis();
+    lineReader.read(0, new Process());
+    endReadTime = System.currentTimeMillis();
   }
 
   /**
-   * blah
+   * Print CDF of ranks to quantiles.
+   * Print PMF
    */
   public void analysis() {
-    final double[] frac = buildRanksArr();
-    final double[] values = qs_.getQuantiles(frac);
-    final double minV = qs_.getMinValue();
+    final double[] fracRanks = buildRanksArr(numRanks);
+    final double[] quantiles = sketch.getQuantiles(fracRanks);
+    final double minV = sketch.getMinValue();
 
-    println("\tMin:\t" + minV);
-    for (int i = 0; i < numRanks_; i++) {
-      println(i + "\t" + frac[i] + "\t" + values[i]);
-    }
-    final double maxV = qs_.getMaxValue();
+    //print sketch stats
+    final double maxV = sketch.getMaxValue();
     println("\tMax:\t" + maxV);
-    n_ = qs_.getN();
-    println("N:\t" + n_);
-    println("Size Bytes:\t" + qs_.getCompactStorageBytes());
+    n = sketch.getN();
+    println("N:\t" + n);
+    println("Size Bytes:\t" + sketch.getCompactStorageBytes());
+    println(sketch.toString());
     println("");
+
+    //print the cumulative rank to quantiles distribution
+    println("\tMin:\t" + minV);
+    for (int i = 0; i < numRanks; i++) {
+      println(i + "\t" + fracRanks[i] + "\t" + quantiles[i]);
+    }
+    println("");
+
+    //print PMF histogram, assume 5 points per Order-Of-Magnitude (OOM).
     final double[] splitpoints = buildSplitPointsArr(minV, maxV, 5);
-    final double[] pmfArr = qs_.getPMF(splitpoints);
+    final double[] pmfArr = sketch.getPMF(splitpoints);
     final int lenPMF = pmfArr.length;
     int i;
     for (i = 0; i < (lenPMF - 1); i++) {
-      println(i + "\t" + splitpoints[i] + "\t" + (pmfArr[i] * n_));
+      println(i + "\t" + splitpoints[i] + "\t" + (pmfArr[i] * n));
     }
-    println(i + "\t\t" + (pmfArr[i] * n_)); // the last point
+    println(i + "\t\t" + (pmfArr[i] * n)); // the last point
 
-    final double readTime = (endReadTime_ - startTime_) / 1000.0;
-    final double analTime = (System.currentTimeMillis() - endReadTime_) / 1000.0;
+    final double readTime = (endReadTime - startTime) / 1000.0;
+    final double analTime = (System.currentTimeMillis() - endReadTime) / 1000.0;
     println("ReadTime:\t" + readTime);
-    println("ReadRate:\t" + (n_ / readTime));
+    println("ReadRate:\t" + (n / readTime));
     println("AnalTime:\t" + analTime);
 
   }
 
   /**
-   * blah
-   * @param min blah
-   * @param max blah
-   * @param ppmag v
-   * @return blah
+   * Compute the split-points for the PMF function.
+   * @param min The minimum value recorded by the sketch
+   * @param max The maximum value recorded by the sketch
+   * @param ppmag desired number of points per Order-Of-Magnitude (OOM).
+   * @return the split-points array
    */
-  public double[] buildSplitPointsArr(final double min, final double max, final int ppmag) {
+  public static double[] buildSplitPointsArr(final double min, final double max, final int ppmag) {
     final double log10Min = floor(log10(min));
     final double log10Max = ceil(log10(max));
     final int oom = (int) (log10Max - log10Min);
@@ -123,7 +134,6 @@ public class TimeSpent {
     final double delta = 1.0 / ppmag;
     for (int i = 0; i < points; i++) {
       ptsArr[i] = pow(10, sp);
-      // println(""+ptsArr[i]);
       sp += delta;
       sp = rint(sp * ppmag) / ppmag;
     }
@@ -131,17 +141,17 @@ public class TimeSpent {
   }
 
   /**
-   * blah
-   * @return blah
+   * Compute the ranks array.
+   * @param numRanks the number of evenly-spaced rank values including 0 and 1.0.
+   * @return the ranks array
    */
-  public double[] buildRanksArr() {
-    final int numRM1 = numRanks_ - 1;
-    final double[] fractions = new double[numRanks_];
+  public static double[] buildRanksArr(final int numRanks) {
+    final int numRM1 = numRanks - 1;
+    final double[] fractions = new double[numRanks];
     final double delta = 1.0 / (numRM1);
     double d = 0.0;
-    for (int i = 0; i < numRanks_; i++) {
+    for (int i = 0; i < numRanks; i++) {
       fractions[i] = d;
-      // println(""+d);
       d += delta;
       d = rint(d * numRM1) / numRM1;
     }
@@ -157,17 +167,17 @@ public class TimeSpent {
    * @param args blah
    */
   public static void main(final String[] args) {
-    final int reportInterval = 10000000;
-    final String fileName = "/Users/lrhodes/dev/Data/timespent_263Mvalues_20160303.txt";
+
+    final String fileName =
+      "/Users/lrhodes/dev/git/characterization/src/main/resources/quantiles/streamA.txt";
+    final int reportInterval = 10_000_000;
     final int numRanks = 101;
+    final int ppOoM = 5;
     final int k = 256;
-    final int numValues = 0;
 
-    final TimeSpent ts = new TimeSpent(fileName, reportInterval, numRanks, k);
-    // ts.buildRanksArr();
-    // ts.buildSplitPointsArr(1.0, 1E6, 5);
+    final TimeSpent ts = new TimeSpent(fileName, reportInterval, numRanks, ppOoM, k);
 
-    ts.readFile(numValues);
+    ts.readFile();
     println("");
     ts.analysis();
   }

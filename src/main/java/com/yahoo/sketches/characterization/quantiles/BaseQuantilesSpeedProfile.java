@@ -6,7 +6,7 @@ import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.Properties;
 
-public abstract class QuantilesSpeedProfile implements JobProfile {
+public abstract class BaseQuantilesSpeedProfile implements JobProfile {
 
   private Job job;
 
