@@ -35,7 +35,7 @@ public class UnzipFiles {
         FileInputStream fis = new FileInputStream(srcZipFile);
         ZipInputStream zis = new ZipInputStream(fis)) {
       ZipEntry ze = zis.getNextEntry();
-      while (ze != null) {
+      while ((ze != null) && !ze.getName().startsWith("__")) {
         final String fileName = ze.getName();
         final File newFile = new File(destDir + File.separator + fileName);
 
