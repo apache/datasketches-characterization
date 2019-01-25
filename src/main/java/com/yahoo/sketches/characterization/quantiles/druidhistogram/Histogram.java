@@ -16,14 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+package com.yahoo.sketches.characterization.quantiles.druidhistogram;
+
 //CHECKSTYLE.OFF: FinalLocalVariable
 //CHECKSTYLE.OFF: JavadocMethod
 //CHECKSTYLE.OFF: LineLength
 //CHECKSTYLE.OFF: OperatorWrap
 //CHECKSTYLE.OFF: NonEmptyAtclauseDescription
 //CHECKSTYLE.OFF: JavadocParagraph
-
-package com.yahoo.sketches.characterization.quantiles.druidhistogram;
 
 //import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,5 +1,13 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch;
 
+//CHECKSTYLE.OFF: FinalLocalVariable
+//CHECKSTYLE.OFF: JavadocMethod
+//CHECKSTYLE.OFF: LineLength
+//CHECKSTYLE.OFF: OperatorWrap
+//CHECKSTYLE.OFF: NonEmptyAtclauseDescription
+//CHECKSTYLE.OFF: JavadocParagraph
+//CHECKSTYLE.OFF: WhitespaceAround
+
 import org.apache.commons.math3.util.FastMath;
 
 import com.yahoo.sketches.characterization.quantiles.momentsketch.optimizer.FunctionWithHessian;

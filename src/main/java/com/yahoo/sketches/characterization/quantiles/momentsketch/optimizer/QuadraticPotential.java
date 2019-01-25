@@ -1,5 +1,15 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch.optimizer;
 
+//CHECKSTYLE.OFF: FinalLocalVariable
+//CHECKSTYLE.OFF: JavadocMethod
+//CHECKSTYLE.OFF: LineLength
+//CHECKSTYLE.OFF: OperatorWrap
+//CHECKSTYLE.OFF: NonEmptyAtclauseDescription
+//CHECKSTYLE.OFF: JavadocParagraph
+//CHECKSTYLE.OFF: WhitespaceAround
+//CHECKSTYLE.OFF: EmptyLineSeparator
+//CHECKSTYLE.OFF: CommentsIndentation
+
 /**
  * Simple quadratic function for use in tests.
  */
@@ -46,7 +56,7 @@ public class QuadraticPotential implements FunctionWithHessian {
 
     @Override
     public int dim() {
-        return this.k;
+        return k;
     }
 
     @Override

@@ -1,5 +1,15 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch.optimizer;
 
+//CHECKSTYLE.OFF: FinalLocalVariable
+//CHECKSTYLE.OFF: JavadocMethod
+//CHECKSTYLE.OFF: LineLength
+//CHECKSTYLE.OFF: OperatorWrap
+//CHECKSTYLE.OFF: NonEmptyAtclauseDescription
+//CHECKSTYLE.OFF: JavadocParagraph
+//CHECKSTYLE.OFF: WhitespaceAround
+//CHECKSTYLE.OFF: EmptyLineSeparator
+//CHECKSTYLE.OFF: CommentsIndentation
+
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.CholeskyDecomposition;

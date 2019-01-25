@@ -1,5 +1,14 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch;
 
+//CHECKSTYLE.OFF: FinalLocalVariable
+//CHECKSTYLE.OFF: JavadocMethod
+//CHECKSTYLE.OFF: LineLength
+//CHECKSTYLE.OFF: OperatorWrap
+//CHECKSTYLE.OFF: NonEmptyAtclauseDescription
+//CHECKSTYLE.OFF: JavadocParagraph
+//CHECKSTYLE.OFF: WhitespaceAround
+//CHECKSTYLE.OFF: EmptyLineSeparator
+
 import com.yahoo.sketches.characterization.quantiles.momentsketch.optimizer.GenericOptimizer;
 import com.yahoo.sketches.characterization.quantiles.momentsketch.optimizer.NewtonOptimizer;
 
@@ -48,6 +57,7 @@ public class MomentSolver {
     public void setMaxIter(int maxIter) {
         this.maxIter = maxIter;
     }
+
     public void setVerbose(boolean flag) {
         verbose = flag;
     }

@@ -1,5 +1,13 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch;
 
+//CHECKSTYLE.OFF: FinalLocalVariable
+//CHECKSTYLE.OFF: JavadocMethod
+//CHECKSTYLE.OFF: LineLength
+//CHECKSTYLE.OFF: OperatorWrap
+//CHECKSTYLE.OFF: NonEmptyAtclauseDescription
+//CHECKSTYLE.OFF: JavadocParagraph
+//CHECKSTYLE.OFF: WhitespaceAround
+//CHECKSTYLE.OFF: EmptyLineSeparator
 
 /**
  * Example wrapper class for exposing an approximate quantiles sketch API

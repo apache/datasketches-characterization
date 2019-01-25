@@ -1,5 +1,14 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch.optimizer;
 
+//CHECKSTYLE.OFF: FinalLocalVariable
+//CHECKSTYLE.OFF: JavadocMethod
+//CHECKSTYLE.OFF: LineLength
+//CHECKSTYLE.OFF: OperatorWrap
+//CHECKSTYLE.OFF: NonEmptyAtclauseDescription
+//CHECKSTYLE.OFF: JavadocParagraph
+//CHECKSTYLE.OFF: WhitespaceAround
+//CHECKSTYLE.OFF: EmptyLineSeparator
+
 /**
  * Describes a function which can be optimized using Newton's method.
  */

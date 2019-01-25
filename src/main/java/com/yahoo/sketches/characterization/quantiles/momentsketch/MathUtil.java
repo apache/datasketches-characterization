@@ -1,5 +1,13 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch;
 
+//CHECKSTYLE.OFF: FinalLocalVariable
+//CHECKSTYLE.OFF: JavadocMethod
+//CHECKSTYLE.OFF: LineLength
+//CHECKSTYLE.OFF: OperatorWrap
+//CHECKSTYLE.OFF: NonEmptyAtclauseDescription
+//CHECKSTYLE.OFF: JavadocParagraph
+//CHECKSTYLE.OFF: WhitespaceAround
+
 public class MathUtil {
     public static long[][] getBinomials(int m) {
         long[][] binoms = new long[m+1][m+1];
@@ -24,7 +32,7 @@ public class MathUtil {
             int[] c2 = chebyCoeffs[i-2];
             chebyCoeffs[i][0] = -c2[0];
             for (int j = 1; j <= i; j++) {
-                chebyCoeffs[i][j] = 2*c1[j-1] - c2[j];
+                chebyCoeffs[i][j] = (2*c1[j-1]) - c2[j];
             }
         }
         return chebyCoeffs;

@@ -1,5 +1,14 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch;
 
+//CHECKSTYLE.OFF: FinalLocalVariable
+//CHECKSTYLE.OFF: JavadocMethod
+//CHECKSTYLE.OFF: LineLength
+//CHECKSTYLE.OFF: OperatorWrap
+//CHECKSTYLE.OFF: NonEmptyAtclauseDescription
+//CHECKSTYLE.OFF: JavadocParagraph
+//CHECKSTYLE.OFF: WhitespaceAround
+//CHECKSTYLE.OFF: EmptyLineSeparator
+
 import java.util.Arrays;
 
 /**
@@ -34,8 +43,8 @@ public class MomentStruct {
             int k
     ) {
         power_sums = new double[k];
-        this.min = Double.MAX_VALUE;
-        this.max = -Double.MAX_VALUE;
+        min = Double.MAX_VALUE;
+        max = -Double.MAX_VALUE;
     }
 
     /**
@@ -67,10 +76,10 @@ public class MomentStruct {
      */
     public void merge(MomentStruct other) {
         if (other.min < min) {
-            this.min = other.min;
+            min = other.min;
         }
         if (other.max > max) {
-            this.max = other.max;
+            max = other.max;
         }
         int k = power_sums.length;
         for (int i = 0; i<k; i++) {
