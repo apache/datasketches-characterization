@@ -8,7 +8,6 @@ package com.yahoo.sketches.characterization.quantiles;
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
 import static java.lang.Math.log10;
-import static java.lang.Math.max;
 import static java.lang.Math.pow;
 import static java.lang.Math.rint;
 
@@ -20,13 +19,13 @@ import com.yahoo.sketches.UnzipFiles;
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.Properties;
-import com.yahoo.sketches.quantiles.DoublesSketch;
-import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
+import com.yahoo.sketches.characterization.quantiles.druidhistogram.ApproximateHistogram;
+import com.yahoo.sketches.characterization.quantiles.druidhistogram.Histogram;
 
 /**
  * @author Lee Rhodes
  */
-public class QuantilesStreamAProfile implements JobProfile {
+public class DruidAppHistStreamAProfile implements JobProfile {
 
   private Job job;
 
@@ -35,13 +34,14 @@ public class QuantilesStreamAProfile implements JobProfile {
   private int reportInterval; //prints number of lines read to console every reportInterval lines.
   private int numRanks; //number of linearly spaced ranks between zero and one.
   private int ppOoM; //number of split-points per Order-Of-Magnitude (OOM).
-  private int k; //size of sketch
+  private int histSize; //ApproximateHistogram size. Max # of position, bin pairs
   private String cdfHdr;
   private String cdfFmt;
   private String pmfHdr;
   private String pmfFmt;
 
-  UpdateDoublesSketch sketch;
+  ApproximateHistogram ahist;
+  Histogram hist;
   private boolean dataWasZipped = false;
 
   //JobProfile
@@ -54,13 +54,14 @@ public class QuantilesStreamAProfile implements JobProfile {
     reportInterval = Integer.parseInt(prop.mustGet("ReportInterval"));
     numRanks = Integer.parseInt(prop.mustGet("NumRanks"));
     ppOoM = Integer.parseInt(prop.mustGet("PpOoM"));
-    k = Integer.parseInt(prop.mustGet("K"));
+
     cdfHdr = prop.mustGet("CdfHdr").replace("\\t", "\t");
     cdfFmt = prop.mustGet("CdfFmt").replace("\\t", "\t");
     pmfHdr = prop.mustGet("PdfHdr").replace("\\t", "\t");
     pmfFmt = prop.mustGet("PdfFmt").replace("\\t", "\t");
 
-    sketch = DoublesSketch.builder().setK(k).build();
+    histSize = Integer.parseInt(prop.mustGet("HistSize"));
+    ahist = new ApproximateHistogram(histSize);
 
     processStream();
 
@@ -90,7 +91,7 @@ public class QuantilesStreamAProfile implements JobProfile {
         println("" + lineNo);
       }
       final long v = Long.parseLong(strArr0);
-      sketch.update(v);
+      ahist.offer(v);
     }
   }
 
@@ -101,6 +102,7 @@ public class QuantilesStreamAProfile implements JobProfile {
     checkIfZipped(srcFileName);
 
     //Read
+    //println("");
     println("Input Lines Processed: ");
     final LineReader lineReader = new LineReader(srcFileName);
 
@@ -108,16 +110,17 @@ public class QuantilesStreamAProfile implements JobProfile {
     lineReader.read(0, new Process());
     final long readTime_nS = System.nanoTime() - startReadTime_nS;
 
-    //print sketch stats
-    println(sketch.toString());
+    //print hist stats
+    println(ahist.toString());
 
     //CDF
-    final double[] fracRanks = buildRanksArr(numRanks);
+    final float[] fracRanks = buildRanksArr(numRanks);
     final long startCdfTime_nS = System.nanoTime();
-    final double[] quantiles = sketch.getQuantiles(fracRanks);
+    final float[] quantiles = ahist.getQuantiles(fracRanks);
     final long cdfTime_nS = System.nanoTime() - startCdfTime_nS;
 
     //print the cumulative rank to quantiles distribution
+    println("");
     println("CDF");
     println(String.format(cdfHdr, "Index", "Rank", "Quantile"));
     for (int i = 0; i < numRanks; i++) {
@@ -127,23 +130,26 @@ public class QuantilesStreamAProfile implements JobProfile {
     println("");
 
     //print PMF histogram, using Points Per Order-Of-Magnitude (ppOoM).
-    final double minV = sketch.getMinValue();
-    final double maxV = sketch.getMaxValue();
-    final double n = sketch.getN();
-    final double[] splitpoints = buildSplitPointsArr(max(1.0, minV), maxV, ppOoM);
+    final double minV = ahist.getMin();
+    final double maxV = ahist.getMax();
+    final double n = ahist.count();
+    final float[] splitpoints = buildExpBreaksArr(minV, maxV, ppOoM);
     //PMF
     final long startPmfTime_nS = System.nanoTime();
-    final double[] pmfArr = sketch.getPMF(splitpoints);
+    final Histogram hist = ahist.toHistogram(splitpoints);
+
+    final double[] breaksArr = hist.getBreaks();
+    final double[] countsArr = hist.getCounts();
     final long pmfTime_nS = System.nanoTime() - startPmfTime_nS;
-    final int lenPMF = pmfArr.length;
+    final int lenBreaks = breaksArr.length;
 
     println("PMF");
     println(String.format(pmfHdr, "Index", "Quantile", "Mass"));
     int i;
-    for (i = 0; i < (lenPMF - 1); i++) {
-      println(String.format(pmfFmt, i, splitpoints[i], pmfArr[i] * n));
+    for (i = 0; i < (lenBreaks - 1); i++) {
+      println(String.format(pmfFmt, i, breaksArr[i], countsArr[i]));
     }
-    //println(String.format(pmfFmt, i, maxV, pmfArr[i] * n)); // the last point
+    println(String.format(pmfFmt, i, breaksArr[i], 0.0)); // the last point
 
     final double readTime_S = readTime_nS / 1E9;
     println("");
@@ -152,7 +158,7 @@ public class QuantilesStreamAProfile implements JobProfile {
     println(String.format("CdfTime_mSec  :\t%10.3f", cdfTime_nS / 1E6));
     println(String.format("Cdf/Point_nSec:\t%10.3f", (double)cdfTime_nS / numRanks));
     println(String.format("PmfTime_mSec  :\t%10.3f", pmfTime_nS / 1E6));
-    println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / lenPMF));
+    println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / lenBreaks));
   }
 
   /**
@@ -162,16 +168,19 @@ public class QuantilesStreamAProfile implements JobProfile {
    * @param ppmag desired number of points per Order-Of-Magnitude (OOM).
    * @return the split-points array
    */
-  private static double[] buildSplitPointsArr(final double min, final double max, final int ppmag) {
-    final double log10Min = floor(log10(min));
+  private static float[] buildExpBreaksArr(final double min, final double max, final int ppmag) {
+    final boolean minLT1 = min < 1.0;
+    final double startLgMin = minLT1 ? 1.0 : min;
+    final double log10Min = floor(log10(startLgMin));
     final double log10Max = ceil(log10(max));
     final int oom = (int) (log10Max - log10Min);
-    final int points = (oom * ppmag) + 1;
-    final double[] ptsArr = new double[points];
+    final int points = (oom * ppmag) + 1 + (minLT1 ? 1 : 0);
+    final float[] ptsArr = new float[points];
     double sp = log10Min;
     final double delta = 1.0 / ppmag;
     for (int i = 0; i < points; i++) {
-      ptsArr[i] = pow(10, sp);
+      if (minLT1 && (i == 0)) { ptsArr[i] = 0; continue; }
+      ptsArr[i] = (float) pow(10, sp);
       sp += delta;
       sp = rint(sp * ppmag) / ppmag;
     }
@@ -180,16 +189,16 @@ public class QuantilesStreamAProfile implements JobProfile {
 
   /**
    * Compute the ranks array.
-   * @param numRanks the number of evenly-spaced rank values including 0 and 1.0.
+   * @param numRanks the number of evenly-spaced rank values excluding 0 and 1.0.
    * @return the ranks array
    */
-  private static double[] buildRanksArr(final int numRanks) {
-    final int numRM1 = numRanks - 1;
-    final double[] fractions = new double[numRanks];
+  private static float[] buildRanksArr(final int numRanks) {
+    final int numRM1 = numRanks + 1;
+    final float[] fractions = new float[numRanks];
     final double delta = 1.0 / (numRM1);
-    double d = 0.0;
+    double d = delta;
     for (int i = 0; i < numRanks; i++) {
-      fractions[i] = d;
+      fractions[i] = (float) d;
       d += delta;
       d = rint(d * numRM1) / numRM1;
     }

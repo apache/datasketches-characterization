@@ -39,7 +39,7 @@ import com.google.common.primitives.Floats;
 public class ApproximateHistogram
 {
   public static final int DEFAULT_HISTOGRAM_SIZE = 50;
-  public static final int DEFAULT_BUCKET_SIZE = 7;
+  public static final int DEFAULT_BUCKET_SIZE = 7; //not used
 
   // max size of the histogram (number of bincount/position pairs)
   int size;

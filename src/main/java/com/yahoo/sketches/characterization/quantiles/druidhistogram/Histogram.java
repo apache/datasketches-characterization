@@ -32,7 +32,7 @@ import java.util.Arrays;
 public class Histogram
 {
   double[] breaks;
-  double[] counts;
+  double[] counts; //one less than breaks
 
   public Histogram(float[] breaks, double[] counts)
   {
