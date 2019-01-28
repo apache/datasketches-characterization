@@ -21,7 +21,8 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
   private UpdateSketch localSketch;
   private int sharedLgK;
   private int localLgK;
-  private int cacheLimit;
+  private int poolThreads;
+  private double maxConcurrencyError;
   private boolean ordered;
   private boolean offHeap;
   private boolean rebuild; //Theta QS Sketch Accuracy
@@ -35,7 +36,8 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     //Configure Sketches
     sharedLgK = lgK;
     localLgK = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_localLgK"));
-    cacheLimit = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_cacheLimit"));
+    poolThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_poolThreads"));
+    maxConcurrencyError = Double.parseDouble(prop.mustGet("CONCURRENT_THETA_maxConcurrencyError"));
     ordered = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_ordered"));
     offHeap = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_offHeap"));
     rebuild = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_rebuild"));
@@ -87,12 +89,13 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
   //configures builder for both local and shared
   UpdateSketchBuilder configureBuilder() {
     final UpdateSketchBuilder bldr = new UpdateSketchBuilder();
+    bldr.setbNumPoolThreads(poolThreads);
     bldr.setSharedLogNominalEntries(sharedLgK);
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
-    bldr.setCacheLimit(cacheLimit);
     bldr.setPropagateOrderedCompact(ordered);
     bldr.setSharedIsDirect(sharedIsDirect);
+    bldr.setMaxConcurrencyError(maxConcurrencyError);
     return bldr;
   }
 

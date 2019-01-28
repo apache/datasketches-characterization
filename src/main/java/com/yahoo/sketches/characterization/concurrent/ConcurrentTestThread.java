@@ -48,10 +48,9 @@ public abstract class ConcurrentTestThread extends Thread {
    * Reset this ConcurrentTestThread
    */
   public void reset() {
-    resumed.set(false);
-    paused.set(false);
     numOpsToDo.set(0);
     done = 0;
+    paused.set(false);
   }
 
   public void resumeThread(final long uPerThread) {

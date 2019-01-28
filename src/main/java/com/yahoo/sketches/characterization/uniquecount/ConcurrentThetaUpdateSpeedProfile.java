@@ -21,10 +21,11 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private UpdateSketch localSketch;
   private int sharedLgK;
   private int localLgK;
-  private int cacheLimit;
   private boolean ordered;
   private boolean offHeap;
   private boolean sharedIsDirect;
+  private int poolThreads;
+  private double maxConcurrencyError;
   private WritableDirectHandle wdh;
   private WritableMemory wmem;
 
@@ -36,7 +37,8 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     //Configure Sketches
     sharedLgK = Integer.parseInt(prop.mustGet("LgK"));
     localLgK = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_localLgK"));
-    cacheLimit = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_cacheLimit"));
+    poolThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_poolThreads"));
+    maxConcurrencyError = Double.parseDouble(prop.mustGet("CONCURRENT_THETA_maxConcurrencyError"));
     ordered = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_ordered"));
     offHeap = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_offHeap"));
     sharedIsDirect = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_sharedIsDirect"));
@@ -79,12 +81,13 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   //configures builder for both local and shared
   UpdateSketchBuilder configureBuilder() {
     final UpdateSketchBuilder bldr = new UpdateSketchBuilder();
+    bldr.setbNumPoolThreads(poolThreads);
     bldr.setSharedLogNominalEntries(sharedLgK);
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
-    bldr.setCacheLimit(cacheLimit);
     bldr.setPropagateOrderedCompact(ordered);
     bldr.setSharedIsDirect(sharedIsDirect);
+    bldr.setMaxConcurrencyError(maxConcurrencyError);
     return bldr;
   }
 

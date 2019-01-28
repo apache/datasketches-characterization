@@ -28,10 +28,11 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
   private ReentrantReadWriteLock lock;
   private int sharedLgK;
   private int localLgK;
-  private int cacheLimit;
   private boolean ordered;
   private boolean offHeap;
+  private int poolThreads;
   private boolean sharedIsDirect;
+  private double maxConcurrencyError;
   private WritableDirectHandle wdh;
   private WritableMemory wmem;
 
@@ -50,10 +51,11 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     //Configure Sketches
     sharedLgK = Integer.parseInt(prop.mustGet("LgK"));
     localLgK = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_localLgK"));
-    cacheLimit = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_cacheLimit"));
     ordered = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_ordered"));
     offHeap = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_offHeap"));
+    poolThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_poolThreads"));
     sharedIsDirect = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_sharedIsDirect"));
+    maxConcurrencyError = Double.parseDouble(prop.mustGet("CONCURRENT_THETA_maxConcurrencyError"));
     numReaderThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_numReaders"));
     numWriterThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_numWriters"));
     writesRatio = Double.parseDouble(prop.mustGet("CONCURRENT_THETA_writersRatio"));
@@ -127,12 +129,13 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
   //configures builder for both local and shared
   UpdateSketchBuilder configureBuilder() {
     final UpdateSketchBuilder bldr = new UpdateSketchBuilder();
+    bldr.setbNumPoolThreads(poolThreads);
     bldr.setSharedLogNominalEntries(sharedLgK);
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
-    bldr.setCacheLimit(cacheLimit);
     bldr.setPropagateOrderedCompact(ordered);
     bldr.setSharedIsDirect(sharedIsDirect);
+    bldr.setMaxConcurrencyError(maxConcurrencyError);
     return bldr;
   }
 
@@ -194,9 +197,9 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
 
     @Override
     public void reset() {
-      super.reset();
       local.reset();
       i = start;
+      super.reset();
     }
 
     protected double getWrites() {
@@ -286,8 +289,8 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
 
     @Override
     public void reset() {
-      super.reset();
       reads = 0;
+      super.reset();
     }
 
     protected double getReads() {
@@ -352,8 +355,8 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
 
     @Override
     public void reset() {
-      super.reset();
       reads = 0;
+      super.reset();
     }
 
     protected double getReads() {
