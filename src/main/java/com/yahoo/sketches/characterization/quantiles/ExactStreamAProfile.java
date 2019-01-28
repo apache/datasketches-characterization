@@ -24,9 +24,11 @@ import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.Properties;
 
 /**
+ * Computes exact quantiles using brute-force methods.
+ *
  * @author Lee Rhodes
  */
-public class BruteForceStreamAProfile implements JobProfile {
+public class ExactStreamAProfile implements JobProfile {
 
   private Job job;
 
@@ -50,6 +52,7 @@ public class BruteForceStreamAProfile implements JobProfile {
   private double maxV;
   private double[] ranksArr; // 0, .01, .02, ...1.0 //101 ranks
   private double[] quantilesArr; //101 values
+  private int[] cdfIdxArr; //101 values
 
   private double[] spArr;  //splitpoints 1 ... ceilPwr2(maxValue), ppo values per octave
   private int numSP;
@@ -76,6 +79,7 @@ public class BruteForceStreamAProfile implements JobProfile {
 
     ranksArr = buildRanksArr(numRanks);
     quantilesArr = new double[numRanks];
+    cdfIdxArr = new int[numRanks];
     checkMonotonic(ranksArr);
 
     processInputStream();
@@ -120,20 +124,38 @@ public class BruteForceStreamAProfile implements JobProfile {
     numSP = spArr.length;
     spCounts = new long[numSP];
 
+    println("Process Percentiles");
+    printPercentiles(dataArr);
+    println("End Percentiles");
+    println("");
+
     println("Process Array");
     startTime_nS = System.nanoTime();
-    processArray(dataArr, spArr, spCounts, ranksArr, quantilesArr);
+    processArray(dataArr, spArr, spCounts, ranksArr, quantilesArr, cdfIdxArr);
     final long processTime_nS = System.nanoTime() - startTime_nS;
     println("End Process Array");
-
+    println("");
     printCDF();
+    println("");
     printPMF();
+    println("");
     printTimes(readTime_nS, sortTime_nS, processTime_nS);
   }
 
-  //initialized with values: ranksArr, spArr
+  private void printPercentiles(final int[] sortedArr) {
+    final int len = sortedArr.length;
+    println("Percentiles");
+    println(String.format("%6s%20s%20s", "Frac", "Index", "Value"));
+    for (int i = 0; i < 100; i++) {
+      final double frac = i * .01;
+      final int index = (int) (frac * len);
+      final int v = sortedArr[index];
+      println(String.format("%6.2f%20d%20d", frac, index, v));
+    }
+  }
+
   private static void processArray(final int[] sortedArr, final double[] spArr, final long[] spCounts,
-      final double[] ranksArr, final double[] quantilesArr) {
+      final double[] ranksArr, final double[] quantilesArr, final int[] cdfIdxArr) {
     int rankIdx = 0;
     int spIdx = 0;
     final int dataLen = sortedArr.length;
@@ -150,11 +172,15 @@ public class BruteForceStreamAProfile implements JobProfile {
         }
         spCounts[spIdx]++;
       }
+      //cdf
       if (i == dataLenM1) {
-        quantilesArr[quantilesArr.length - 1] = sortedArr[dataLenM1];
+        rankIdx = quantilesArr.length - 1;
+        quantilesArr[rankIdx] = sortedArr[dataLenM1];
+        cdfIdxArr[rankIdx] = i;
       }
       if (i >= (ranksArr[rankIdx] * dataLen)) {
         quantilesArr[rankIdx] = lastV;
+        cdfIdxArr[rankIdx] = i;
         rankIdx++;
       }
       lastV = v;
@@ -168,8 +194,9 @@ public class BruteForceStreamAProfile implements JobProfile {
     final double[] spArr = buildSplitPointsArr(0, 9999, 1);
     final long[] spCounts = new long[spArr.length];
     final double[] ranksArr = buildRanksArr(101);
+    final int[] cdfIdxArr = new int[101];
     final double[] quantilesArr = new double[101];
-    processArray(data, spArr, spCounts, ranksArr, quantilesArr);
+    processArray(data, spArr, spCounts, ranksArr, quantilesArr, cdfIdxArr);
     System.out.println("Done");
   }
 
@@ -229,12 +256,11 @@ public class BruteForceStreamAProfile implements JobProfile {
 
   private void printCDF() {
     println("CDF");
-    println(String.format(cdfHdr, "Index", "Rank", "Quantile"));
+    println(String.format(cdfHdr, "Num", "Rank", "Index", "Quantile"));
     for (int i = 0; i < numRanks; i++) {
-      final String s = String.format(cdfFmt, i, ranksArr[i], quantilesArr[i]);
+      final String s = String.format(cdfFmt, i, ranksArr[i], cdfIdxArr[i], quantilesArr[i]);
       println(s);
     }
-    println("");
   }
 
   private void printPMF() {
@@ -247,7 +273,6 @@ public class BruteForceStreamAProfile implements JobProfile {
   }
 
   private void printTimes(final long readTime_nS, final long sortTime_nS, final long processTime_nS) {
-    println("");
     final double readTime_S = readTime_nS / 1E9;
     println(String.format("ReadTime_Sec  :\t%10.3f", readTime_S));
     println(String.format("ReadRate/Sec  :\t%,10.0f", proc.n / readTime_S));
