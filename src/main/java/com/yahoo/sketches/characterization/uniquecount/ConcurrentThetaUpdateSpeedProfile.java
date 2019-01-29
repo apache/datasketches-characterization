@@ -23,7 +23,6 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private int localLgK;
   private boolean ordered;
   private boolean offHeap;
-  private boolean sharedIsDirect;
   private int poolThreads;
   private double maxConcurrencyError;
   private WritableDirectHandle wdh;
@@ -41,7 +40,6 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     maxConcurrencyError = Double.parseDouble(prop.mustGet("CONCURRENT_THETA_maxConcurrencyError"));
     ordered = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_ordered"));
     offHeap = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_offHeap"));
-    sharedIsDirect = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_sharedIsDirect"));
 
     final int maxSharedUpdateBytes = Sketch.getMaxUpdateSketchBytes(1 << sharedLgK);
 
@@ -86,7 +84,6 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
     bldr.setPropagateOrderedCompact(ordered);
-    bldr.setSharedIsDirect(sharedIsDirect);
     bldr.setMaxConcurrencyError(maxConcurrencyError);
     return bldr;
   }

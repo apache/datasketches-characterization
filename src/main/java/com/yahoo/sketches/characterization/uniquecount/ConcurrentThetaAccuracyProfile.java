@@ -26,7 +26,6 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
   private boolean ordered;
   private boolean offHeap;
   private boolean rebuild; //Theta QS Sketch Accuracy
-  private boolean sharedIsDirect;
   private WritableDirectHandle wdh;
   private WritableMemory wmem;
 
@@ -41,7 +40,6 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     ordered = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_ordered"));
     offHeap = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_offHeap"));
     rebuild = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_rebuild"));
-    sharedIsDirect = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_sharedIsDirect"));
 
     final int maxSharedUpdateBytes = Sketch.getMaxUpdateSketchBytes(1 << sharedLgK);
 
@@ -94,7 +92,6 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
     bldr.setPropagateOrderedCompact(ordered);
-    bldr.setSharedIsDirect(sharedIsDirect);
     bldr.setMaxConcurrencyError(maxConcurrencyError);
     return bldr;
   }

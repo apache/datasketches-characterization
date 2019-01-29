@@ -31,7 +31,6 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
   private boolean ordered;
   private boolean offHeap;
   private int poolThreads;
-  private boolean sharedIsDirect;
   private double maxConcurrencyError;
   private WritableDirectHandle wdh;
   private WritableMemory wmem;
@@ -54,7 +53,6 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     ordered = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_ordered"));
     offHeap = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_offHeap"));
     poolThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_poolThreads"));
-    sharedIsDirect = Boolean.parseBoolean(prop.mustGet("CONCURRENT_THETA_sharedIsDirect"));
     maxConcurrencyError = Double.parseDouble(prop.mustGet("CONCURRENT_THETA_maxConcurrencyError"));
     numReaderThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_numReaders"));
     numWriterThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_numWriters"));
@@ -134,7 +132,6 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
     bldr.setPropagateOrderedCompact(ordered);
-    bldr.setSharedIsDirect(sharedIsDirect);
     bldr.setMaxConcurrencyError(maxConcurrencyError);
     return bldr;
   }
