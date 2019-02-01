@@ -15,7 +15,7 @@ import com.yahoo.sketches.UnzipFiles;
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
 import com.yahoo.sketches.characterization.Properties;
-import com.yahoo.sketches.characterization.quantiles.momentsketch.SimpleMomentSketch;
+import com.yahoo.sketches.characterization.quantiles.momentsketch.MomentSketchWrapper;
 
 /**
  * @author Lee Rhodes
@@ -35,7 +35,7 @@ public class MSketchStreamAProfile implements JobProfile {
   //private String pmfHdr;
   //private String pmfFmt;
 
-  SimpleMomentSketch sketch;
+  MomentSketchWrapper sketch;
 
   private boolean dataWasZipped = false;
   //private double eps = 1e-6;
@@ -65,7 +65,7 @@ public class MSketchStreamAProfile implements JobProfile {
     //pmfHdr = prop.mustGet("PdfHdr").replace("\\t", "\t");
     //pmfFmt = prop.mustGet("PdfFmt").replace("\\t", "\t");
 
-    sketch = new SimpleMomentSketch(moments);
+    sketch = new MomentSketchWrapper(moments);
 
     processInputStream();
 
