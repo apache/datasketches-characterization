@@ -5,11 +5,8 @@
 
 package com.yahoo.sketches.characterization.quantiles;
 
-import static com.yahoo.sketches.Util.ceilingPowerOf2double;
-import static com.yahoo.sketches.Util.log2;
-import static com.yahoo.sketches.Util.pwr2LawNextDouble;
-import static java.lang.Math.rint;
-import static java.lang.Math.round;
+import static com.yahoo.sketches.characterization.quantiles.ProfileUtil.buildSplitPointsArr;
+import static com.yahoo.sketches.characterization.quantiles.ProfileUtil.checkMonotonic;
 
 import java.io.File;
 import java.util.Arrays;
@@ -36,7 +33,8 @@ public class ExactStreamAProfile implements JobProfile {
   private String srcFileName;
   private int reportInterval; //prints number of lines read to console every reportInterval lines.
   private int numRanks; //number of linearly spaced ranks between zero and one.
-  private int ppo; //number of split-points per Octave.
+  private int pplb; //number of split-Points Per Log Base.
+  private double lb; //Log Base
   private String cdfHdr;
   private String cdfFmt;
   private String pmfHdr;
@@ -46,18 +44,17 @@ public class ExactStreamAProfile implements JobProfile {
   private boolean dataWasZipped = false;
   private static final int numItems = 263078000;
   private int[] dataArr = new int[numItems];
+  private Process proc = new Process();
 
   //outputs for plotting
   private double minV;
   private double maxV;
-  private double[] ranksArr; // 0, .01, .02, ...1.0 //101 ranks
-  private double[] quantilesArr; //101 values
-  private int[] cdfIdxArr; //101 values
 
-  private double[] spArr;  //splitpoints 1 ... ceilPwr2(maxValue), ppo values per octave
+  private double[] spArr;  //splitpoints 0, 1 ... ceilPwr2(maxValue), ppo values per octave
   private int numSP;
-  private long[] spCounts;  //
-  private Process proc = new Process();
+  private long[] spCounts;
+  private double eps = 1E-6;
+
 
 
   //JobProfile
@@ -70,17 +67,13 @@ public class ExactStreamAProfile implements JobProfile {
     srcFileName = prop.mustGet("FileName");
     reportInterval = Integer.parseInt(prop.mustGet("ReportInterval"));
     numRanks = Integer.parseInt(prop.mustGet("NumRanks"));
-    ppo = Integer.parseInt(prop.mustGet("PPO"));
+    pplb = Integer.parseInt(prop.mustGet("PPLB"));
+    lb = Double.parseDouble(prop.mustGet("LogBase"));
 
     cdfHdr = prop.mustGet("CdfHdr").replace("\\t", "\t");
     cdfFmt = prop.mustGet("CdfFmt").replace("\\t", "\t");
     pmfHdr = prop.mustGet("PdfHdr").replace("\\t", "\t");
     pmfFmt = prop.mustGet("PdfFmt").replace("\\t", "\t");
-
-    ranksArr = buildRanksArr(numRanks);
-    quantilesArr = new double[numRanks];
-    cdfIdxArr = new int[numRanks];
-    checkMonotonic(ranksArr);
 
     processInputStream();
 
@@ -119,49 +112,48 @@ public class ExactStreamAProfile implements JobProfile {
 
     //outputs
     //ranksArr and quantilesArr already initialized
-    spArr = buildSplitPointsArr(minV, maxV, ppo);
+    spArr = buildSplitPointsArr(minV, maxV, pplb, lb, eps);
     checkMonotonic(spArr);
     numSP = spArr.length;
     spCounts = new long[numSP];
 
-    println("Process Percentiles");
-    printPercentiles(dataArr);
+    println("");
+    printExactPercentiles(dataArr);
     println("End Percentiles");
     println("");
 
-    println("Process Array");
+    println("Process PMF");
     startTime_nS = System.nanoTime();
-    processArray(dataArr, spArr, spCounts, ranksArr, quantilesArr, cdfIdxArr);
+    processExactPmf(dataArr, spArr, spCounts);//, ranksArr, quantilesArr, cdfIdxArr);
     final long processTime_nS = System.nanoTime() - startTime_nS;
-    println("End Process Array");
-    println("");
-    printCDF();
+    println("End Process PMF");
     println("");
     printPMF();
     println("");
     printTimes(readTime_nS, sortTime_nS, processTime_nS);
   }
 
-  private void printPercentiles(final int[] sortedArr) {
+  private void printExactPercentiles(final int[] sortedArr) {
     final int len = sortedArr.length;
     println("Percentiles");
-    println(String.format("%6s%20s%20s", "Frac", "Index", "Value"));
+    println(String.format(cdfHdr, "Num", "Rank", "Index", "Value"));
+    int index, v;
     for (int i = 0; i < 100; i++) {
-      final double frac = i * .01;
-      final int index = (int) (frac * len);
-      final int v = sortedArr[index];
-      println(String.format("%6.2f%20d%20d", frac, index, v));
+      final double fracRank = i * .01;
+      index = (int) (fracRank * len);
+      v = sortedArr[index];
+      println(String.format(cdfFmt, i, fracRank, index, v));
     }
+    index = numItems - 1; //max value
+    v = sortedArr[index];
+    println(String.format(cdfFmt, 101, 1.0, index, v));
   }
 
-  private static void processArray(final int[] sortedArr, final double[] spArr, final long[] spCounts,
-      final double[] ranksArr, final double[] quantilesArr, final int[] cdfIdxArr) {
-    int rankIdx = 0;
+  private static void processExactPmf(final int[] sortedArr, final double[] spArr,
+      final long[] spCounts) {
     int spIdx = 0;
     final int dataLen = sortedArr.length;
-    final int dataLenM1 = dataLen - 1;
     final int spLen = spArr.length;
-    double lastV = sortedArr[0];
     for (int i = 0; i < dataLen; i++) {
       final double v = sortedArr[i];
       if (v < spArr[spIdx]) {
@@ -172,18 +164,6 @@ public class ExactStreamAProfile implements JobProfile {
         }
         spCounts[spIdx]++;
       }
-      //cdf
-      if (i == dataLenM1) {
-        rankIdx = quantilesArr.length - 1;
-        quantilesArr[rankIdx] = sortedArr[dataLenM1];
-        cdfIdxArr[rankIdx] = i;
-      }
-      if (i >= (ranksArr[rankIdx] * dataLen)) {
-        quantilesArr[rankIdx] = lastV;
-        cdfIdxArr[rankIdx] = i;
-        rankIdx++;
-      }
-      lastV = v;
     }
   }
 
@@ -191,83 +171,17 @@ public class ExactStreamAProfile implements JobProfile {
   public void checkProcessArr() {
     final int[] data = new int[10000];
     for (int i = 0; i < data.length; i++) { data[i] = i; }
-    final double[] spArr = buildSplitPointsArr(0, 9999, 1);
+    final double[] spArr = buildSplitPointsArr(0, 9999, 1, 2.0, 1E-6);
     final long[] spCounts = new long[spArr.length];
-    final double[] ranksArr = buildRanksArr(101);
-    final int[] cdfIdxArr = new int[101];
-    final double[] quantilesArr = new double[101];
-    processArray(data, spArr, spCounts, ranksArr, quantilesArr, cdfIdxArr);
+    processExactPmf(data, spArr, spCounts);
     System.out.println("Done");
-  }
-
-  /**
-   * Compute the split-points for the PMF function.
-   * The minimum split-point will never be less than one.
-   * This assumes all points are positive and may include zero.
-   * @param min The minimum value recorded by the sketch
-   * @param max The maximum value recorded by the sketch
-   * @param ppo desired number of points per Octave.
-   * @return the split-points array, which does not include zero
-   */
-  private double[] buildSplitPointsArr(final double min, final double max, final int ppo) {
-    final double ceilPwr2min = ceilingPowerOf2double(min);
-    final double ceilPwr2max = ceilingPowerOf2double(max);
-    final int numSP = (int)((round(log2(ceilPwr2max)) - round(log2(ceilPwr2min)) ) * ppo) + 1;
-    spArr = new double[numSP];
-    spArr[0] = ceilPwr2min;
-    double next = ceilPwr2min;
-    for (int i = 1; i < numSP; i++) {
-      next = pwr2LawNextDouble(ppo, next, false);
-      spArr[i] = next;
-    }
-    return spArr;
-  }
-
-  private static void checkMonotonic(final double[] arr) {
-    final int len = arr.length;
-    for (int i = 1; i < len; i++) {
-      assert arr[i] > arr[i - 1];
-    }
-  }
-
-  @Test
-  public void checkBuildSPArr() {
-    final double[] arr = buildSplitPointsArr(512, 999, 2);
-    for (int i = 0; i < arr.length; i++) { System.out.println("" + arr[i]); }
-  }
-
-  /**
-   * Compute the ranks array.
-   * @param numRanks the number of evenly-spaced rank values including 0 and 1.0.
-   * @return the ranks array
-   */
-  private static double[] buildRanksArr(final int numRanks) {
-    final int numRanksM1 = numRanks - 1;
-    final double[] fractions = new double[numRanks];
-    final double delta = 1.0 / (numRanksM1);
-    double d = 0.0;
-    for (int i = 0; i < numRanks; i++) {
-      fractions[i] = d;
-      d += delta;
-      d = rint(d * numRanksM1) / numRanksM1;
-    }
-    return fractions;
-  }
-
-  private void printCDF() {
-    println("CDF");
-    println(String.format(cdfHdr, "Num", "Rank", "Index", "Quantile"));
-    for (int i = 0; i < numRanks; i++) {
-      final String s = String.format(cdfFmt, i, ranksArr[i], cdfIdxArr[i], quantilesArr[i]);
-      println(s);
-    }
   }
 
   private void printPMF() {
     println("PMF");
     println(String.format(pmfHdr, "Index", "Quantile", "Mass"));
-    int i;
-    for (i = 0; i < numSP; i++) {
+    final int numSP = spArr.length;
+    for (int i = 0; i < numSP; i++) {
       println(String.format(pmfFmt, i, spArr[i], spCounts[i]));
     }
   }
@@ -300,6 +214,7 @@ public class ExactStreamAProfile implements JobProfile {
     }
   }
 
+  //JobProfile
   @Override
   public void shutdown() {}
 

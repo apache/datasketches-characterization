@@ -5,11 +5,7 @@
 
 package com.yahoo.sketches.characterization.quantiles;
 
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
-import static java.lang.Math.log10;
-import static java.lang.Math.max;
-import static java.lang.Math.pow;
+import static com.yahoo.sketches.characterization.quantiles.ProfileUtil.buildSplitPointsArr;
 import static java.lang.Math.rint;
 
 import java.io.File;
@@ -34,7 +30,8 @@ public class QuantilesStreamAProfile implements JobProfile {
   private String srcFileName;
   private int reportInterval; //prints number of lines read to console every reportInterval lines.
   private int numRanks; //number of linearly spaced ranks between zero and one.
-  private int ppOoM; //number of split-points per Order-Of-Magnitude (OOM).
+  private int logBase;
+  private int pplb; //number of split-Points Per Log Base.
   private int k; //size of sketch
   private String cdfHdr;
   private String cdfFmt;
@@ -43,6 +40,17 @@ public class QuantilesStreamAProfile implements JobProfile {
 
   UpdateDoublesSketch sketch;
   private boolean dataWasZipped = false;
+  private double eps = 1e-6;
+  private Process proc = new Process();
+
+  //outputs for plotting
+  private double minV;
+  private double maxV;
+
+  private double[] spArr;  //splitpoints 0, 1 ... ceilPwr2(maxValue), ppo values per octave
+  private int numSP;
+  private double[] spProbArr;
+  private double numItems;
 
   //JobProfile
   @Override
@@ -53,8 +61,11 @@ public class QuantilesStreamAProfile implements JobProfile {
     srcFileName = prop.mustGet("FileName");
     reportInterval = Integer.parseInt(prop.mustGet("ReportInterval"));
     numRanks = Integer.parseInt(prop.mustGet("NumRanks"));
-    ppOoM = Integer.parseInt(prop.mustGet("PpOoM"));
+    logBase = Integer.parseInt(prop.mustGet("LogBase"));
+    pplb = Integer.parseInt(prop.mustGet("PPLB"));
+
     k = Integer.parseInt(prop.mustGet("K"));
+
     cdfHdr = prop.mustGet("CdfHdr").replace("\\t", "\t");
     cdfFmt = prop.mustGet("CdfFmt").replace("\\t", "\t");
     pmfHdr = prop.mustGet("PdfHdr").replace("\\t", "\t");
@@ -62,7 +73,7 @@ public class QuantilesStreamAProfile implements JobProfile {
 
     sketch = DoublesSketch.builder().setK(k).build();
 
-    processStream();
+    processInputStream();
 
     if (dataWasZipped) {
       final File file = new File(srcFileName);
@@ -70,34 +81,10 @@ public class QuantilesStreamAProfile implements JobProfile {
     }
   }
 
-  @Override
-  public void shutdown() {}
-
-  @Override
-  public void cleanup() {}
-
-  @Override
-  public void println(final String s) {
-    job.println(s);
-  }
-
-  // Callback
-  class Process implements ProcessLine {
-
-    @Override
-    public void process(final String strArr0, final int lineNo) {
-      if ((lineNo % reportInterval) == 0) {
-        println("" + lineNo);
-      }
-      final long v = Long.parseLong(strArr0);
-      sketch.update(v);
-    }
-  }
-
   /**
    * Read file, Print CDF, Print PMF.
    */
-  private void processStream() {
+  private void processInputStream() {
     checkIfZipped(srcFileName);
 
     //Read
@@ -105,7 +92,7 @@ public class QuantilesStreamAProfile implements JobProfile {
     final LineReader lineReader = new LineReader(srcFileName);
 
     final long startReadTime_nS = System.nanoTime();
-    lineReader.read(0, new Process());
+    lineReader.read(0, proc);
     final long readTime_nS = System.nanoTime() - startReadTime_nS;
 
     //print sketch stats
@@ -117,65 +104,46 @@ public class QuantilesStreamAProfile implements JobProfile {
     final double[] quantiles = sketch.getQuantiles(fracRanks);
     final long cdfTime_nS = System.nanoTime() - startCdfTime_nS;
 
-    //print the cumulative rank to quantiles distribution
     println("CDF");
     println(String.format(cdfHdr, "Index", "Rank", "Quantile"));
     for (int i = 0; i < numRanks; i++) {
-      final String s = String.format(cdfFmt, i, fracRanks[i], quantiles[i]);
+      final String s = String.format(cdfFmt, i, fracRanks[i], (int)quantiles[i]);
       println(s);
     }
     println("");
 
-    //print PMF histogram, using Points Per Order-Of-Magnitude (ppOoM).
-    final double minV = sketch.getMinValue();
-    final double maxV = sketch.getMaxValue();
-    final double n = sketch.getN();
-    final double[] splitpoints = buildSplitPointsArr(max(1.0, minV), maxV, ppOoM);
+    //PMF
+    minV = sketch.getMinValue();
+    maxV = sketch.getMaxValue();
+    numItems = sketch.getN();
+    spArr = buildSplitPointsArr(minV, maxV, pplb, logBase, eps);
+    numSP = spArr.length;
     //PMF
     final long startPmfTime_nS = System.nanoTime();
-    final double[] pmfArr = sketch.getPMF(splitpoints);
+    spProbArr = sketch.getPMF(spArr);
     final long pmfTime_nS = System.nanoTime() - startPmfTime_nS;
-    final int lenPMF = pmfArr.length;
 
+    printPMF();
+    printTimes(readTime_nS, cdfTime_nS, pmfTime_nS);
+  }
+
+  private void printPMF() {
     println("PMF");
     println(String.format(pmfHdr, "Index", "Quantile", "Mass"));
-    int i;
-    for (i = 0; i < (lenPMF - 1); i++) {
-      println(String.format(pmfFmt, i, splitpoints[i], pmfArr[i] * n));
+    for (int i = 0; i < numSP; i++) {
+      println(String.format(pmfFmt, i, spArr[i], spProbArr[i] * numItems));
     }
-    //println(String.format(pmfFmt, i, maxV, pmfArr[i] * n)); // the last point
+  }
 
+  private void printTimes(final long readTime_nS, final long cdfTime_nS, final long pmfTime_nS) {
     final double readTime_S = readTime_nS / 1E9;
     println("");
     println(String.format("ReadTime_Sec  :\t%10.3f", readTime_S));
-    println(String.format("ReadRate/Sec  :\t%,10.0f", n / readTime_S));
+    println(String.format("ReadRate/Sec  :\t%,10.0f", numItems / readTime_S));
     println(String.format("CdfTime_mSec  :\t%10.3f", cdfTime_nS / 1E6));
     println(String.format("Cdf/Point_nSec:\t%10.3f", (double)cdfTime_nS / numRanks));
     println(String.format("PmfTime_mSec  :\t%10.3f", pmfTime_nS / 1E6));
-    println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / lenPMF));
-  }
-
-  /**
-   * Compute the split-points for the PMF function.
-   * @param min The minimum value recorded by the sketch
-   * @param max The maximum value recorded by the sketch
-   * @param ppmag desired number of points per Order-Of-Magnitude (OOM).
-   * @return the split-points array
-   */
-  private static double[] buildSplitPointsArr(final double min, final double max, final int ppmag) {
-    final double log10Min = floor(log10(min));
-    final double log10Max = ceil(log10(max));
-    final int oom = (int) (log10Max - log10Min);
-    final int points = (oom * ppmag) + 1;
-    final double[] ptsArr = new double[points];
-    double sp = log10Min;
-    final double delta = 1.0 / ppmag;
-    for (int i = 0; i < points; i++) {
-      ptsArr[i] = pow(10, sp);
-      sp += delta;
-      sp = rint(sp * ppmag) / ppmag;
-    }
-    return ptsArr;
+    println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / numSP));
   }
 
   /**
@@ -212,6 +180,33 @@ public class QuantilesStreamAProfile implements JobProfile {
       }
       println(srcZipFile + " unzipped!");
       dataWasZipped = true;
+    }
+  }
+
+  //JobProfile
+  @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
+
+  @Override
+  public void println(final String s) {
+    job.println(s);
+  }
+
+  // Callback
+  class Process implements ProcessLine {
+    int n = 0;
+
+    @Override
+    public void process(final String strArr0, final int lineNo) {
+      if ((lineNo % reportInterval) == 0) {
+        println("" + lineNo);
+      }
+      final long v = Long.parseLong(strArr0);
+      sketch.update(v);
+      n++;
     }
   }
 

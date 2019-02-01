@@ -5,13 +5,11 @@
 
 package com.yahoo.sketches.characterization.quantiles;
 
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
-import static java.lang.Math.log10;
-import static java.lang.Math.pow;
-import static java.lang.Math.rint;
+import static com.yahoo.sketches.characterization.quantiles.ProfileUtil.buildSplitPointsArr;
 
 import java.io.File;
+
+import org.testng.annotations.Test;
 
 import com.yahoo.sketches.LineReader;
 import com.yahoo.sketches.ProcessLine;
@@ -33,7 +31,8 @@ public class DruidAppHistStreamAProfile implements JobProfile {
   private String srcFileName;
   private int reportInterval; //prints number of lines read to console every reportInterval lines.
   private int numRanks; //number of linearly spaced ranks between zero and one.
-  private int ppOoM; //number of split-points per Order-Of-Magnitude (OOM).
+  private int pplb; //number of split-Points Per Log Base.
+  private double logBase; //Log Base
   private int histSize; //ApproximateHistogram size. Max # of position, bin pairs
   private String cdfHdr;
   private String cdfFmt;
@@ -42,7 +41,19 @@ public class DruidAppHistStreamAProfile implements JobProfile {
 
   ApproximateHistogram ahist;
   Histogram hist;
+
   private boolean dataWasZipped = false;
+  private double eps = 1e-6;
+  private Process proc = new Process();
+
+  //outputs for plotting
+  private double minV;
+  private double maxV;
+
+  private float[] spArr;  //splitpoints 0, 1 ... ceilPwr2(maxValue), ppo values per octave
+  private int numSP;
+  private double numItems;
+
 
   //JobProfile
   @Override
@@ -53,17 +64,19 @@ public class DruidAppHistStreamAProfile implements JobProfile {
     srcFileName = prop.mustGet("FileName");
     reportInterval = Integer.parseInt(prop.mustGet("ReportInterval"));
     numRanks = Integer.parseInt(prop.mustGet("NumRanks"));
-    ppOoM = Integer.parseInt(prop.mustGet("PpOoM"));
+    logBase = Double.parseDouble(prop.mustGet("LogBase"));
+    pplb = Integer.parseInt(prop.mustGet("PPLB"));
+
+    histSize = Integer.parseInt(prop.mustGet("HistSize"));
 
     cdfHdr = prop.mustGet("CdfHdr").replace("\\t", "\t");
     cdfFmt = prop.mustGet("CdfFmt").replace("\\t", "\t");
     pmfHdr = prop.mustGet("PdfHdr").replace("\\t", "\t");
     pmfFmt = prop.mustGet("PdfFmt").replace("\\t", "\t");
 
-    histSize = Integer.parseInt(prop.mustGet("HistSize"));
     ahist = new ApproximateHistogram(histSize);
 
-    processStream();
+    processInputStream();
 
     if (dataWasZipped) {
       final File file = new File(srcFileName);
@@ -71,47 +84,22 @@ public class DruidAppHistStreamAProfile implements JobProfile {
     }
   }
 
-  @Override
-  public void shutdown() {}
-
-  @Override
-  public void cleanup() {}
-
-  @Override
-  public void println(final String s) {
-    job.println(s);
-  }
-
-  // Callback
-  class Process implements ProcessLine {
-
-    @Override
-    public void process(final String strArr0, final int lineNo) {
-      if ((lineNo % reportInterval) == 0) {
-        println("" + lineNo);
-      }
-      final long v = Long.parseLong(strArr0);
-      ahist.offer(v);
-    }
-  }
-
   /**
    * Read file, Print CDF, Print PMF.
    */
-  private void processStream() {
+  private void processInputStream() {
     checkIfZipped(srcFileName);
 
     //Read
-    //println("");
     println("Input Lines Processed: ");
     final LineReader lineReader = new LineReader(srcFileName);
 
     final long startReadTime_nS = System.nanoTime();
-    lineReader.read(0, new Process());
+    lineReader.read(0, proc);
     final long readTime_nS = System.nanoTime() - startReadTime_nS;
 
     //print hist stats
-    println(ahist.toString());
+    println(ahist.toString().replace(", ", "\n").replace("*", ""));
 
     //CDF
     final float[] fracRanks = buildRanksArr(numRanks);
@@ -119,24 +107,27 @@ public class DruidAppHistStreamAProfile implements JobProfile {
     final float[] quantiles = ahist.getQuantiles(fracRanks);
     final long cdfTime_nS = System.nanoTime() - startCdfTime_nS;
 
-    //print the cumulative rank to quantiles distribution
     println("");
     println("CDF");
     println(String.format(cdfHdr, "Index", "Rank", "Quantile"));
     for (int i = 0; i < numRanks; i++) {
-      final String s = String.format(cdfFmt, i, fracRanks[i], quantiles[i]);
+      final String s = String.format(cdfFmt, i, fracRanks[i], (int)quantiles[i]);
       println(s);
     }
     println("");
 
-    //print PMF histogram, using Points Per Order-Of-Magnitude (ppOoM).
-    final double minV = ahist.getMin();
-    final double maxV = ahist.getMax();
-    final double n = ahist.count();
-    final float[] splitpoints = buildExpBreaksArr(minV, maxV, ppOoM);
+    //print PMF histogram, using Points Per Log Base.
+    minV = ahist.getMin();
+    maxV = ahist.getMax();
+    numItems = ahist.count();
+    final double[] splitpoints = buildSplitPointsArr(minV, maxV, pplb, logBase, eps);
+    numSP = splitpoints.length;
+    spArr = new float[numSP];
+    for (int i = 0; i < numSP; i++) { spArr[i] = (float) splitpoints[i]; }
+
     //PMF
     final long startPmfTime_nS = System.nanoTime();
-    final Histogram hist = ahist.toHistogram(splitpoints);
+    final Histogram hist = ahist.toHistogram(spArr);
 
     final double[] breaksArr = hist.getBreaks();
     final double[] countsArr = hist.getCounts();
@@ -154,38 +145,11 @@ public class DruidAppHistStreamAProfile implements JobProfile {
     final double readTime_S = readTime_nS / 1E9;
     println("");
     println(String.format("ReadTime_Sec  :\t%10.3f", readTime_S));
-    println(String.format("ReadRate/Sec  :\t%,10.0f", n / readTime_S));
+    println(String.format("ReadRate/Sec  :\t%,10.0f", numItems / readTime_S));
     println(String.format("CdfTime_mSec  :\t%10.3f", cdfTime_nS / 1E6));
     println(String.format("Cdf/Point_nSec:\t%10.3f", (double)cdfTime_nS / numRanks));
     println(String.format("PmfTime_mSec  :\t%10.3f", pmfTime_nS / 1E6));
     println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / lenBreaks));
-  }
-
-  /**
-   * Compute the split-points for the PMF function.
-   * This assumes all points are positive and may include zero.
-   * @param min The minimum value recorded by the sketch
-   * @param max The maximum value recorded by the sketch
-   * @param ppmag desired number of points per Order-Of-Magnitude (OOM).
-   * @return the split-points array, which may start with zero.
-   */
-  private static float[] buildExpBreaksArr(final double min, final double max, final int ppmag) {
-    final boolean minLT1 = min < 1.0;
-    final double startLgMin = minLT1 ? 1.0 : min;
-    final double log10Min = floor(log10(startLgMin));
-    final double log10Max = ceil(log10(max));
-    final int oom = (int) (log10Max - log10Min);
-    final int points = (oom * ppmag) + 1 + (minLT1 ? 1 : 0);
-    final float[] ptsArr = new float[points];
-    double sp = log10Min;
-    final double delta = 1.0 / ppmag;
-    for (int i = 0; i < points; i++) {
-      if (minLT1 && (i == 0)) { ptsArr[i] = 0; continue; }
-      ptsArr[i] = (float) pow(10, sp);
-      sp += delta;
-      sp = rint(sp * ppmag) / ppmag;
-    }
-    return ptsArr;
   }
 
   /**
@@ -194,16 +158,19 @@ public class DruidAppHistStreamAProfile implements JobProfile {
    * @return the ranks array
    */
   private static float[] buildRanksArr(final int numRanks) {
-    final int numRM1 = numRanks + 1;
     final float[] fractions = new float[numRanks];
-    final double delta = 1.0 / (numRM1);
-    double d = delta;
-    for (int i = 0; i < numRanks; i++) {
-      fractions[i] = (float) d;
-      d += delta;
-      d = rint(d * numRM1) / numRM1;
+    final double delta = 1.0 / (numRanks + 1);
+    for (int i = 1; i <= numRanks; i++) {
+      fractions[i - 1] = (float) (delta * i);
     }
     return fractions;
+  }
+
+  @Test
+  public void checkRanks() {
+    final int num = 3;
+    final float[] arr = buildRanksArr(num);
+    for (int i = 0; i < num; i++) { System.out.println(arr[i]); }
   }
 
   private void checkIfZipped(final String srcFileName) {
@@ -222,6 +189,32 @@ public class DruidAppHistStreamAProfile implements JobProfile {
       }
       println(srcZipFile + " unzipped!");
       dataWasZipped = true;
+    }
+  }
+
+  @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
+
+  @Override
+  public void println(final String s) {
+    job.println(s);
+  }
+
+  // Callback
+  class Process implements ProcessLine {
+    int n = 0;
+
+    @Override
+    public void process(final String strArr0, final int lineNo) {
+      if ((lineNo % reportInterval) == 0) {
+        println("" + lineNo);
+      }
+      final long v = Long.parseLong(strArr0);
+      ahist.offer(v);
+      n++;
     }
   }
 

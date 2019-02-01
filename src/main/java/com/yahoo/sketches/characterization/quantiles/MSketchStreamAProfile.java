@@ -37,8 +37,14 @@ public class MSketchStreamAProfile implements JobProfile {
 
   SimpleMomentSketch sketch;
 
-  private long n = 0;
   private boolean dataWasZipped = false;
+  //private double eps = 1e-6;
+  private Process proc = new Process();
+
+  //outputs for plotting
+  private double minV;
+  private double maxV;
+  private long numItems = 0;
 
   //JobProfile
   @Override
@@ -49,16 +55,19 @@ public class MSketchStreamAProfile implements JobProfile {
     srcFileName = prop.mustGet("FileName");
     reportInterval = Integer.parseInt(prop.mustGet("ReportInterval"));
     numRanks = Integer.parseInt(prop.mustGet("NumRanks"));
+    //logBase = Double.parseDouble(prop.mustGet("LogBase"));
+    //pplb = Integer.parseInt(prop.mustGet("PPLB"));
+
     moments = Integer.parseInt(prop.mustGet("Moments"));
+
     cdfHdr = prop.mustGet("CdfHdr").replace("\\t", "\t");
     cdfFmt = prop.mustGet("CdfFmt").replace("\\t", "\t");
-    //ppOoM = Integer.parseInt(prop.mustGet("PpOoM"));
     //pmfHdr = prop.mustGet("PdfHdr").replace("\\t", "\t");
     //pmfFmt = prop.mustGet("PdfFmt").replace("\\t", "\t");
 
     sketch = new SimpleMomentSketch(moments);
 
-    processStream();
+    processInputStream();
 
     if (dataWasZipped) {
       final File file = new File(srcFileName);
@@ -66,35 +75,10 @@ public class MSketchStreamAProfile implements JobProfile {
     }
   }
 
-  @Override
-  public void shutdown() {}
-
-  @Override
-  public void cleanup() {}
-
-  @Override
-  public void println(final String s) {
-    job.println(s);
-  }
-
-  // Callback
-  class Process implements ProcessLine {
-
-    @Override
-    public void process(final String strArr0, final int lineNo) {
-      if ((lineNo % reportInterval) == 0) {
-        println("" + lineNo);
-      }
-      final long v = Long.parseLong(strArr0);
-      sketch.add(v);
-      n++;
-    }
-  }
-
   /**
    * Read file, Print CDF, Print PMF.
    */
-  private void processStream() {
+  private void processInputStream() {
     checkIfZipped(srcFileName);
 
     //Read
@@ -103,14 +87,19 @@ public class MSketchStreamAProfile implements JobProfile {
     final LineReader lineReader = new LineReader(srcFileName);
 
     final long startReadTime_nS = System.nanoTime();
-    lineReader.read(0, new Process());
+    lineReader.read(0, proc);
     final long readTime_nS = System.nanoTime() - startReadTime_nS;
-    println("" + n);
+    numItems = proc.n;
     println("");
 
     //print sketch stats
     println("Sketch.toString()");
-    println(sketch.toString());
+    println(sketch.toString().replace(", ", "\n"));
+    minV = sketch.getMin();
+    maxV = sketch.getMax();
+    println("Min: " + minV);
+    println("Max: " + maxV);
+    println("NumItems: " + numItems);
     println("");
 
     //CDF
@@ -119,7 +108,6 @@ public class MSketchStreamAProfile implements JobProfile {
     final double[] quantiles = sketch.getQuantiles(fracRanks);
     final long cdfTime_nS = System.nanoTime() - startCdfTime_nS;
 
-    //print the cumulative rank to quantiles distribution
     println("CDF");
     println(String.format(cdfHdr, "Index", "Rank", "Quantile"));
     for (int i = 0; i < numRanks; i++) {
@@ -128,57 +116,17 @@ public class MSketchStreamAProfile implements JobProfile {
     }
     println("");
 
-    //print PMF histogram, using Points Per Order-Of-Magnitude (ppOoM).
-    //    final double minV = sketch.getMin();
-    //    final double maxV = sketch.getMax();
-    //    final double n = sketch.getN();
-    //    final double[] splitpoints = buildSplitPointsArr(max(1.0, minV), maxV, ppOoM);
-    //    //PMF
-    //    final long startPmfTime_nS = System.nanoTime();
-    //    final double[] pmfArr = sketch.getPMF(splitpoints);
-    //    final long pmfTime_nS = System.nanoTime() - startPmfTime_nS;
-    //    final int lenPMF = pmfArr.length;
-    //
-    //    println("PMF");
-    //    println(String.format(pmfHdr, "Index", "Quantile", "Mass"));
-    //    int i;
-    //    for (i = 0; i < (lenPMF - 1); i++) {
-    //      println(String.format(pmfFmt, i, splitpoints[i], pmfArr[i] * n));
-    //    }
-    //println(String.format(pmfFmt, i, maxV, pmfArr[i] * n)); // the last point
 
     final double readTime_S = readTime_nS / 1E9;
 
     println(String.format("ReadTime_Sec  :\t%10.3f", readTime_S));
-    println(String.format("ReadRate/Sec  :\t%,10.0f", n / readTime_S));
+    println(String.format("ReadRate/Sec  :\t%,10.0f", numItems / readTime_S));
     println(String.format("CdfTime_mSec  :\t%10.3f", cdfTime_nS / 1E6));
     println(String.format("Cdf/Point_nSec:\t%10.3f", (double)cdfTime_nS / numRanks));
     //println(String.format("PmfTime_mSec  :\t%10.3f", pmfTime_nS / 1E6));
     //println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / lenPMF));
   }
 
-  //  /**
-  //   * Compute the split-points for the PMF function.
-  //   * @param min The minimum value recorded by the sketch
-  //   * @param max The maximum value recorded by the sketch
-  //   * @param ppmag desired number of points per Order-Of-Magnitude (OOM).
-  //   * @return the split-points array
-  //   */
-  //  private static double[] buildSplitPointsArr(final double min, final double max, final int ppmag) {
-  //    final double log10Min = floor(log10(min));
-  //    final double log10Max = ceil(log10(max));
-  //    final int oom = (int) (log10Max - log10Min);
-  //    final int points = (oom * ppmag) + 1;
-  //    final double[] ptsArr = new double[points];
-  //    double sp = log10Min;
-  //    final double delta = 1.0 / ppmag;
-  //    for (int i = 0; i < points; i++) {
-  //      ptsArr[i] = pow(10, sp);
-  //      sp += delta;
-  //      sp = rint(sp * ppmag) / ppmag;
-  //    }
-  //    return ptsArr;
-  //  }
 
   /**
    * Compute the ranks array.
@@ -214,6 +162,32 @@ public class MSketchStreamAProfile implements JobProfile {
       }
       println(srcZipFile + " unzipped!");
       dataWasZipped = true;
+    }
+  }
+
+  @Override
+  public void shutdown() {}
+
+  @Override
+  public void cleanup() {}
+
+  @Override
+  public void println(final String s) {
+    job.println(s);
+  }
+
+  // Callback
+  class Process implements ProcessLine {
+    int n;
+
+    @Override
+    public void process(final String strArr0, final int lineNo) {
+      if ((lineNo % reportInterval) == 0) {
+        println("" + lineNo);
+      }
+      final long v = Long.parseLong(strArr0);
+      sketch.add(v);
+      n++;
     }
   }
 
