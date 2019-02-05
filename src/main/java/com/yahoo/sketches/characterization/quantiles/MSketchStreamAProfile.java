@@ -99,6 +99,7 @@ public class MSketchStreamAProfile implements JobProfile {
     maxV = sketch.getMax();
     println("Min: " + minV);
     println("Max: " + maxV);
+    println("Size: " + sketch.toByteArray().length);
     println("NumItems: " + numItems);
     println("");
 

@@ -100,6 +100,7 @@ public class DruidAppHistStreamAProfile implements JobProfile {
 
     //print hist stats
     println(ahist.toString().replace(", ", "\n").replace("*", ""));
+    println("Max Storage Size: " + ahist.getMaxStorageSize());
 
     //CDF
     final float[] fracRanks = buildRanksArr(numRanks);
