@@ -65,7 +65,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
       wdh = WritableMemory.allocateDirect(maxSharedUpdateBytes);
       wmem = wdh.get();
     } else {
-      wmem = WritableMemory.allocate(maxSharedUpdateBytes);
+      wmem = null; //WritableMemory.allocate(maxSharedUpdateBytes);
     }
     final UpdateSketchBuilder bldr = configureBuilder();
     //must build shared first
@@ -138,6 +138,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
 
   @Override
   public void cleanup() {
+    sharedSketch.reset();
     ctx.stopAllThreads();
   }
 
