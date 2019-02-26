@@ -79,8 +79,8 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   //configures builder for both local and shared
   UpdateSketchBuilder configureBuilder() {
     final UpdateSketchBuilder bldr = new UpdateSketchBuilder();
-    bldr.setbNumPoolThreads(poolThreads);
-    bldr.setSharedLogNominalEntries(sharedLgK);
+    bldr.setNumPoolThreads(poolThreads);
+    bldr.setLogNominalEntries(sharedLgK);
     bldr.setLocalLogNominalEntries(localLgK);
     bldr.setSeed(DEFAULT_UPDATE_SEED);
     bldr.setPropagateOrderedCompact(ordered);
