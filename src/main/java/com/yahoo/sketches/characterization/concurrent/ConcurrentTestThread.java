@@ -21,11 +21,11 @@ public abstract class ConcurrentTestThread extends Thread {
   private AtomicLong numOpsToDo = new AtomicLong(0);
   private AtomicBoolean resumed = new AtomicBoolean(false);
   private AtomicBoolean paused = new AtomicBoolean(false);
-  private long done;
+  private long opCount;
 
   public ConcurrentTestThread(final ConcurrentTestContext context) {
     this.context = context;
-    done = 0;
+    opCount = 0;
   }
 
   @Override
@@ -33,13 +33,13 @@ public abstract class ConcurrentTestThread extends Thread {
 
     while (!stop.get()) {
 
-      while (!paused.get() && (done < numOpsToDo.get())) {
+      while (!paused.get() && (opCount < numOpsToDo.get())) {
         doWork();
-        done++;
+        opCount++;
       }
-      if (resumed.get() && (paused.get() || (done == numOpsToDo.get()))) {
+      if (resumed.get() && (paused.get() || (opCount == numOpsToDo.get()))) {
         resumed.set(false);
-        context.done(getIndex(), done);
+        context.done(getIndex(), opCount);
       }
     }
   }
@@ -49,7 +49,7 @@ public abstract class ConcurrentTestThread extends Thread {
    */
   public void reset() {
     numOpsToDo.set(0);
-    done = 0;
+    opCount = 0;
     paused.set(false);
   }
 

@@ -120,7 +120,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     ctx.waitForAll();
 
     final long totalTimeNS = ctx.getTotalTimeNS();
-    final long numWritesDone = ctx.getNumWrites();
+    final long numWritesDone = ctx.getNumWriterThreads();
     return (double) totalTimeNS / numWritesDone;
   }
 
