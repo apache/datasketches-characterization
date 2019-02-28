@@ -133,14 +133,14 @@ public class ConcurrentTestContext {
       pauseAllThreads();
     }
     if (index == WRITER_INDEX) {
-      writerThreadCounter += done;
+      writerThreadCounter += done; //TODO WHY?
       numDoneWriterThreads++;
       if (numDoneWriterThreads == numWriterThreads) {
         //done - take time
         totalTimeNS.set(System.nanoTime() - startTimeNS);
       }
     } else { //reader
-      readerThreadCounter += done;
+      readerThreadCounter += done;  //TODO WHY?
       numDoneReaderThreads++;
     }
   }
