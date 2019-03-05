@@ -71,6 +71,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     //must build shared first
     sharedSketch = bldr.buildShared(wmem);
     if (!isThreadSafe) {
+      sharedSketch = bldr.build();
       lock = new ReentrantReadWriteLock();
     }
     ctx = new ConcurrentTestContext();
