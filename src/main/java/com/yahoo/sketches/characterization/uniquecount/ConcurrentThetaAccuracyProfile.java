@@ -93,6 +93,7 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     bldr.setSeed(DEFAULT_UPDATE_SEED);
     bldr.setPropagateOrderedCompact(ordered);
     bldr.setMaxConcurrencyError(maxConcurrencyError);
+    bldr.setbMaxNumLocalThreads(1);
     return bldr;
   }
 

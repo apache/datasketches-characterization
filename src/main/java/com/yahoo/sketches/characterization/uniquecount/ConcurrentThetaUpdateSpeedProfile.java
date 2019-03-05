@@ -85,6 +85,7 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     bldr.setSeed(DEFAULT_UPDATE_SEED);
     bldr.setPropagateOrderedCompact(ordered);
     bldr.setMaxConcurrencyError(maxConcurrencyError);
+    bldr.setbMaxNumLocalThreads(1);
     return bldr;
   }
 
