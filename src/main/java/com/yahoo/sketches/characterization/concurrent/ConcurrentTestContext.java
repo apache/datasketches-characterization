@@ -22,8 +22,8 @@ public class ConcurrentTestContext {
 
   private Set<ConcurrentTestThread> writerThreadsSet;
   private Set<ConcurrentTestThread> readerThreadsSet;
-  private long writerThreadCounter;
-  private long readerThreadCounter;
+  private long writeOpsCounter;
+  private long readOpsCounter;
   private int numWriterThreads;
   private int numReaderThreads;
   private int numDoneWriterThreads;
@@ -38,8 +38,10 @@ public class ConcurrentTestContext {
   public ConcurrentTestContext() {
     writerThreadsSet = new HashSet<>();
     readerThreadsSet = new HashSet<>();
-    writerThreadCounter = 0;
-    readerThreadCounter = 0;
+    numWriterThreads = 0;
+    numReaderThreads = 0;
+    writeOpsCounter = 0;
+    readOpsCounter = 0;
     numDoneWriterThreads = 0;
     numDoneReaderThreads = 0;
   }
@@ -76,8 +78,8 @@ public class ConcurrentTestContext {
     for (ConcurrentTestThread t : readerThreadsSet) {
       t.reset();
     }
-    writerThreadCounter = 0;
-    readerThreadCounter = 0;
+    writeOpsCounter = 0;
+    readOpsCounter = 0;
     numDoneWriterThreads = 0;
     numDoneReaderThreads = 0;
     totalTimeNS.set(0);
@@ -115,11 +117,11 @@ public class ConcurrentTestContext {
   }
 
   public long getNumWriterThreads() {
-    return writerThreadCounter;
+    return writeOpsCounter;
   }
 
   public long getNumReaderThreads() {
-    return readerThreadCounter;
+    return readOpsCounter;
   }
 
   /**
@@ -128,19 +130,19 @@ public class ConcurrentTestContext {
    */
   public long getTotalTimeNS() { return totalTimeNS.get(); }
 
-  synchronized void done(final int index, final long done) {
+  synchronized void done(final int opType, final long done) {
     if (numDoneWriterThreads == 0) {
       pauseAllThreads();
     }
-    if (index == WRITER_INDEX) {
-      writerThreadCounter += done; //TODO WHY?
+    if (opType == WRITER_INDEX) {
+      writeOpsCounter += done;
       numDoneWriterThreads++;
       if (numDoneWriterThreads == numWriterThreads) {
         //done - take time
         totalTimeNS.set(System.nanoTime() - startTimeNS);
       }
     } else { //reader
-      readerThreadCounter += done;  //TODO WHY?
+      readOpsCounter += done;
       numDoneReaderThreads++;
     }
   }
