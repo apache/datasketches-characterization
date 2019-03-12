@@ -134,7 +134,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     bldr.setSeed(DEFAULT_UPDATE_SEED);
     bldr.setPropagateOrderedCompact(ordered);
     bldr.setMaxConcurrencyError(maxConcurrencyError);
-    bldr.setbMaxNumLocalThreads(numWriterThreads);
+    bldr.setMaxNumLocalThreads(numWriterThreads);
     return bldr;
   }
 
