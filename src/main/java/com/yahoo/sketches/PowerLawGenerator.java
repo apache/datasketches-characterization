@@ -45,17 +45,13 @@ public class PowerLawGenerator {
    * power-law relation. This creates the intermediate mathematical values from
    * the given parameters will allow simplified gets with few or no parameters.
    *
-   * @param xLogBase
-   *          The logarithmic base for the x-coordinate
-   * @param ptsPerXBase
-   *          The desired resolution specified in number of equally spaced
-   *          points per power of the x logarithmic base. For example, if x is
-   *          log-base2 specifying 4 would result in 4 equally spaced points for
-   *          every power of 2 of x.
-   * @param start
-   *          the desired starting (x,y) Pair
-   * @param end
-   *          the desired ending (x,y) Pair
+   * @param xLogBase The logarithmic base for the x-coordinate
+   * @param ptsPerXBase The desired resolution specified in number of equally spaced
+   * points per power of the x logarithmic base. For example, if x is
+   * log-base2 specifying 4 would result in 4 equally spaced points for
+   * every power of 2 of x.
+   * @param start the desired starting (x,y) Pair
+   * @param end the desired ending (x,y) Pair
    */
   public PowerLawGenerator(final double xLogBase, final int ptsPerXBase, final DoublePair start,
       final DoublePair end) {
@@ -121,8 +117,7 @@ public class PowerLawGenerator {
   /**
    * Returns a coordinate Pair based on the given generating index.
    *
-   * @param genIndex
-   *          the given generating index
+   * @param genIndex the given generating index
    * @return a coordinate Pair based on the given generating index.
    */
   public DoublePair getPair(final int genIndex) {
@@ -137,19 +132,15 @@ public class PowerLawGenerator {
    * The total number of generating indices available given the start and end
    * Pairs.
    *
-   * @param start
-   *          the desired starting (x,y) Pair
-   * @param end
-   *          the desired ending (x,y) Pair
-   * @param xLogBase
-   *          The logarithmic base for the x-coordinate
-   * @param ptsPerXBase
-   *          The desired resolution specified in number of equally spaced
-   *          points per power of the x logarithmic base. For example, if x is
-   *          log-base2 specifying 4 would result in 4 equally spaced points for
-   *          every power of 2 of x.
+   * @param start the desired starting (x,y) Pair
+   * @param end the desired ending (x,y) Pair
+   * @param xLogBase The logarithmic base for the x-coordinate
+   * @param ptsPerXBase The desired resolution specified in number of equally spaced
+   * points per power of the x logarithmic base. For example, if x is
+   * log-base2 specifying 4 would result in 4 equally spaced points for
+   * every power of 2 of x.
    * @return The total number of generating indices available given the start
-   *         and end Pairs.
+   * and end Pairs.
    */
   public static int getNumGenIndices(final DoublePair start, final DoublePair end,
       final double xLogBase, final int ptsPerXBase) {
@@ -162,10 +153,8 @@ public class PowerLawGenerator {
    * Returns the generating index delta value. If start.x &lt; end.x then this
    * returns 1, else -1.
    *
-   * @param start
-   *          the desired starting (x,y) Pair
-   * @param end
-   *          the desired ending (x,y) Pair
+   * @param start the desired starting (x,y) Pair
+   * @param end the desired ending (x,y) Pair
    * @return the generating index delta value
    */
   public static int getDelta(final DoublePair start, final DoublePair end) {
@@ -176,10 +165,8 @@ public class PowerLawGenerator {
   /**
    * Returns the power-law slope derived from the start and end Pairs.
    *
-   * @param start
-   *          the desired starting (x,y) Pair
-   * @param end
-   *          the desired ending (x,y) Pair
+   * @param start the desired starting (x,y) Pair
+   * @param end the desired ending (x,y) Pair
    * @return the power-law slope derived from the start and end Pairs
    */
   public static double getSlope(final DoublePair start, final DoublePair end) {
@@ -189,17 +176,13 @@ public class PowerLawGenerator {
   /**
    * Returns the starting generating index used to generate the starting value.
    *
-   * @param start
-   *          the desired starting value
-   * @param end
-   *          the desired ending value
-   * @param logBase
-   *          The logarithmic base for the x-coordinate
-   * @param ptsPerLogBase
-   *          The desired resolution specified in number of equally spaced
-   *          points per power of the x logarithmic base. For example, if x is
-   *          log-base2 specifying 4 would result in 4 equally spaced points for
-   *          every power of 2 of x.
+   * @param start the desired starting value
+   * @param end the desired ending value
+   * @param logBase The logarithmic base for the x-coordinate
+   * @param ptsPerLogBase The desired resolution specified in number of equally spaced
+   * points per power of the x logarithmic base. For example, if x is
+   * log-base2 specifying 4 would result in 4 equally spaced points for
+   * every power of 2 of x.
    * @return the starting generating index used to generate the start value
    */
   public static int getStartGenIndex(final double start, final double end, final double logBase,
@@ -212,17 +195,13 @@ public class PowerLawGenerator {
   /**
    * Returns the ending generating index used to generate the end value.
    *
-   * @param start
-   *          the desired starting value
-   * @param end
-   *          the desired ending value
-   * @param logBase
-   *          The logarithmic base for the x-coordinate
-   * @param ptsPerLogBase
-   *          The desired resolution specified in number of equally spaced
-   *          points per power of the x logarithmic base. For example, if x is
-   *          log-base2 specifying 4 would result in 4 equally spaced points for
-   *          every power of 2 of x.
+   * @param start the desired starting value
+   * @param end the desired ending value
+   * @param logBase The logarithmic base for the x-coordinate
+   * @param ptsPerLogBase The desired resolution specified in number of equally spaced
+   * points per power of the x logarithmic base. For example, if x is
+   * log-base2 specifying 4 would result in 4 equally spaced points for
+   * every power of 2 of x.
    * @return the ending generating index used to generate the end value
    */
   public static int getEndGenIndex(final double start, final double end, final double logBase,
@@ -236,12 +215,9 @@ public class PowerLawGenerator {
    * Returns the generating index given x, the logBase and the number of points
    * per logBase.
    *
-   * @param x
-   *          the value at which the genIndex is to be computed.
-   * @param logBase
-   *          the logBase, either 10 or 2
-   * @param ptsPerLogBase
-   *          number of points per logBase interval (factor of 10 or 2)
+   * @param x the value at which the genIndex is to be computed.
+   * @param logBase the logBase, either 10 or 2
+   * @param ptsPerLogBase number of points per logBase interval (factor of 10 or 2)
    * @return the generating index as a double
    */
   public static double getGenIndex(final double x, final double logBase, final int ptsPerLogBase) {
@@ -252,15 +228,12 @@ public class PowerLawGenerator {
   /**
    * Returns the x-coordinate given the generating index.
    *
-   * @param genIndex
-   *          the given generating index
-   * @param logBase
-   *          The logarithmic base for the x-coordinate
-   * @param ptsPerLogBase
-   *          The desired resolution specified in number of equally spaced
-   *          points per power of the x logarithmic base. For example, if x is
-   *          log-base2 specifying 4 would result in 4 equally spaced points for
-   *          every power of 2 of x.
+   * @param genIndex the given generating index
+   * @param logBase The logarithmic base for the x-coordinate
+   * @param ptsPerLogBase The desired resolution specified in number of equally spaced
+   * points per power of the x logarithmic base. For example, if x is
+   * log-base2 specifying 4 would result in 4 equally spaced points for
+   * every power of 2 of x.
    * @return the x-coordinate based on the generating index
    */
   public static double getX(final int genIndex, final double logBase, final int ptsPerLogBase) {
@@ -270,12 +243,9 @@ public class PowerLawGenerator {
   /**
    * Returns the y-coordinate given the computed x-coordinate and slope.
    *
-   * @param start
-   *          the desired starting (x,y) Pair
-   * @param slope
-   *          the given slope
-   * @param x
-   *          the computed x-coordinate
+   * @param start the desired starting (x,y) Pair
+   * @param slope the given slope
+   * @param x the computed x-coordinate
    * @return the y-coordinate
    */
   public static double getY(final DoublePair start, final double slope, final double x) {

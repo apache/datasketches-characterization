@@ -86,14 +86,10 @@ public class RandomPowerLawGenerator {
    * Returns a pair on the line between p1 and p2 based on the input value x,
    * which must be between 0 and 1, and the slope.
    *
-   * @param x
-   *          the normalized input X-axis
-   * @param p1
-   *          point 1
-   * @param p2
-   *          point 2
-   * @param slope
-   *          the given slope
+   * @param x the normalized input X-axis
+   * @param p1 point 1
+   * @param p2 point 2
+   * @param slope the given slope
    * @return a pair on the line between p1 and p2
    */
   public static DoublePair getPairOnLine(final double x, final DoublePair p1, final DoublePair p2,
@@ -106,12 +102,9 @@ public class RandomPowerLawGenerator {
   /**
    * Scales a value v in the range 0 to 1 into the range min to max.
    *
-   * @param v
-   *          the given value of x in the range 0 to 1.
-   * @param min
-   *          the minimum endpoint of the resulting range
-   * @param max
-   *          the maximum endpoint of the resulting range
+   * @param v the given value of x in the range 0 to 1.
+   * @param min the minimum endpoint of the resulting range
+   * @param max the maximum endpoint of the resulting range
    * @return scaled x
    */
   public static double scale(final double v, final double min, final double max) {
@@ -157,26 +150,26 @@ public class RandomPowerLawGenerator {
   }
 
   /**
-   *
    * @param args given
    */
   public static void main(final String[] args) {
+    final String fmt = "%,20.2f" + "%,20.2f";
+    final String hfmt = "%20s"   + "%20s";
+    println(String.format(hfmt, "X", "Y"));
     final DoublePair p1 = new DoublePair(1, 100);
     final DoublePair p2 = new DoublePair(100, 1);
     final int denOOMX = 10;
     final RandomPowerLawGenerator rpl = new RandomPowerLawGenerator(p1, p2);
     final double oomx = abs(log10(p1.x) - log10(p2.x));
     final int n = (int) round(oomx * denOOMX);
-
     for (int i = 0; i < n; i++) {
       final DoublePair p = rpl.getRandomPair();
-      println(p.x + "\t" + p.y);
+      println(String.format(fmt, p.x, p.y));
     }
   }
 
   /**
-   * @param s
-   *          value to print
+   * @param s value to print
    */
   static void println(final String s) {
     System.out.println(s); // disable here

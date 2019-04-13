@@ -56,11 +56,13 @@ public class PowerLawGeneratorTest {
      * iteration variable "row" just counts the actual output rows for
      * convenience.
      */
+    outputHeader();
     for (int i = 1, gi = startGenIdx, row = 1; i <= numGenIdxs; i++, gi += del) {
       if (gi != startGenIdx) {
         DoublePair next = plg.getPair(gi);
-        if (skip(cur, next))
+        if (skip(cur, next)) {
           continue;
+        }
         cur = next;
       }
       outputPair(row++, gi, cur);
@@ -71,31 +73,31 @@ public class PowerLawGeneratorTest {
   /**
    * Returns true if the next Pair should be skipped. Change this function to
    * the desired criteria.
-   * 
-   * @param cur
-   *          the current Pair
-   * @param next
-   *          the next Pair
+   *
+   * @param cur the current Pair
+   * @param next the next Pair
    * @return true to skip the next pair
    */
   private static boolean skip(DoublePair cur, DoublePair next) {
     return ((int) next.x == (int) cur.x);
   }
 
+  private static final String HDRFMT = "%12s"  + "%12s"  + "%20s"    + "%20s";
+  private static final String FMT =    "%,12d" + "%,12d" + "%,20.2f" + "%,20.2f";
+
+  private static void outputHeader() {
+    println(String.format(HDRFMT, "Row", "GI", "X", "Y"));
+  }
+
   /**
    * Place-holder for a plotting or other analysis function
-   * 
-   * @param row
-   *          the row number (for convenience)
-   * @param gi
-   *          generating index (for convenience)
-   * @param p
-   *          the point Pair
+   *
+   * @param row the row number (for convenience)
+   * @param gi generating index (for convenience)
+   * @param p the point Pair
    */
   private static void outputPair(int row, int gi, DoublePair p) {
-    int x = (int) p.x;
-    int y = (int) p.y;
-    println(row + "\t" + gi + "\t" + x + "\t" + y);
+    println(String.format(FMT, row, gi, p.x, p.y));
   }
 
   // SECOND CODE EXAMPLE
@@ -131,8 +133,9 @@ public class PowerLawGeneratorTest {
     for (int i = 1, gi = startGenIdx, row = 1; i <= numGenIdxs; i++, gi += del) {
       if (gi != startGenIdx) {
         double next = PowerLawGenerator.getX(gi, xLogBase, ptsPerXBase);
-        if (skip(cur, next))
+        if (skip(cur, next)) {
           continue;
+        }
         cur = next;
       }
       outputX(row++, gi, cur);
@@ -142,11 +145,9 @@ public class PowerLawGeneratorTest {
 
   /**
    * Returns true if cur == next. Change this function to the desired criteria.
-   * 
-   * @param cur
-   *          the current value of x
-   * @param next
-   *          the next value of x
+   *
+   * @param cur the current value of x
+   * @param next the next value of x
    * @return true if cur == next
    */
   private static boolean skip(double cur, double next) {
@@ -155,16 +156,13 @@ public class PowerLawGeneratorTest {
 
   /**
    * Place-holder for a plotting or other analysis function
-   * 
-   * @param row
-   *          the row number (for convenience)
-   * @param gi
-   *          generating index (for convenience)
-   * @param x
-   *          the value x
+   *
+   * @param row the row number (for convenience)
+   * @param gi generating index (for convenience)
+   * @param x the value x
    */
   private static void outputX(int row, int gi, double x) {
-    println(row + "\t" + gi + "\t" + ((int) x));
+    //println(row + "\t" + gi + "\t" + ((int) x));
   }
 
   @Test
@@ -177,7 +175,7 @@ public class PowerLawGeneratorTest {
    *          value to print
    */
   private static void println(String s) {
-    // System.out.println(s); //disable here
+    System.out.println(s); //disable here
   }
 
 }
