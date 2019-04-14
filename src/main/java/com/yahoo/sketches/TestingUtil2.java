@@ -10,41 +10,10 @@ import static java.lang.Math.exp;
 import static java.lang.Math.log;
 import static java.lang.Math.min;
 
-import java.util.Comparator;
 import java.util.Random;
 
 public class TestingUtil2 {
   public static Random rand = new Random();
-
-  public static class LongPair implements Comparator<LongPair> {
-    public long x;
-    public long y;
-
-    public LongPair(final long x, final long y) {
-      this.x = x;
-      this.y = y;
-    }
-
-    @Override
-    public int compare(final LongPair p1, final LongPair p2) {
-      return (p1.x < p2.x) ? -1 : (p1.x > p2.x) ? 1 : 0;
-    }
-  }
-
-  public static class DoublePair implements Comparator<DoublePair> {
-    public double x;
-    public double y;
-
-    public DoublePair(final double x, final double y) {
-      this.x = x;
-      this.y = y;
-    }
-
-    @Override
-    public int compare(final DoublePair p1, final DoublePair p2) {
-      return Double.compare(p1.x, p2.x); // handles NaN, +/- 0, etc.
-    }
-  }
 
   /**
    *

@@ -8,8 +8,6 @@ package com.yahoo.sketches;
 import static java.lang.Math.abs;
 import static java.lang.Math.log;
 
-import com.yahoo.sketches.TestingUtil2.DoublePair;
-
 /**
  * A simple tool to generate (x,y) pairs of points that follow a power-law
  * relationship. This class provides both a convenient dynamic class with

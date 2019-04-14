@@ -8,8 +8,6 @@ package com.yahoo.sketches;
 //import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.yahoo.sketches.TestingUtil2.DoublePair;
-
 //import com.yahoo.sketches.PowerLawGenerator.Pair;
 
 /**
@@ -67,7 +65,6 @@ public class PowerLawGeneratorTest {
       }
       outputPair(row++, gi, cur);
     }
-
   }
 
   /**
