@@ -3,7 +3,9 @@
  * Apache License 2.0. See LICENSE file at the project root for terms.
  */
 
-package com.yahoo.sketches.characterization.uniquecount;
+package com.yahoo.sketches.characterization;
+
+import static com.yahoo.sketches.Util.pwr2LawNext;
 
 import com.yahoo.sketches.quantiles.DoublesSketchBuilder;
 import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
@@ -40,4 +42,25 @@ public class AccuracyStats {
     final double error = est - trueValue;
     sumSqErr += error * error;
   }
+
+  /**
+   * Build the Accuracy Stats Array
+   * @param lgMinU log_base2 of the minimum number of uniques used
+   * @param lgMaxU log_base2 of the maximum number of uniques used
+   * @param uPPO the number of points per octave
+   * @param lgQK the lgK for the Quantiles sketch
+   * @return an AccuracyStats array
+   */
+  public static final AccuracyStats[] buildAccuracyStatsArray(
+      final int lgMinU, final int lgMaxU, final int uPPO, final int lgQK) {
+    final int qLen = PerformanceUtil.countPoints(lgMinU, lgMaxU, uPPO);
+    final AccuracyStats[] qArr = new AccuracyStats[qLen];
+    int p = 1 << lgMinU;
+    for (int i = 0; i < qLen; i++) {
+      qArr[i] = new AccuracyStats(1 << lgQK, p);
+      p = pwr2LawNext(uPPO, p);
+    }
+    return qArr;
+  }
+
 }

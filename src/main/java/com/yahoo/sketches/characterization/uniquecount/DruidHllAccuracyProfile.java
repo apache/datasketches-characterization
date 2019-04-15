@@ -5,6 +5,7 @@
 
 package com.yahoo.sketches.characterization.uniquecount;
 
+import com.yahoo.sketches.characterization.AccuracyStats;
 import com.yahoo.sketches.characterization.uniquecount.druidhll.HyperLogLogCollector;
 import com.yahoo.sketches.characterization.uniquecount.druidhll.HyperLogLogHash;
 

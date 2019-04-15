@@ -12,9 +12,9 @@ import static com.yahoo.sketches.characterization.PerformanceUtil.FRACT_LEN;
 
 import java.io.PrintWriter;
 
+import com.yahoo.sketches.characterization.AccuracyStats;
 import com.yahoo.sketches.characterization.Job;
 import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.PerformanceUtil;
 import com.yahoo.sketches.characterization.Properties;
 import com.yahoo.sketches.quantiles.DoublesSketch;
 
@@ -54,7 +54,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
     postPMFs = Boolean.parseBoolean(prop.mustGet("Trials_postPMFs"));
     uPPO = Integer.parseInt(prop.mustGet("Trials_UPPO"));
     lgQK = Integer.parseInt(prop.mustGet("Trials_lgQK"));
-    qArr = buildAccuracyStatsArray(prop, this);
+    qArr = AccuracyStats.buildAccuracyStatsArray(lgMinU, lgMaxU, uPPO, lgQK);
     lgK = Integer.parseInt(prop.mustGet("LgK"));
     final String getSizeStr = prop.get("Trials_bytes");
     getSize = (getSizeStr == null) ? false : Boolean.parseBoolean(getSizeStr);
@@ -227,28 +227,6 @@ public abstract class BaseAccuracyProfile implements JobProfile {
     sb.append("Bytes").append(TAB);
     sb.append("ReMerit");
     return sb.toString();
-  }
-
-  /**
-   *
-   * @param prop the given Properties
-   * @return an AccuracyStats array
-   */
-  private static final AccuracyStats[] buildAccuracyStatsArray(final Properties prop,
-      final BaseAccuracyProfile profile) {
-    final int lgMinU = profile.lgMinU;
-    final int lgMaxU = profile.lgMaxU;
-    final int uPPO = profile.uPPO;
-    final int lgQK = profile.lgQK;
-
-    final int qLen = PerformanceUtil.countPoints(lgMinU, lgMaxU, uPPO);
-    final AccuracyStats[] qArr = new AccuracyStats[qLen];
-    int p = 1 << lgMinU;
-    for (int i = 0; i < qLen; i++) {
-      qArr[i] = new AccuracyStats(1 << lgQK, p);
-      p = pwr2LawNext(uPPO, p);
-    }
-    return qArr;
   }
 
   /**
