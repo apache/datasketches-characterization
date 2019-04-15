@@ -36,7 +36,7 @@ public class PowerLawGeneratorTest {
     DoublePair start = new DoublePair(1, 1 << 20);
     DoublePair end = new DoublePair(1 << 20, 1);
     double xLogBase = 2.0;
-    int ptsPerXBase = 2;
+    int ptsPerXBase = 8;
 
     PowerLawGenerator plg = new PowerLawGenerator(xLogBase, ptsPerXBase, start, end);
     int numGenIdxs = plg.getNumGenIndices();
@@ -76,7 +76,7 @@ public class PowerLawGeneratorTest {
    * @return true to skip the next pair
    */
   private static boolean skip(DoublePair cur, DoublePair next) {
-    return ((int) next.x == (int) cur.x);
+    return (Math.round(next.x) == Math.round(cur.x));
   }
 
   private static final String HDRFMT = "%12s"  + "%12s"  + "%20s"    + "%20s";
