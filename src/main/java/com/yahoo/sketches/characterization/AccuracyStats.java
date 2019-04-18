@@ -24,6 +24,10 @@ public class AccuracyStats {
   public double trueValue;
   public int bytes = 0;
 
+  /**
+   * @param k the configuration value for the quantiles sketch. It must be a power of two.
+   * @param trueValue the true value
+   */
   public AccuracyStats(final int k, final int trueValue) {
     qsk = new DoublesSketchBuilder().setK(k).build(); //Quantiles
     this.trueValue = trueValue;
@@ -45,20 +49,20 @@ public class AccuracyStats {
 
   /**
    * Build the Accuracy Stats Array
-   * @param lgMinU log_base2 of the minimum number of uniques used
-   * @param lgMaxU log_base2 of the maximum number of uniques used
-   * @param uPPO the number of points per octave
+   * @param lgMin log_base2 of the minimum number of uniques used
+   * @param lgMax log_base2 of the maximum number of uniques used
+   * @param ppo the number of points per octave
    * @param lgQK the lgK for the Quantiles sketch
    * @return an AccuracyStats array
    */
   public static final AccuracyStats[] buildAccuracyStatsArray(
-      final int lgMinU, final int lgMaxU, final int uPPO, final int lgQK) {
-    final int qLen = PerformanceUtil.countPoints(lgMinU, lgMaxU, uPPO);
+      final int lgMin, final int lgMax, final int ppo, final int lgQK) {
+    final int qLen = PerformanceUtil.countPoints(lgMin, lgMax, ppo);
     final AccuracyStats[] qArr = new AccuracyStats[qLen];
-    int p = 1 << lgMinU;
+    int p = 1 << lgMin;
     for (int i = 0; i < qLen; i++) {
       qArr[i] = new AccuracyStats(1 << lgQK, p);
-      p = pwr2LawNext(uPPO, p);
+      p = pwr2LawNext(ppo, p);
     }
     return qArr;
   }

@@ -102,7 +102,7 @@
     
     <module name="MultipleVariableDeclarations">
       <property name="severity" value="ignore"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+      <!--<metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/> -->
     </module>
     
     <module name="NoFinalizer">

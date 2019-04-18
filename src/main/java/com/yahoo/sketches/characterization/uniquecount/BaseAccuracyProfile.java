@@ -167,8 +167,8 @@ public abstract class BaseAccuracyProfile implements JobProfile {
       final double uniques = q.trueValue;
       final double meanEst = q.sumEst / cumTrials;
       final double meanRelErr = q.sumRelErr / cumTrials;
-      final double meanSqErr = q.sumSqErr / cumTrials;
-      final double normMeanSqErr = meanSqErr / (1.0 * uniques * uniques);
+      final double meanSqErr = q.sumSqErr / cumTrials; //intermediate
+      final double normMeanSqErr = meanSqErr / (1.0 * uniques * uniques); //intermediate
       final double rmsRelErr = Math.sqrt(normMeanSqErr);
       q.rmsre = rmsRelErr;
       final int bytes = q.bytes;
