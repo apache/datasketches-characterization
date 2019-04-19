@@ -54,7 +54,7 @@ public class FdtAccuracyProfile implements JobProfile {
   Map<Integer,AccuracyStats> qMap;
   PostProcessor lastPost;
   int[] priKeyIndices = {0, 1, 2};
-  int groupCnt = 0;
+  int groupsGenerated = 0;
   double slope = 0;
   int minG;
   int maxG;
@@ -62,7 +62,6 @@ public class FdtAccuracyProfile implements JobProfile {
   int maxU;
   DoublePair p1;
   DoublePair p2;
-
 
   @Override
   public void start(final Job job) {
@@ -117,26 +116,26 @@ public class FdtAccuracyProfile implements JobProfile {
 
   void doTrial() {
     sketch.reset(); //reuse the same sketch
-    groupCnt = 0;
+    groupsGenerated = 0;
     int xG, yU;
     for (xG = minG; xG <= maxG; xG = pwr2LawNext(gPPO, xG)) { //select major group
       yU = (int) Math.round(getY(p1, slope, xG)); //compute target # uniques
       for (int g = 1; g <= xG; g++) { //select the minor group
-
         for (int u = minU; u <= yU; u++) { //create the group with yU unique variations
           final String[] tuple =
             {Integer.toString(xG), Integer.toString(g), Integer.toString(yU), Long.toHexString(vIn++)};
           sketch.update(tuple);
-          groupCnt++;
+          groupsGenerated++;
         }
       }
     }
-    lastPost = sketch.getPostProcessor();
-    final List<Group<String>> gpList = lastPost.getGroupList(priKeyIndices, numStdDev, 0);
-    final Iterator<Group<String>> itr = gpList.iterator();
+    //sketch has been fully updated
+    lastPost = sketch.getPostProcessor(new TestGroup());
+    final List<Group> gpList = lastPost.getGroupList(priKeyIndices, numStdDev, 0);
+    final Iterator<Group> itr = gpList.iterator();
 
     while (itr.hasNext()) {
-      final Group<String> gp = itr.next();
+      final Group gp = itr.next();
       yU = Integer.parseInt(gp.getPrimaryKey().split(",")[2]); //true uniques
       AccuracyStats q = qMap.get(yU); //get the q sketch for all priKeys with the same yU
       if (q == null) {
@@ -164,7 +163,6 @@ public class FdtAccuracyProfile implements JobProfile {
       list.add(as);
     }
     list.sort(new MyComparator());
-
     process(list);
   }
 
@@ -212,18 +210,20 @@ public class FdtAccuracyProfile implements JobProfile {
     }
     //Print PostProcessor
     if (printPostProcessor) {
-      final List<Group<String>> gpList = lastPost.getGroupList(priKeyIndices, numStdDev, topN);
-      final Iterator<Group<String>> itr = gpList.iterator();
+      final List<Group> gpList = lastPost.getGroupList(priKeyIndices, numStdDev, topN);
+      final Iterator<Group> itr = gpList.iterator();
       job.println("");
       job.println("Data From Last Trial");
-      job.println("Total groups generated: " + groupCnt);
-      job.println(Group.getRowHeader());
+      job.println("Total groups generated: " + groupsGenerated);
+      job.println("Total groups captured: "  + lastPost.getGroupCount());
+      job.println(new TestGroup().getRowHeader());
       while (itr.hasNext()) {
-        final Group<String> gp = itr.next();
+        final Group gp = itr.next();
         job.println(gp.toString());
       }
     }
-
+    println("");
+    println(sketch.toString());
   }
 
   private static String getHeader() {
