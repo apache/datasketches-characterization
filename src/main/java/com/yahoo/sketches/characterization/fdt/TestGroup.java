@@ -12,11 +12,18 @@ import com.yahoo.sketches.fdt.Group;
  * @author Lee Rhodes
  */
 public class TestGroup extends Group {
+  private int xG;
+  private int yU;
+  private double err;
+  private double ubErr;
+  private double lbErr;
 
   private final static String fmt2 =
-      "%,12d" + "%,15.2f" + "%,15.2f" + "%,15.2f" + "%12.6f" + "%12.6f" + " %15s" + "%12.6f";
+      "%12d" + "%12.2f" + "%12.2f" + "%12.2f" + "%12.6f" + "%12.6f" + " %15s"
+    + "%12d" + "%12d"   + "%12.6f" + "%12.6f" + "%12.6f";
   private final static String hfmt2 =
-      "%12s"  + "%15s"    + "%15s"    + "%15s"    + "%12s"   + "%12s"   + " %15s" + "%12s";
+      "%12s" + "%12s"   + "%12s"   + "%12s"   + "%12s"   + "%12s"   + " %15s"
+    + "%12s" + "%12s"   + "%12s"   + "%12s"   + "%12s";
 
   public TestGroup() { }
 
@@ -29,23 +36,42 @@ public class TestGroup extends Group {
   public TestGroup init(final String priKey, final int count, final double estimate, final double ub,
       final double lb, final double thresh, final double rse) {
     super.init(priKey, count, estimate, ub, lb, thresh, rse);
+    final String[] priKeyArr = priKey.split(",");
+    xG = Integer.parseInt(priKeyArr[0]);
+    yU = Integer.parseInt(priKeyArr[2]);
+    err =  (estimate / yU) - 1.0;
+    ubErr = (ub / estimate) - 1.0;
+    lbErr = (lb / estimate) - 1.0;
     return this;
   }
 
+  public int getYU() {
+    return yU;
+  }
+
+  public double getErr() {
+    return err;
+  }
+
+  public double getUbErr() {
+    return ubErr;
+  }
+
+  public double getLbErr() {
+    return lbErr;
+  }
 
   @Override
   public String getRowHeader() {
-    return String.format(hfmt2,"Count", "Est", "UB", "LB", "Thresh", "RSE", "PriKey", "Err");
+    return String.format(hfmt2,"Count", "Est", "UB", "LB", "Thresh", "RSE", "PriKey",
+        "xG", "yU", "Err", "UBErr", "LBErr");
   }
 
   @Override
   public String toString() {
-    final String priKeyStr = super.getPrimaryKey().toString();
-    final int yU = Integer.parseInt(priKeyStr.split(",")[2]);
-    final double est = super.getEstimate();
-    final double err = (est / yU) - 1.0;
-    return String.format(fmt2, super.getCount(), est, super.getUpperBound(), super.getLowerBound(),
-        super.getThreshold(), super.getRse(), priKeyStr, err);
+    return String.format(fmt2, super.getCount(), getEstimate(), super.getUpperBound(),
+        super.getLowerBound(), super.getThreshold(), super.getRse(), getPrimaryKey(),
+        xG, yU, err, ubErr, lbErr);
   }
 
   /**
@@ -64,9 +90,9 @@ public class TestGroup extends Group {
     final String[] s2 = thatPriKey.toString().split(",");
     final int[] thatPK = { Integer.parseInt(s2[0]), Integer.parseInt(s2[1]), Integer.parseInt(s2[2]) };
     if (thatCount != count) { return thatCount - count; } //decreasing
+    if (thisPK[2] != thatPK[2]) { return thatPK[2] - thisPK[2]; } //decreasing
     if (thisPK[0] != thatPK[0]) { return thisPK[0] - thatPK[0]; } //increasing
     if (thisPK[1] != thatPK[1]) { return thisPK[1] - thatPK[1]; } //increasing
-    if (thisPK[2] != thatPK[2]) { return thisPK[2] - thatPK[2]; } //increasing
     return 0;
   }
 }

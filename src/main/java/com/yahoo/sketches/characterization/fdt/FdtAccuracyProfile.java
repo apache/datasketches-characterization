@@ -9,7 +9,6 @@ import static com.yahoo.sketches.PowerLawGenerator.getSlope;
 import static com.yahoo.sketches.PowerLawGenerator.getY;
 import static com.yahoo.sketches.Util.pwr2LawNext;
 import static com.yahoo.sketches.characterization.PerformanceUtil.FRACTIONS;
-import static com.yahoo.sketches.characterization.PerformanceUtil.FRACT_LEN;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -54,6 +53,7 @@ public class FdtAccuracyProfile implements JobProfile {
   Map<Integer,AccuracyStats> qMap;
   PostProcessor lastPost;
   int[] priKeyIndices = {0, 1, 2};
+  int sketchUpdates = 0;
   int groupsGenerated = 0;
   double slope = 0;
   int minG;
@@ -62,6 +62,7 @@ public class FdtAccuracyProfile implements JobProfile {
   int maxU;
   DoublePair p1;
   DoublePair p2;
+  int xPoints;
 
   @Override
   public void start(final Job job) {
@@ -112,20 +113,27 @@ public class FdtAccuracyProfile implements JobProfile {
     p1 = new DoublePair(minG, maxU);
     p2 = new DoublePair(maxG, minU);
     slope = getSlope(p1, p2);
+    xPoints = 0;
+    int xG;
+    for (xG = minG; xG <= maxG; xG = pwr2LawNext(gPPO, xG)) {
+      xPoints++;
+    }
   }
 
   void doTrial() {
     sketch.reset(); //reuse the same sketch
     groupsGenerated = 0;
+    sketchUpdates = 0;
     int xG, yU;
     for (xG = minG; xG <= maxG; xG = pwr2LawNext(gPPO, xG)) { //select major group
+      groupsGenerated += xG;
       yU = (int) Math.round(getY(p1, slope, xG)); //compute target # uniques
       for (int g = 1; g <= xG; g++) { //select the minor group
-        for (int u = minU; u <= yU; u++) { //create the group with yU unique variations
+        for (int u = minU; u <= yU; u++) { //create the minor group with yU unique variations
           final String[] tuple =
             {Integer.toString(xG), Integer.toString(g), Integer.toString(yU), Long.toHexString(vIn++)};
           sketch.update(tuple);
-          groupsGenerated++;
+          sketchUpdates++;
         }
       }
     }
@@ -166,11 +174,26 @@ public class FdtAccuracyProfile implements JobProfile {
     process(list);
   }
 
+  private final static String hfmt =
+      "%12s" + "%12s" + "%12s" + "%12s" + "%12s"
+    + "%12s" + "%12s" + "%12s" + "%12s" + "%12s"
+    + "%12s" + "%12s" + "%12s" + "%12s" + "%12s" + "%12s";
+
+  private final static String fmt =
+      "%12d"   + "%12.1f" + "%12.6f" + "%12.6f" + "%12d"
+    + "%12.6f" + "%12.6f" + "%12.6f" + "%12.6f" + "%12.6f"
+    + "%12.6f" + "%12.6f" + "%12.6f" + "%12.6f" + "%12.6f" + "%12.6f";
+
+  private static String getHeader() {
+    final String header = String.format(hfmt,
+        "yU",   "MeanEst",    "MeanRelErr","RMS_RE",   "CapturedGps",
+        "Min",  "Q(.0000317)","Q(.00135)", "Q(.02275)","Q(.15866)",
+        "Q(.5)","Q(.84134)",  "Q(.97725)", "Q(.99865)","Q(.9999683)","Max");
+    return header;
+  }
+
   private void process(final List<AccuracyStats> list) {
     final Iterator<AccuracyStats> itr2 = list.iterator();
-    final String IFMT = "%d";
-    final String DFMT6 = "%.6f";
-    final String DFMT1 = "%.1f";
     job.println("Sketch: lgK: " + sketch.getLgK());
     job.println(String.format("Slope: %.2f", slope));
     job.println(getHeader());
@@ -178,35 +201,21 @@ public class FdtAccuracyProfile implements JobProfile {
       final AccuracyStats as = itr2.next();
       final int trials = as.bytes;
       final int uniq = (int) as.trueValue;
-      final String uniques = String.format(IFMT, uniq);
-      final String meanEst = String.format(DFMT1, as.sumEst / trials);
-      final String meanRelErr = String.format(DFMT6, as.sumRelErr / trials);
+      final double meanEst = as.sumEst / trials;
+      final double meanRelErr = as.sumRelErr / trials;
       final double meanSqErr = as.sumSqErr / trials;
       final double normMeanSqErr = meanSqErr / (1.0 * uniq * uniq);
       final double rmsRE = Math.sqrt(normMeanSqErr);
-      final String rmsRelErr = String.format(DFMT6, rmsRE);
       as.rmsre = rmsRE;
 
       //OUTPUT
-      final StringBuilder sb = new StringBuilder();
-      sb.append(uniques).append(TAB);
-
-      //Sketch meanEst, meanRelErr, norm RMS Err
-      sb.append(meanEst).append(TAB);
-      sb.append(meanRelErr).append(TAB);
-      sb.append(rmsRelErr).append(TAB);
-
-      //TRIALS
-      sb.append(trials).append(TAB);
-
-      //Quantiles
-      final String fmt = "%10.6f" + TAB;
-      final double[] quants = as.qsk.getQuantiles(FRACTIONS);
-      for (int i = 0; i < FRACT_LEN; i++) {
-        final double finQuant = (quants[i] / uniq) - 1.0;
-        sb.append(String.format(fmt, finQuant));
-      }
-      job.println(sb.toString());
+      final double[] qarr = as.qsk.getQuantiles(FRACTIONS);
+      final String out = String.format(fmt,
+        uniq, meanEst, meanRelErr, rmsRE, trials,
+        qf(qarr[0],uniq),qf(qarr[1],uniq),qf(qarr[2],uniq),qf(qarr[3],uniq),qf(qarr[4],uniq),
+        qf(qarr[5],uniq),qf(qarr[6],uniq),qf(qarr[7],uniq),qf(qarr[8],uniq),qf(qarr[9],uniq),
+        qf(qarr[10],uniq));
+      job.println(out);
     }
     //Print PostProcessor
     if (printPostProcessor) {
@@ -214,8 +223,11 @@ public class FdtAccuracyProfile implements JobProfile {
       final Iterator<Group> itr = gpList.iterator();
       job.println("");
       job.println("Data From Last Trial");
-      job.println("Total groups generated: " + groupsGenerated);
-      job.println("Total groups captured: "  + lastPost.getGroupCount());
+      job.println("Total Sketch Updates  : " + sketchUpdates);
+      job.println("Sketch Retained Items : " + sketch.getRetainedEntries());
+      job.println("Total Groups generated: " + groupsGenerated);
+      job.println("Total Groups captured : " + lastPost.getGroupCount());
+      job.println("Total X-axis Points   : " + xPoints);
       job.println(new TestGroup().getRowHeader());
       while (itr.hasNext()) {
         final Group gp = itr.next();
@@ -226,31 +238,11 @@ public class FdtAccuracyProfile implements JobProfile {
     println(sketch.toString());
   }
 
-  private static String getHeader() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("InU").append(TAB);        //col 1
-    //Estimates
-    sb.append("MeanEst").append(TAB);    //col 2
-    sb.append("MeanRelErr").append(TAB); //col 3
-    sb.append("RMS_RE").append(TAB);     //col 4
-
-    //Trials
-    sb.append("Trials").append(TAB);     //col 5
-
-    //Quantiles
-    sb.append("Min").append(TAB);
-    sb.append("Q(.0000317)").append(TAB);
-    sb.append("Q(.00135)").append(TAB);
-    sb.append("Q(.02275)").append(TAB);
-    sb.append("Q(.15866)").append(TAB);
-    sb.append("Q(.5)").append(TAB);
-    sb.append("Q(.84134)").append(TAB);
-    sb.append("Q(.97725)").append(TAB);
-    sb.append("Q(.99865)").append(TAB);
-    sb.append("Q(.9999683)").append(TAB);
-    sb.append("Max");
-    return sb.toString();
+  private static final double qf(final double q, final int u) {
+    return (q / u) - 1.0;
   }
+
+
 
   class MyComparator implements Comparator<AccuracyStats> {
     @Override
