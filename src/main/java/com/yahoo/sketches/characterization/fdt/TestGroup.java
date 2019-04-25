@@ -34,8 +34,8 @@ public class TestGroup extends Group {
 
   @Override
   public TestGroup init(final String priKey, final int count, final double estimate, final double ub,
-      final double lb, final double thresh, final double rse) {
-    super.init(priKey, count, estimate, ub, lb, thresh, rse);
+      final double lb, final double fraction, final double rse) {
+    super.init(priKey, count, estimate, ub, lb, fraction, rse);
     final String[] priKeyArr = priKey.split(",");
     xG = Integer.parseInt(priKeyArr[0]);
     yU = Integer.parseInt(priKeyArr[2]);
@@ -62,7 +62,7 @@ public class TestGroup extends Group {
   }
 
   @Override
-  public String getRowHeader() {
+  public String getHeader() {
     return String.format(hfmt2,"Count", "Est", "UB", "LB", "Thresh", "RSE", "PriKey",
         "xG", "yU", "Err", "UBErr", "LBErr");
   }
@@ -70,7 +70,7 @@ public class TestGroup extends Group {
   @Override
   public String toString() {
     return String.format(fmt2, super.getCount(), getEstimate(), super.getUpperBound(),
-        super.getLowerBound(), super.getThreshold(), super.getRse(), getPrimaryKey(),
+        super.getLowerBound(), super.getFraction(), super.getRse(), getPrimaryKey(),
         xG, yU, err, ubErr, lbErr);
   }
 

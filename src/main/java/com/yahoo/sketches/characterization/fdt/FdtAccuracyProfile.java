@@ -63,6 +63,7 @@ public class FdtAccuracyProfile implements JobProfile {
   DoublePair p1;
   DoublePair p2;
   int xPoints;
+  char sep = '|';
 
   @Override
   public void start(final Job job) {
@@ -138,7 +139,7 @@ public class FdtAccuracyProfile implements JobProfile {
       }
     }
     //sketch has been fully updated
-    lastPost = sketch.getPostProcessor(new TestGroup());
+    lastPost = sketch.getPostProcessor(new TestGroup(), sep);
     final List<Group> gpList = lastPost.getGroupList(priKeyIndices, numStdDev, 0);
     final Iterator<Group> itr = gpList.iterator();
 
@@ -228,7 +229,7 @@ public class FdtAccuracyProfile implements JobProfile {
       job.println("Total Groups generated: " + groupsGenerated);
       job.println("Total Groups captured : " + lastPost.getGroupCount());
       job.println("Total X-axis Points   : " + xPoints);
-      job.println(new TestGroup().getRowHeader());
+      job.println(new TestGroup().getHeader());
       while (itr.hasNext()) {
         final Group gp = itr.next();
         job.println(gp.toString());
