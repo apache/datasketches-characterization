@@ -880,8 +880,6 @@ public class ApproximateHistogram
    * @param numMerge
    * @param next
    * @param prev
-   *
-   * @return the last valid index into the mergedPositions and mergedBins arrays
    */
   private static void mergeBins(
       int mergedBinCount,
