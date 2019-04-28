@@ -3,7 +3,7 @@
  * Apache License 2.0. See LICENSE file at the project root for terms.
  */
 
-package com.yahoo.sketches.characterization;
+package com.yahoo.sketches;
 
 import java.util.ArrayList;
 import java.util.Comparator;

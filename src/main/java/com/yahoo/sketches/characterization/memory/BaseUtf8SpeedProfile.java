@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yahoo.memory.Memory;
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
+import com.yahoo.sketches.Properties;
 
 /**
  * @author Lee Rhodes

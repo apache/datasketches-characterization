@@ -3,7 +3,7 @@ package com.yahoo.sketches.characterization.quantiles;
 import java.util.Comparator;
 import java.util.Random;
 
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.quantiles.ItemsSketch;
 
 public class ItemsSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {

@@ -5,10 +5,10 @@
 
 package com.yahoo.sketches.characterization.fdt;
 
+import static com.yahoo.sketches.PerformanceUtil.FRACTIONS;
 import static com.yahoo.sketches.PowerLawGenerator.getSlope;
 import static com.yahoo.sketches.PowerLawGenerator.getY;
 import static com.yahoo.sketches.Util.pwr2LawNext;
-import static com.yahoo.sketches.characterization.PerformanceUtil.FRACTIONS;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.yahoo.sketches.AccuracyStats;
 import com.yahoo.sketches.DoublePair;
-import com.yahoo.sketches.characterization.AccuracyStats;
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
+import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.fdt.FdtSketch;
 import com.yahoo.sketches.fdt.Group;
 import com.yahoo.sketches.fdt.PostProcessor;

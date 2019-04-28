@@ -7,7 +7,7 @@ import java.util.Random;
 import com.yahoo.memory.WritableMemory;
 import com.yahoo.sketches.ArrayOfDoublesSerDe;
 import com.yahoo.sketches.ArrayOfItemsSerDe;
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.quantiles.ItemsSketch;
 
 public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {

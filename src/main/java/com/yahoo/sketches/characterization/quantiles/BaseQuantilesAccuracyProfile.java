@@ -2,10 +2,10 @@ package com.yahoo.sketches.characterization.quantiles;
 
 import static com.yahoo.sketches.Util.pwr2LawNext;
 
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.PerformanceUtil;
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
+import com.yahoo.sketches.PerformanceUtil;
+import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.quantiles.DoublesSketch;
 import com.yahoo.sketches.quantiles.DoublesSketchBuilder;
 import com.yahoo.sketches.quantiles.UpdateDoublesSketch;

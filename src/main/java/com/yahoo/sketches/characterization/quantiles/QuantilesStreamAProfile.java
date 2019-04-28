@@ -10,12 +10,12 @@ import static java.lang.Math.rint;
 
 import java.io.File;
 
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
 import com.yahoo.sketches.LineReader;
 import com.yahoo.sketches.ProcessLine;
+import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.UnzipFiles;
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.Properties;
 import com.yahoo.sketches.quantiles.DoublesSketch;
 import com.yahoo.sketches.quantiles.UpdateDoublesSketch;
 

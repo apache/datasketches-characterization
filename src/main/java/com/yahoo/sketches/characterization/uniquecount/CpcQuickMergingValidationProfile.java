@@ -8,9 +8,9 @@ package com.yahoo.sketches.characterization.uniquecount;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
+import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.cpc.QuickMergingValidation;
 
 /**

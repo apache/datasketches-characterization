@@ -7,8 +7,8 @@ package com.yahoo.sketches.characterization.uniquecount;
 
 import java.util.Random;
 
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
 import com.yahoo.sketches.hll.HllSketch;
 import com.yahoo.sketches.hll.Union;
 

@@ -2,9 +2,9 @@ package com.yahoo.sketches.characterization.quantiles;
 
 import static com.yahoo.sketches.Util.pwr2LawNext;
 
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
+import com.yahoo.sketches.Properties;
 
 public abstract class BaseQuantilesSpeedProfile implements JobProfile {
 

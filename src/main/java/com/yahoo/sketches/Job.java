@@ -3,7 +3,7 @@
  * Apache License 2.0. See LICENSE file at the project root for terms.
  */
 
-package com.yahoo.sketches.characterization;
+package com.yahoo.sketches;
 
 import static com.yahoo.sketches.Files.isFileValid;
 import static com.yahoo.sketches.Files.openPrintWriter;
@@ -13,8 +13,6 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
-
-import com.yahoo.sketches.Files;
 
 /**
  * This class parses an input string job file, which contains properties for a specific

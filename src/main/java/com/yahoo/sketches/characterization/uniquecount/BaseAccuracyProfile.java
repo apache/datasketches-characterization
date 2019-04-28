@@ -5,17 +5,17 @@
 
 package com.yahoo.sketches.characterization.uniquecount;
 
+import static com.yahoo.sketches.PerformanceUtil.FRACTIONS;
+import static com.yahoo.sketches.PerformanceUtil.FRACT_LEN;
 import static com.yahoo.sketches.Util.milliSecToString;
 import static com.yahoo.sketches.Util.pwr2LawNext;
-import static com.yahoo.sketches.characterization.PerformanceUtil.FRACTIONS;
-import static com.yahoo.sketches.characterization.PerformanceUtil.FRACT_LEN;
 
 import java.io.PrintWriter;
 
-import com.yahoo.sketches.characterization.AccuracyStats;
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.AccuracyStats;
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
+import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.quantiles.DoublesSketch;
 
 /**

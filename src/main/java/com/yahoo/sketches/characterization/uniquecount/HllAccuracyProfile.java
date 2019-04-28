@@ -6,7 +6,7 @@
 package com.yahoo.sketches.characterization.uniquecount;
 
 import com.yahoo.memory.WritableMemory;
-import com.yahoo.sketches.characterization.AccuracyStats;
+import com.yahoo.sketches.AccuracyStats;
 import com.yahoo.sketches.hll.HllSketch;
 import com.yahoo.sketches.hll.TgtHllType;
 
