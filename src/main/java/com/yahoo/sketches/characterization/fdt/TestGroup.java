@@ -5,6 +5,8 @@
 
 package com.yahoo.sketches.characterization.fdt;
 
+import java.util.regex.Pattern;
+
 import com.yahoo.sketches.fdt.Group;
 
 /**
@@ -17,6 +19,8 @@ public class TestGroup extends Group {
   private double err;
   private double ubErr;
   private double lbErr;
+  private char sep = '|'; //This is a hack
+  private String sepr = Pattern.quote(Character.toString(sep));
 
   private final static String fmt2 =
       "%12d" + "%12.2f" + "%12.2f" + "%12.2f" + "%12.6f" + "%12.6f" + " %15s"
@@ -36,7 +40,7 @@ public class TestGroup extends Group {
   public TestGroup init(final String priKey, final int count, final double estimate, final double ub,
       final double lb, final double fraction, final double rse) {
     super.init(priKey, count, estimate, ub, lb, fraction, rse);
-    final String[] priKeyArr = priKey.split(",");
+    final String[] priKeyArr = priKey.split(sepr);
     xG = Integer.parseInt(priKeyArr[0]);
     yU = Integer.parseInt(priKeyArr[2]);
     err =  (estimate / yU) - 1.0;
@@ -85,9 +89,9 @@ public class TestGroup extends Group {
     final String thatPriKey = that.getPrimaryKey();
     final int count = super.getCount();
     final int thatCount = that.getCount();
-    final String[] s1 = priKey.toString().split(",");
+    final String[] s1 = priKey.toString().split(sepr);
     final int[] thisPK = { Integer.parseInt(s1[0]), Integer.parseInt(s1[1]), Integer.parseInt(s1[2]) };
-    final String[] s2 = thatPriKey.toString().split(",");
+    final String[] s2 = thatPriKey.toString().split(sepr);
     final int[] thatPK = { Integer.parseInt(s2[0]), Integer.parseInt(s2[1]), Integer.parseInt(s2[2]) };
     if (thatCount != count) { return thatCount - count; } //decreasing
     if (thisPK[2] != thatPK[2]) { return thatPK[2] - thisPK[2]; } //decreasing

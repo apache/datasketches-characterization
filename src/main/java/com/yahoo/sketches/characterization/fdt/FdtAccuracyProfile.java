@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.yahoo.sketches.AccuracyStats;
 import com.yahoo.sketches.DoublePair;
@@ -64,6 +65,7 @@ public class FdtAccuracyProfile implements JobProfile {
   DoublePair p2;
   int xPoints;
   char sep = '|';
+  String sepr; //for use by string.split();
 
   @Override
   public void start(final Job job) {
@@ -83,6 +85,8 @@ public class FdtAccuracyProfile implements JobProfile {
     printPostProcessor = Boolean.parseBoolean(prop.mustGet("PrintPostProcessor"));
     numStdDev = Integer.parseInt(prop.mustGet("NumStdDev"));
     topN = Integer.parseInt(prop.mustGet("TopN"));
+    sep = prop.mustGet("Sep").charAt(0);
+    sepr = Pattern.quote(Character.toString(sep));
     qMap = new HashMap<>();
     configure();
     doTrials();
@@ -145,7 +149,7 @@ public class FdtAccuracyProfile implements JobProfile {
 
     while (itr.hasNext()) {
       final Group gp = itr.next();
-      yU = Integer.parseInt(gp.getPrimaryKey().split(",")[2]); //true uniques
+      yU = Integer.parseInt(gp.getPrimaryKey().split(sepr)[2]); //true uniques
       AccuracyStats q = qMap.get(yU); //get the q sketch for all priKeys with the same yU
       if (q == null) {
         q = new AccuracyStats(1 << lgQK, yU);
