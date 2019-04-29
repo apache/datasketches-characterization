@@ -7,17 +7,16 @@ package com.yahoo.sketches.docgen;
 
 import org.testng.annotations.Test;
 
-import com.yahoo.sketches.docgen.Doc;
-
 /**
  * @author Lee Rhodes
  */
-public class DocTest {
+public class DropdownTest {
 
   @Test
-  public void checkDoc() {
-    Doc doc = new Doc("Frequency", "FrequentItemsOverview", "Frequent Items Overview", 1);
-    println(doc.toString());
+  public void checkDropdown() {
+    Dropdown dropdn = new Dropdown("The Description", null, 1);
+    println(dropdn.toString());
   }
+
   static void println(String s) { System.out.println(s); }
 }
