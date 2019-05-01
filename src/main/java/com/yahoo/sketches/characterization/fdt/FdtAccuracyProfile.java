@@ -199,7 +199,8 @@ public class FdtAccuracyProfile implements JobProfile {
 
   private void process(final List<AccuracyStats> list) {
     final Iterator<AccuracyStats> itr2 = list.iterator();
-    job.println("Sketch: lgK: " + sketch.getLgK());
+    final int lgK = Integer.numberOfTrailingZeros(sketch.getNominalEntries());
+    job.println("Sketch: lgK: " + lgK);
     job.println(String.format("Slope: %.2f", slope));
     job.println(getHeader());
     while (itr2.hasNext()) { //compute error for each AccuracyStats

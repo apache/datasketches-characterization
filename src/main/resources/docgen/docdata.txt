@@ -6,3 +6,11 @@
   ]
 
 }
+
+
+keys:
+ class: Doc, Dropdown
+ desc
+ dir
+ file
+

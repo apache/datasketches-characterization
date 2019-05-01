@@ -59,10 +59,11 @@
         
         <!-- Dependencies -->
         <memory.version>0.12.1</memory.version>
-        <sketches-core.version>0.13.1-SNAPSHOT</sketches-core.version>
+        <sketches-core.version>0.13.3-SNAPSHOT</sketches-core.version>
         <guava.version>25.0-jre</guava.version>
         <testng.version>6.14.3</testng.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
+        <org-json.version>20180813</org-json.version>
 
         <!-- Maven Plugins -->
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
@@ -135,6 +136,13 @@
             <groupId>com.yahoo.datasketches</groupId>
             <artifactId>sketches-core</artifactId>
             <version>${sketches-core.version}</version>
+        </dependency>
+
+        <!-- org.json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${org-json.version}</version>
         </dependency>
 
         <!-- Druid HLL -->
