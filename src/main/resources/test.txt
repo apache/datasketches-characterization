@@ -1,8 +1,108 @@
-{ 
-  "class":"Dropdown", "desc" : "Overview", #comment
+{ "class":"TOC", "array":
   [
-    {"class":"Doc",  "desc" : "The Challenge", "dir" : null, "file": "TheChallege" },
-    {"class":"Doc",  "desc" : "The Major Sketch Families", "dir" : null, "file": "MajorSketchFamilies" }
-  ]
+    { "class":"Dropdown", "desc" : "Overview", "array":
+      [
+        {"class":"Doc",  "desc" : "The Challenge",                "dir" : "", "file": "TheChallege" },
+        {"class":"Doc",  "desc" : "The Major Sketch Families",    "dir" : "", "file": "MajorSketchFamilies" },
+        {"class":"Doc",  "desc" : "Sketch Origins",               "dir" : "", "file": "SketchOrigins" },
+        {"class":"Doc",  "desc" : "Sketch Elements",              "dir" : "", "file": "SketchElements" },
+        {"class":"Doc",  "desc" : "Large Scale Computing",        "dir" : "", "file": "LargeScale" },
+        {"class":"Doc",  "desc" : "Architecture",                 "dir" : "", "file": "Architecture" },
+        {"class":"Doc",  "desc" : "Notes on Order Sensitivity",   "dir" : "", "file": "OrderSensitivity" },
+        {"class":"Doc",  "desc" : "Notes on Concurrency",         "dir" : "", "file": "Concurrency" },
+        {"class":"Doc",  "desc" : "Overview Slide Deck",          "dir" : "", "file": "DataSketches_deck", "pdf":"true" }
+      ]
+    },
+    
+    { "class":"Dropdown", "desc" : "Research", "array":
+      [
+        {"class":"Doc",  "desc" : "Research",                     "dir" : "", "file": "Research" }
+      ]
+    },
+    
+    { "class":"Dropdown", "desc" : "Frequency Sketches", "array":
+      [
+        {"class":"Doc",  "desc" : "Frequency Sketches Overview",  "dir" : "Frequency", "file": "FrequencySketchesOverview" },
+        
+        { "class":"Dropdown", "desc" : "Frequent Item Sketches", "array":
+          [
+            {"class":"Doc",  "desc" : "Frequent Items Overview",      "dir" : "Frequency", "file": "FrequentItemsOverview" },
+            {"class":"Doc",  "desc" : "Frequent Items Java Example",  "dir" : "Frequency", "file": "FrequentItemsJavaExample" },
+            {"class":"Doc",  "desc" : "Frequent Items Pig UDFs",      "dir" : "Frequency", "file": "FrequentItemsPigUDFs" },
+            {"class":"Doc",  "desc" : "Frequent Items Hive UDFs",     "dir" : "Frequency", "file": "FrequentItemsHiveUDFs" },
+            {"class":"Doc",  "desc" : "Frequent Items Error Table",   "dir" : "Frequency", "file": "FrequentItemsErrorTable" },
+            {"class":"Doc",  "desc" : "Frequent Items References",    "dir" : "Frequency", "file": "FrequentItemsReferences" }
+          ]
+        },
+      
+        { "class":"Dropdown", "desc" : "Frequent Distinct Sketches", "array": 
+          [
+            {"class":"Doc",  "desc" : "Frequent Distinct Tuples Sketch", "dir" : "Frequency", "file": "FrequentDistinctTuplesSketch" }
+          ]
+        }
+      ]
+    },
+    
+    { "class":"Dropdown", "desc" : "HyperLogLog Sketches", "array":
+      [
+        {"class":"Doc",  "desc" : "HLL Sketch",                               "dir" : "HLL", "file": "HLL" },
+        {"class":"Doc",  "desc" : "HLL vs HLL++",                             "dir" : "HLL", "file": "Hll_vs_Hllpp" },
+        {"class":"Doc",  "desc" : "HLL Sketch Java Example",                  "dir" : "HLL", "file": "HllJavaExample" },
+        {"class":"Doc",  "desc" : "HLL Sketch Pig UDFs",                      "dir" : "HLL", "file": "HllPigUDFs" },
+        {"class":"Doc",  "desc" : "HLL Sketch Hive UDFs",                     "dir" : "HLL", "file": "HllHiveUDFs" },
+        {"class":"Doc",  "desc" : "HLL Map Sketch",                           "dir" : "HLL", "file": "HllMap" },
+        {"class":"Doc",  "desc" : "HLL Sketch vs Druid HyperLogLogCollector", "dir" : "HLL", "file": "HllSketchVsDruidHyperLogLogCollector" }
+      ]
+    },
+    
+    { "class":"Dropdown", "desc" : "Memory", "array":
+      [
+        {"class":"Doc",  "desc" : "Memory Package",                           "dir" : "Memory", "file": "MemoryPackage" },
+        {"class":"Doc",  "desc" : "Memory Package Performance",               "dir" : "Memory", "file": "MemoryPerformance" }
+      ]
+    },
+    
+    { "class":"Dropdown", "desc" : "Quantiles Sketches", "array":
+      [
+        {"class":"Doc",  "desc" : "Quantiles Overview",                       "dir" : "Quantiles", "file": "QuantilesOverview" },
+        {"class":"Doc",  "desc" : "Quantiles Accuracy and Size",              "dir" : "Quantiles", "file": "QuantilesAccuracy" },
+        {"class":"Doc",  "desc" : "Quantiles Sketch Java Example",            "dir" : "Quantiles", "file": "QuantilesJavaExample" },
+        {"class":"Doc",  "desc" : "Quantiles Sketch Pig UDFs",                "dir" : "Quantiles", "file": "QuantilesPigUDFs" },
+        {"class":"Doc",  "desc" : "Quantiles Sketch Hive UDFs",               "dir" : "Quantiles", "file": "QuantilesHiveUDFs" },
+        
+        { "class":"Dropdown", "desc" : "Quantiles Studies", "array":
+          [
+            {"class":"Doc",  "desc" : "New KLL sketch and comparison with DoublesSketch", "dir" : "Quantiles", "file": "KLLSketch" },
+            {"class":"Doc",  "desc" : "KLL sketch vs t-digest",                           "dir" : "Quantiles", "file": "KllSketchVsTDigest" },
+            {"class":"Doc",  "desc" : "Druid Approximate Histogram",                      "dir" : "Quantiles", "file": "DruidApproxHistogramStudy" },
+            {"class":"Doc",  "desc" : "Moments Sketch Study",                             "dir" : "Quantiles", "file": "MomentsSketchStudy" },
+            {"class":"Doc",  "desc" : "Quantiles StreamA Study",                          "dir" : "Quantiles", "file": "QuantilesStreamAStudy" }
+          ]
+        },
+        
+        { "class":"Dropdown", "desc" : "Quantiles Sketch Theory", "array":
+          [
+            {"class":"Doc",  "desc" : "Optimal Quantile Approximation in Streams",        "dir" : "", "file": "Quantiles_KLL", "pdf":"true" },
+            {"class":"Doc",  "desc" : "Quantiles References",                             "dir" : "Quantiles", "file": "QuantilesReferences" }
+          ]
+        }
+      ]
+    },
+    
+    { "class":"Dropdown", "desc" : "Sampling Sketches", "array":
+      [
+        {"class":"Doc",  "desc" : "Reservoir Sampling",               "dir" : "Sampling", "file": "ReservoirSampling" },
+        {"class":"Doc",  "desc" : "Reservoir Sampling Performance",   "dir" : "Sampling", "file": "ReservoirSamplingPerformance" },
+        {"class":"Doc",  "desc" : "Reservoir Sampling Java Example",  "dir" : "Sampling", "file": "ReservoirSamplingJava" },
+        {"class":"Doc",  "desc" : "Reservoir Sampling Pig UDFs",      "dir" : "Sampling", "file": "ReservoirSamplingPigUDFs" },
+        {"class":"Doc",  "desc" : "VarOpt Sampling",                  "dir" : "Sampling", "file": "VarOptSampling" },
+        {"class":"Doc",  "desc" : "VarOpt Sampling Java Example",     "dir" : "Sampling", "file": "VarOptSamplingJava" },
+        {"class":"Doc",  "desc" : "VarOpt Sampling Pig UDFs",         "dir" : "Sampling", "file": "VarOptPigUDFs" }
+      ]
+    },
+    
 
+
+  ]
 }
+
