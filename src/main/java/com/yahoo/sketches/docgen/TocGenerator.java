@@ -16,11 +16,11 @@ import com.yahoo.sketches.Files;
 /**
  * @author Lee Rhodes
  */
-public class JsonParser {
+public class TocGenerator {
   static final String LS = System.getProperty("line.separator");
   int level = 0;
 
-  public JsonParser() {}
+  public TocGenerator() {}
 
   @Test
   public void readJson() {
