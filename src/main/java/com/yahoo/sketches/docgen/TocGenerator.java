@@ -25,13 +25,12 @@ public class TocGenerator {
   @Test
   public void readJson() {
     final StringBuilder sb = new StringBuilder();
-    final String jin = Files.fileToString("src/main/resources/test.txt");
+    final String jin = Files.fileToString("src/main/resources/docgen/toc.json");
     final JSONObject jo = new JSONObject(jin);
     final String clazz = jo.getString("class");
-    if (!clazz.equals("TOC")) {
-      throw new IllegalArgumentException("First class must be TOC");
-    }
-    else { emitToc(jo, sb); }
+    if (clazz.equals("TOC")) { emitToc(jo, sb); }
+    else if (clazz.equals("Dropdown")) { emitDropdown(jo, sb); }
+    else { emitDoc(jo, sb); }
     println(sb.toString());
   }
 
