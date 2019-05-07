@@ -18,8 +18,8 @@ import com.yahoo.sketches.Properties;
  */
 public abstract class BaseSerDeProfile implements JobProfile {
   Job job;
-  Properties prop;
-  long vIn = 0;
+  public Properties prop;
+  public long vIn = 0;
   int lgMinT;
   int lgMaxT;
   int lgMinU;
@@ -28,8 +28,8 @@ public abstract class BaseSerDeProfile implements JobProfile {
   int lgMinBpU;
   int lgMaxBpU;
   double slope;
-  int lgK;
-  Stats stats = new Stats();
+  public int lgK;
+  public Stats stats = new Stats();
 
   //JobProfile
   @Override
@@ -144,8 +144,8 @@ public abstract class BaseSerDeProfile implements JobProfile {
     return sb.toString();
   }
 
-  static final class Stats {
-    double serializeTime_nS;
-    double deserializeTime_nS;
+  public static final class Stats {
+    public double serializeTime_nS;
+    public double deserializeTime_nS;
   }
 }

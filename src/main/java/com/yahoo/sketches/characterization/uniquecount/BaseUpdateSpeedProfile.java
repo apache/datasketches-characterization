@@ -18,8 +18,8 @@ import com.yahoo.sketches.Properties;
  */
 public abstract class BaseUpdateSpeedProfile implements JobProfile {
   Job job;
-  Properties prop;
-  long vIn = 0;
+  public Properties prop;
+  public long vIn = 0;
   int lgMinT;
   int lgMaxT;
   int lgMinU;

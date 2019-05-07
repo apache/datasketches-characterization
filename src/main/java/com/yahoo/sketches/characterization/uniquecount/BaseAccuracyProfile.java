@@ -24,8 +24,8 @@ import com.yahoo.sketches.quantiles.DoublesSketch;
 public abstract class BaseAccuracyProfile implements JobProfile {
   Job job;
   PrintWriter pw;
-  Properties prop;
-  long vIn = 0;
+  public Properties prop;
+  public long vIn = 0;
   int lgMinT;
   int lgMaxT;
   int tPPO;
@@ -33,11 +33,11 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   int lgMaxU;
   int uPPO;
   int lgQK;
-  int lgK;
+  public int lgK;
   boolean interData;
   boolean postPMFs;
-  boolean getSize = false;
-  AccuracyStats[] qArr;
+  public boolean getSize = false;
+  public AccuracyStats[] qArr;
 
   //JobProfile
   @Override
