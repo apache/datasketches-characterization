@@ -77,13 +77,13 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   }
   //end JobProfile
 
-  abstract void configure();
+  public abstract void configure();
 
   /**
    * An accuracy trial is one pass through all uniques, pausing to store the estimate into a
    * quantiles sketch at each point along the unique axis.
    */
-  abstract void doTrial();
+  public abstract void doTrial();
 
   /**
    * Manages multiple trials for measuring accuracy.

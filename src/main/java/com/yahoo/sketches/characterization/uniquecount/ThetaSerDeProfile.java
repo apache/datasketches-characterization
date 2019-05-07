@@ -20,7 +20,7 @@ public class ThetaSerDeProfile extends BaseSerDeProfile {
   private UpdateSketch sketch;
 
   @Override
-  void configure() {
+  public void configure() {
     //Configure Sketch
     final Family family = Family.stringToFamily(prop.mustGet("THETA_famName"));
     final float p = Float.parseFloat(prop.mustGet("THETA_p"));
@@ -44,7 +44,7 @@ public class ThetaSerDeProfile extends BaseSerDeProfile {
   }
 
   @Override
-  void doTrial(final Stats stats, final int uPerTrial) {
+  public void doTrial(final Stats stats, final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
 
     for (int u = uPerTrial; u-- > 0;) { //populate the sketch

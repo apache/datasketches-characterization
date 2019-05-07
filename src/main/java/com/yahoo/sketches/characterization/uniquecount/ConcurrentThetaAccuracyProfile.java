@@ -32,7 +32,7 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
 
 
   @Override
-  void configure() {
+  public void configure() {
     //Configure Sketches
     sharedLgK = lgK;
     localLgK = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_localLgK"));
@@ -57,7 +57,7 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
   }
 
   @Override
-  void doTrial() {
+  public void doTrial() {
     final int qArrLen = qArr.length;
     //reuse the same sketches
     sharedSketch.reset(); // reset shared sketch first

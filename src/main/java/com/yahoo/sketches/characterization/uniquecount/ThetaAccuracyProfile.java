@@ -21,7 +21,7 @@ public class ThetaAccuracyProfile extends BaseAccuracyProfile {
   private boolean rebuild; //Theta QS Sketch Accuracy
 
   @Override
-  void configure() {
+  public void configure() {
     //Configure Sketch
     final Family family = Family.stringToFamily(prop.mustGet("THETA_famName"));
     final float p = Float.parseFloat(prop.mustGet("THETA_p"));
@@ -45,7 +45,7 @@ public class ThetaAccuracyProfile extends BaseAccuracyProfile {
   }
 
   @Override
-  void doTrial() {
+  public void doTrial() {
     final int qArrLen = qArr.length;
     sketch.reset(); //reuse the same sketch
     int lastUniques = 0;

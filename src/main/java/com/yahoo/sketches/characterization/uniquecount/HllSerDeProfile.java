@@ -20,7 +20,7 @@ public class HllSerDeProfile extends BaseSerDeProfile {
   private boolean wrap;
 
   @Override
-  void configure() {
+  public void configure() {
     final boolean direct = Boolean.parseBoolean(prop.mustGet("HLL_direct"));
     compact = Boolean.parseBoolean(prop.mustGet("HLL_compact"));
     wrap = Boolean.parseBoolean(prop.mustGet("HLL_wrap"));
@@ -41,7 +41,7 @@ public class HllSerDeProfile extends BaseSerDeProfile {
   }
 
   @Override
-  void doTrial(final Stats stats, final int uPerTrial) {
+  public void doTrial(final Stats stats, final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
 
     for (int u = uPerTrial; u-- > 0;) {

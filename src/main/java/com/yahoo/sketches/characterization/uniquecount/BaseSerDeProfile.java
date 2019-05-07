@@ -64,14 +64,14 @@ public abstract class BaseSerDeProfile implements JobProfile {
   /**
    * Configure the sketch
    */
-  abstract void configure();
+  public abstract void configure();
 
   /**
    * Populates the sketch with the given uPerTrial and loads the stats.
    * @param stats the given stats class
    * @param uPerTrial the given uniques per trial to be offered
    */
-  abstract void doTrial(Stats stats, int uPerTrial);
+  public abstract void doTrial(Stats stats, int uPerTrial);
 
   private void doTrials() {
     final int maxU = 1 << lgMaxU;
@@ -108,7 +108,7 @@ public abstract class BaseSerDeProfile implements JobProfile {
    * @return the number of trials for a given current number of uniques for a
    * trial set.
    */
-  int getNumTrials(final int curU) {
+  private int getNumTrials(final int curU) {
     final int minBpU = 1 << lgMinBpU;
     final int maxBpU = 1 << lgMaxBpU;
     final int maxT = 1 << lgMaxT;

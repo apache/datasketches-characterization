@@ -18,13 +18,13 @@ public class DruidHllAccuracyProfile extends BaseAccuracyProfile {
   private boolean useString;
 
   @Override
-  void configure() {
+  public void configure() {
     final String useStringStr = prop.get("Trials_string");
     useString = (useStringStr == null) ? false : Boolean.parseBoolean(useStringStr);
   }
 
   @Override
-  void doTrial() {
+  public void doTrial() {
     final int qArrLen = qArr.length;
     sketch = HyperLogLogCollector.makeLatestCollector();
     int lastUniques = 0;

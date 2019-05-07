@@ -63,14 +63,14 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
   /**
    * Configure the sketch
    */
-  abstract void configure();
+  public abstract void configure();
 
   /**
    * Return the average update time per update for this trial
    * @param uPerTrial the number of unique updates for this trial
    * @return the average update time per update for this trial
    */
-  abstract double doTrial(final int uPerTrial);
+  public abstract double doTrial(final int uPerTrial);
 
   /**
    * Traverses all the unique axis points and performs trials(u) at each point

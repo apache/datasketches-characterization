@@ -32,7 +32,7 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
    * Configure the sketch
    */
   @Override
-  void configure() {
+  public void configure() {
     //Configure Sketches
     sharedLgK = Integer.parseInt(prop.mustGet("LgK"));
     localLgK = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_localLgK"));
@@ -63,7 +63,7 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
    * @return the average update time per update for this trial
    */
   @Override
-  double doTrial(final int uPerTrial) {
+  public double doTrial(final int uPerTrial) {
     //reuse the same sketches
     sharedSketch.reset(); // reset shared sketch first
     localSketch.reset();  // local sketch reset is reading the theta from shared sketch

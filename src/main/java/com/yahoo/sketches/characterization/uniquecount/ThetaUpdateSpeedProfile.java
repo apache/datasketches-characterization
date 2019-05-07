@@ -19,7 +19,7 @@ public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   protected UpdateSketch sketch;
 
   @Override
-  void configure() {
+  public void configure() {
     //Configure Sketch
     final int lgK = Integer.parseInt(prop.mustGet("LgK"));
     final Family family = Family.stringToFamily(prop.mustGet("THETA_famName"));
@@ -44,7 +44,7 @@ public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   }
 
   @Override
-  double doTrial(final int uPerTrial) {
+  public double doTrial(final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
     final long startUpdateTime_nS = System.nanoTime();
 

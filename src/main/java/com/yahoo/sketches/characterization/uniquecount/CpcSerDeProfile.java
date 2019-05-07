@@ -14,13 +14,13 @@ public class CpcSerDeProfile extends BaseSerDeProfile {
   private CpcSketch sketch;
 
   @Override
-  void configure() {
+  public void configure() {
     sketch = new CpcSketch(lgK);
   }
 
 
   @Override
-  void doTrial(final Stats stats, final int uPerTrial) {
+  public void doTrial(final Stats stats, final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
 
     for (int u = uPerTrial; u-- > 0;) {

@@ -16,7 +16,7 @@ public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private HllSketch sketch;
 
   @Override
-  void configure() {
+  public void configure() {
     final int lgK = Integer.parseInt(prop.mustGet("LgK"));
     final boolean direct = Boolean.parseBoolean(prop.mustGet("HLL_direct"));
 
@@ -36,7 +36,7 @@ public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   }
 
   @Override
-  double doTrial(final int uPerTrial) {
+  public double doTrial(final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
     final long startUpdateTime_nS = System.nanoTime();
 

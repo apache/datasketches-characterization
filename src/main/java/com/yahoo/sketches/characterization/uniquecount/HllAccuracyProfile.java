@@ -16,7 +16,7 @@ public class HllAccuracyProfile extends BaseAccuracyProfile {
   private boolean useCharArr; //accuracy ?? or speed HLL, Theta?
 
   @Override
-  void configure() {
+  public void configure() {
     //Configure Sketch
     final boolean direct = Boolean.parseBoolean(prop.mustGet("HLL_direct"));
     useComposite = Boolean.parseBoolean(prop.mustGet("HLL_useComposite"));
@@ -39,7 +39,7 @@ public class HllAccuracyProfile extends BaseAccuracyProfile {
   }
 
   @Override
-  void doTrial() {
+  public void doTrial() {
     final int qArrLen = qArr.length;
     sketch.reset(); //reuse the same sketch
     int lastUniques = 0;
