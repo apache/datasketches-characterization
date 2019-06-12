@@ -2,9 +2,9 @@ package com.yahoo.sketches.characterization.frequencies;
 
 import static com.yahoo.sketches.Util.pwr2LawNext;
 
-import com.yahoo.sketches.characterization.Job;
-import com.yahoo.sketches.characterization.JobProfile;
-import com.yahoo.sketches.characterization.Properties;
+import com.yahoo.sketches.Job;
+import com.yahoo.sketches.JobProfile;
+import com.yahoo.sketches.Properties;
 
 public abstract class BaseFrequenciesSpeedProfile implements JobProfile {
 
@@ -43,7 +43,8 @@ public abstract class BaseFrequenciesSpeedProfile implements JobProfile {
 
     int streamLength = minStreamLen;
     while (streamLength <= maxStreamLen) {
-      final int numTrials = getNumTrials(streamLength, lgMinStreamLen, lgMaxStreamLen, lgMinTrials, lgMaxTrials);
+      final int numTrials = getNumTrials(streamLength, lgMinStreamLen, lgMaxStreamLen, lgMinTrials,
+          lgMaxTrials);
       resetStats();
       for (int i = 0; i < numTrials; i++) {
         prepareTrial(streamLength);

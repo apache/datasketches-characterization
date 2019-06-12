@@ -27,19 +27,29 @@ public class ZipfDistribution {
   private final double hIntegralNumberOfElements;
   private final double s;
 
+  /**
+   *
+   * @param numberOfElements blah
+   * @param exponent blah
+   */
   public ZipfDistribution(final int numberOfElements, final double exponent) {
     this.numberOfElements = numberOfElements;
     this.exponent = exponent;
-    this.hIntegralX1 = hIntegral(1.5) - 1.0;
-    this.hIntegralNumberOfElements = hIntegral(numberOfElements + F_1_2);
-    this.s = 2 - hIntegralInverse(hIntegral(2.5) - h(2.0));
+    hIntegralX1 = hIntegral(1.5) - 1.0;
+    hIntegralNumberOfElements = hIntegral(numberOfElements + F_1_2);
+    s = 2 - hIntegralInverse(hIntegral(2.5) - h(2.0));
   }
 
+  /**
+   *
+   * @return number of elements
+   */
   public int sample() {
-    while(true) {
-      final double u = hIntegralNumberOfElements + rng.nextDouble() * (hIntegralX1 - hIntegralNumberOfElements);
+    while (true) {
+      final double u = hIntegralNumberOfElements
+          + (rng.nextDouble() * (hIntegralX1 - hIntegralNumberOfElements));
 
-      double x = hIntegralInverse(u);
+      final double x = hIntegralInverse(u);
       int k = (int) (x + F_1_2);
 
       if (k < 1) {
@@ -48,7 +58,7 @@ public class ZipfDistribution {
         k = numberOfElements;
       }
 
-      if (k - x <= s || u >= hIntegral(k + F_1_2) - h(k)) {
+      if (((k - x) <= s) || (u >= (hIntegral(k + F_1_2) - h(k)))) {
           return k;
       }
     }
@@ -77,14 +87,14 @@ public class ZipfDistribution {
     if (Math.abs(x) > TAYLOR_THRESHOLD) {
       return Math.log1p(x) / x;
     }
-    return 1 - x * (F_1_2 - x * (F_1_3 - F_1_4 * x));
+    return 1 - (x * (F_1_2 - (x * (F_1_3 - (F_1_4 * x)))));
   }
 
   private static double helper2(final double x) {
     if (Math.abs(x) > TAYLOR_THRESHOLD) {
       return Math.expm1(x) / x;
     }
-    return 1 + x * F_1_2 * (1 + x * F_1_3 * (1 + F_1_4 * x));
+    return 1 + (x * F_1_2 * (1 + (x * F_1_3 * (1 + (F_1_4 * x)))));
   }
 
 }

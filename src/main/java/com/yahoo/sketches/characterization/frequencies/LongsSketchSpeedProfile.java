@@ -1,10 +1,9 @@
 package com.yahoo.sketches.characterization.frequencies;
 
 import com.yahoo.memory.Memory;
-import com.yahoo.sketches.characterization.Properties;
-import com.yahoo.sketches.frequencies.LongsSketch;
-
+import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.characterization.ZipfDistribution;
+import com.yahoo.sketches.frequencies.LongsSketch;
 
 public class LongsSketchSpeedProfile extends BaseFrequenciesSpeedProfile {
 
@@ -21,10 +20,10 @@ public class LongsSketchSpeedProfile extends BaseFrequenciesSpeedProfile {
 
   @Override
   void configure(final Properties properties) {
-    this.k = Integer.parseInt(properties.mustGet("k"));
+    k = Integer.parseInt(properties.mustGet("k"));
     final int range = Integer.parseInt(properties.mustGet("zipfRange"));
     final double exponent = Double.parseDouble(properties.mustGet("zipfExponent"));
-    this.zipf = new ZipfDistribution(range, exponent);
+    zipf = new ZipfDistribution(range, exponent);
   }
 
   @Override
