@@ -117,13 +117,13 @@ public class DirectoryWalker {
     return fileList;
   }
 
-  @Test
+  @Test //example
   public static void printFiles() {
     final String rootPath = "/Users/lrhodes/dev/git/Apache/datasketches-memory/src/";
-    final String regExSelector = ".+[.]java";
+    final String fileSelector = ".+[.]java";
     final boolean recursive = true;
 
-    final List<String> fileList = appendFileList(rootPath, regExSelector, recursive);
+    final List<String> fileList = appendFileList(rootPath, fileSelector, recursive);
     final int size = fileList.size();
 
     for (int i = 0; i < size; i++) {
@@ -134,19 +134,4 @@ public class DirectoryWalker {
 
   static void println(final String s) { System.out.println(s); }
 
-  /**
-   * blah
-   * @param args blah
-   */
-  public static void main(final String[] args) {
-    final String rootPath = "/Users/lrhodes/dev/git/Apache/datasketches-memory/src";
-    final String regExSelector = ".+[.]java";
-    final boolean recursive = true;
-
-    final List<String> fileList = appendFileList(rootPath, regExSelector, recursive);
-    final int size = fileList.size();
-    for (int i = 0; i < size; i++) {
-      System.out.println(fileList.get(i));
-    }
-  }
 }
