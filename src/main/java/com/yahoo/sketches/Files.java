@@ -947,8 +947,7 @@ public final class Files {
    *
    * @param text is the source String.
    * @param fileName the given fileName
-   * @throws RuntimeException if IOException occurs or if fileName is null or
-   * empty.
+   * @throws RuntimeException if IOException occurs or if fileName is null or empty.
    */
   public static void stringToFile(final String text, final String fileName) {
     stringToFile(text, fileName, DEFAULT_BUFSIZE, Charset.defaultCharset());
@@ -962,8 +961,7 @@ public final class Files {
    * @param bufSize if less than 8192 it defaults to 8192.
    * @param charset The Charset to use when converting the source string
    * (UTF-16) to a sequence of encoded bytes of the Charset.
-   * @throws RuntimeException if IOException occurs or if fileName is null or
-   * empty.
+   * @throws RuntimeException if IOException occurs or if fileName is null or empty.
    */
   public static void stringToFile(final String text, final String fileName, final int bufSize,
       final Charset charset) {
