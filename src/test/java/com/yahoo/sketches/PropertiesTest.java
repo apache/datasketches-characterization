@@ -53,10 +53,9 @@ public class PropertiesTest {
   }
 
   /**
-   *
    * @param s string to print
    */
-  static void println(String s) {
+  static void println(final String s) {
     //System.out.println(s); //Disable here
   }
 
