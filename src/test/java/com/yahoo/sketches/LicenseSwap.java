@@ -22,13 +22,16 @@ import java.io.File;
 public class LicenseSwap {
   private static final String LS = System.getProperty("line.separator");
   private static String mySystemPath = "/Users/lrhodes/dev/git/";
-  private static String myRepoPath = "Apache/datasketches-java/"; //no incubator here
+  private static String myRepoPath = "Apache/datasketches-pig/"; //no incubator here
   private static String folderPath = "/src/";
   private static String rootPath = mySystemPath + myRepoPath + folderPath;
   private static String fileSelector = ".+[.]java";
+  private static boolean detail = true;
 
   /**
    * Run this test to perform the replaceLicense and/or the replacePackage.
+   * PUT TARGET IN A BRANCH FIRST!
+   * AFTERWARDS, UPDATE POM!
    */
   @Test
   public static void treeWalk() {
@@ -38,12 +41,14 @@ public class LicenseSwap {
     println("Files: " + numFiles + "\n");
     for (int i = 0; i < numFiles; i++) {
       String pathFile = fileList.get(i);
-      //replaceLicense(pathFile);
+      //SELECT EITHER OR BOTH
+      replaceLicense(pathFile);
       replacePackage(pathFile);
     }
+    println("DONE!");
   }
 
-  @SuppressWarnings("unused")
+  //@SuppressWarnings("unused")
   private static void replaceLicense(String pathFile) {
     String fileStr = Files.fileToString(pathFile);
     int i1 = fileStr.indexOf("/**");
@@ -53,8 +58,12 @@ public class LicenseSwap {
       throw new IllegalArgumentException("No package in " + pathFile);
     }
     int i3 = (i1 < 0) ? i2 : min(i1, i2);
-    //String filename = path.substring(path.lastIndexOf("/") + 1, path.length()); //opt print filename
-    //println(filename + ":\n" + fileStr.substring(0, i3));
+
+    if (detail) {
+      String filename = pathFile.substring(pathFile.lastIndexOf("/") + 1, pathFile.length());
+      println(filename + ":\n" + fileStr.substring(0, i3));
+    }
+
     String newFileStr = asfHeader + LS + fileStr.substring(i3);
     Files.stringToFile(newFileStr, pathFile);
   }
@@ -73,8 +82,14 @@ public class LicenseSwap {
     String path2;
     if (path.contains("com/yahoo/memory")) {
       path2 = path.replace("com/yahoo/memory", "org/apache/datasketches/memory");
+      if (detail) {
+        println(path + " --> " + path2);
+      }
     } else if (path.contains("com/yahoo/sketches")) {
       path2 = path.replace("com/yahoo/sketches", "org/apache/datasketches");
+      if (detail) {
+        println(path + " --> " + path2);
+      }
     } else {
       throw new IllegalArgumentException(path);
     }
