@@ -19,13 +19,14 @@ import java.io.File;
  * sketches-core-perf/src/test/java/com.yahoo.sketches/LicenseSwap
  * @author Lee Rhodes
  */
+@SuppressWarnings("unused")
 public class LicenseSwap {
   private static final String LS = System.getProperty("line.separator");
   private static String mySystemPath = "/Users/lrhodes/dev/git/";
-  private static String myRepoPath = "Apache/datasketches-pig/"; //no incubator here
-  private static String folderPath = "/src/";
+  private static String myRepoPath = "DataSketches.github.io/"; //no incubator here
+  private static String folderPath = "docs/";
   private static String rootPath = mySystemPath + myRepoPath + folderPath;
-  private static String fileSelector = ".+[.]java";
+  private static String fileSelector = ".+[.]md";
   private static boolean detail = true;
 
   /**
@@ -41,14 +42,14 @@ public class LicenseSwap {
     println("Files: " + numFiles + "\n");
     for (int i = 0; i < numFiles; i++) {
       String pathFile = fileList.get(i);
-      //SELECT EITHER OR BOTH
-      replaceLicense(pathFile);
-      replacePackage(pathFile);
+      replaceStrings(pathFile);
+      //replaceLicense(pathFile);
+      //replacePackage(pathFile);
     }
     println("DONE!");
   }
 
-  //@SuppressWarnings("unused")
+
   private static void replaceLicense(String pathFile) {
     String fileStr = Files.fileToString(pathFile);
     int i1 = fileStr.indexOf("/**");
@@ -68,7 +69,17 @@ public class LicenseSwap {
     Files.stringToFile(newFileStr, pathFile);
   }
 
-  //@SuppressWarnings("unused")
+  private static void replaceStrings(String pathFile) {
+    String fileStr = Files.fileToString(pathFile); //entire contents of file
+    //first change the references to memory
+    String fileStr2 = fileStr.replace("com.yahoo.memory", "org.apache.datasketches.memory");
+    String fileStr3 = fileStr2.replace("com/yahoo/memory", "org/apache/datasketches/memory");
+    //then change the the rest of the strings
+    String fileStr4 = fileStr3.replace("com.yahoo.sketches", "org.apache.datasketches");
+    String fileStr5 = fileStr4.replace("com/yahoo/sketches", "org/apache/datasketches");
+    Files.stringToFile(fileStr5, pathFile);
+  }
+
   private static void replacePackage(String pathFile) {
     String fileStr = Files.fileToString(pathFile); //entire contents of file
     //first change the references to memory
