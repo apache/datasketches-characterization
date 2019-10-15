@@ -1,15 +1,15 @@
 package com.yahoo.sketches.characterization.quantiles.momentsketch.optimizer;
 
 public interface GenericOptimizer {
-    void setVerbose(boolean flag);
+  void setVerbose(boolean flag);
 
-    void setMaxIter(int maxIter);
+  void setMaxIter(int maxIter);
 
-    boolean isConverged();
+  boolean isConverged();
 
-    int getStepCount();
+  int getStepCount();
 
-    FunctionWithHessian getP();
+  FunctionWithHessian getP();
 
-    double[] solve(double[] start, double gradTol);
+  double[] solve(double[] start, double gradTol);
 }

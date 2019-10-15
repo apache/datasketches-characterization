@@ -7,6 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class DMaxentLossTest {
+
     @Test
     public void testTrivial() {
         double m_values[] = {1.0, 0, -1.0/3, 0, -1.0/15, 0, -1.0/35};

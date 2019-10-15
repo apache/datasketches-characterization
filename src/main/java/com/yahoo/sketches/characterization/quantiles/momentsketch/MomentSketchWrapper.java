@@ -35,50 +35,43 @@ import java.nio.ByteBuffer;
  * the moment sketch aggregator
  * {@link org.apache.druid.query.aggregation.momentsketch.aggregator.MomentSketchAggregatorFactory}.
  *
- * <p>k controls the size and accuracy provided by the sketch.
+ * <p>
+ * k controls the size and accuracy provided by the sketch.
  * The sinh function is used to compress the range of data to allow for more robust results
  * on skewed and long-tailed metrics, but slightly reducing accuracy on metrics with more uniform
  * distributions.
  */
-public class MomentSketchWrapper
-{
+public class MomentSketchWrapper {
   // The MomentStruct object stores the relevant statistics about a metric distribution.
   protected MomentStruct data;
   // Whether we use arcsinh to compress the range
   protected boolean useArcSinh = true;
 
-  public MomentSketchWrapper(int k)
-  {
+  public MomentSketchWrapper(int k) {
     data = new MomentStruct(k);
   }
 
-  public MomentSketchWrapper(MomentStruct data)
-  {
+  public MomentSketchWrapper(MomentStruct data) {
     this.data = data;
   }
 
-  public void setCompressed(boolean flag)
-  {
+  public void setCompressed(boolean flag) {
     useArcSinh = flag;
   }
 
-  public boolean getCompressed()
-  {
+  public boolean getCompressed() {
     return useArcSinh;
   }
 
-  public int getK()
-  {
+  public int getK() {
     return data.power_sums.length;
   }
 
-  public double[] getPowerSums()
-  {
+  public double[] getPowerSums() {
     return data.power_sums;
   }
 
-  public double getMin()
-  {
+  public double getMin() {
     if (useArcSinh) {
       return Math.sinh(data.min);
     } else {
@@ -86,8 +79,7 @@ public class MomentSketchWrapper
     }
   }
 
-  public double getMax()
-  {
+  public double getMax() {
     if (useArcSinh) {
       return Math.sinh(data.max);
     } else {
@@ -95,8 +87,7 @@ public class MomentSketchWrapper
     }
   }
 
-  public void add(double rawX)
-  {
+  public void add(double rawX) {
     double x = rawX;
     if (useArcSinh) {
       // Since Java does not have a native arcsinh implementation we
@@ -107,31 +98,28 @@ public class MomentSketchWrapper
     data.add(x);
   }
 
-  public void merge(MomentSketchWrapper other)
-  {
+  public void merge(MomentSketchWrapper other) {
     data.merge(other.data);
   }
 
-  public byte[] toByteArray()
-  {
+  public byte[] toByteArray() {
     ByteBuffer bb = ByteBuffer.allocate((2 * Integer.BYTES) + ((data.power_sums.length + 2) * Double.BYTES));
     return toBytes(bb).array();
   }
 
-  public MomentSolver getSolver()
-  {
+  public MomentSolver getSolver() {
     MomentSolver ms = new MomentSolver(data);
     return ms;
   }
 
   /**
    * Estimates quantiles given the statistics in a moments sketch.
+   * 
    * @param fractions real values between [0,1] for which we want to estimate quantiles
    *
    * @return estimated quantiles.
    */
-  public double[] getQuantiles(double[] fractions)
-  {
+  public double[] getQuantiles(double[] fractions) {
     // The solver attempts to construct a distribution estimate which matches the
     // statistics tracked by the moments sketch. We can then read off quantile estimates
     // from the reconstructed distribution.
@@ -152,8 +140,7 @@ public class MomentSketchWrapper
     return rawQuantiles;
   }
 
-  public ByteBuffer toBytes(ByteBuffer bb)
-  {
+  public ByteBuffer toBytes(ByteBuffer bb) {
     int compressedInt = getCompressed() ? 1 : 0;
     bb.putInt(data.power_sums.length);
     bb.putInt(compressedInt);
@@ -165,8 +152,7 @@ public class MomentSketchWrapper
     return bb;
   }
 
-  public static MomentSketchWrapper fromBytes(ByteBuffer bb)
-  {
+  public static MomentSketchWrapper fromBytes(ByteBuffer bb) {
     int k = bb.getInt();
     int compressedInt = bb.getInt();
     boolean compressed = (compressedInt > 0);
@@ -181,15 +167,13 @@ public class MomentSketchWrapper
     return mw;
   }
 
-  public static MomentSketchWrapper fromByteArray(byte[] input)
-  {
+  public static MomentSketchWrapper fromByteArray(byte[] input) {
     ByteBuffer bb = ByteBuffer.wrap(input);
     return fromBytes(bb);
   }
 
   @Override
-  public String toString()
-  {
+  public String toString() {
     return data.toString();
   }
 }
