@@ -30,6 +30,10 @@ package com.yahoo.sketches.characterization.quantiles.momentsketch;
 
 import java.nio.ByteBuffer;
 
+import com.github.stanfordfuturedata.momentsketch.MomentSolver;
+import com.github.stanfordfuturedata.momentsketch.MomentStruct;
+
+
 /**
  * Class for wrapping the operations of the moments sketch for use in
  * the moment sketch aggregator
@@ -114,7 +118,7 @@ public class MomentSketchWrapper {
 
   /**
    * Estimates quantiles given the statistics in a moments sketch.
-   * 
+   *
    * @param fractions real values between [0,1] for which we want to estimate quantiles
    *
    * @return estimated quantiles.
