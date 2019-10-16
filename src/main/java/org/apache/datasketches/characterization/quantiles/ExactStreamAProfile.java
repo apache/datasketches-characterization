@@ -25,14 +25,13 @@ import static org.apache.datasketches.characterization.quantiles.ProfileUtil.che
 import java.io.File;
 import java.util.Arrays;
 
-import org.testng.annotations.Test;
-
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.LineReader;
 import org.apache.datasketches.ProcessLine;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.UnzipFiles;
+import org.testng.annotations.Test;
 
 /**
  * Computes exact quantiles using brute-force methods.

@@ -19,11 +19,11 @@
 
 package org.apache.datasketches.characterization.hll;
 
-import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.AccuracyStats;
 import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;
+import org.apache.datasketches.memory.WritableMemory;
 
 public class HllAccuracyProfile extends BaseAccuracyProfile {
   private HllSketch sketch;

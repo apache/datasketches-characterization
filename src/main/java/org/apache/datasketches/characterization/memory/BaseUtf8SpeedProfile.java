@@ -19,18 +19,18 @@
 
 package org.apache.datasketches.characterization.memory;
 
-import static org.apache.datasketches.Util.pwr2LawNext;
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
+import static org.apache.datasketches.Util.pwr2LawNext;
 import static org.testng.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.datasketches.memory.Memory;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.memory.Memory;
 
 /**
  * @author Lee Rhodes

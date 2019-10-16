@@ -19,9 +19,9 @@
 
 package org.apache.datasketches.characterization.memory;
 
-import static org.apache.datasketches.Util.pwr2LawNext;
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
+import static org.apache.datasketches.Util.pwr2LawNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;

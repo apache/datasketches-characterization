@@ -19,10 +19,10 @@
 
 package org.apache.datasketches.characterization.frequencies;
 
-import org.apache.datasketches.memory.Memory;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.characterization.ZipfDistribution;
 import org.apache.datasketches.frequencies.LongsSketch;
+import org.apache.datasketches.memory.Memory;
 
 public class LongsSketchSpeedProfile extends BaseFrequenciesSpeedProfile {
 

@@ -23,10 +23,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
-import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.ArrayOfDoublesSerDe;
 import org.apache.datasketches.ArrayOfItemsSerDe;
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.quantiles.ItemsSketch;
 
 public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {

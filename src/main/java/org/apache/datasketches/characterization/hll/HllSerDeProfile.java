@@ -19,11 +19,11 @@
 
 package org.apache.datasketches.characterization.hll;
 
-import org.apache.datasketches.memory.Memory;
-import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.characterization.uniquecount.BaseSerDeProfile;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;
+import org.apache.datasketches.memory.Memory;
+import org.apache.datasketches.memory.WritableMemory;
 
 /**
  * @author Lee Rhodes

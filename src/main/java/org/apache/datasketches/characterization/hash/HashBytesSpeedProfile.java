@@ -21,9 +21,9 @@ package org.apache.datasketches.characterization.hash;
 
 import static org.apache.datasketches.memory.UnsafeUtil.unsafe;
 
-import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.hash.MurmurHash3v2;
 import org.apache.datasketches.hash.XxHash;
+import org.apache.datasketches.memory.WritableMemory;
 
 /**
  * @author Lee Rhodes

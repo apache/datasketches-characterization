@@ -19,11 +19,11 @@
 
 package org.apache.datasketches.characterization.quantiles;
 
+import static java.lang.Math.ceil;
+import static java.lang.Math.max;
 import static org.apache.datasketches.Util.ceilingPowerOfBdouble;
 import static org.apache.datasketches.Util.logB;
 import static org.apache.datasketches.Util.pwrLawNextDouble;
-import static java.lang.Math.ceil;
-import static java.lang.Math.max;
 
 import org.testng.annotations.Test;
 

@@ -22,9 +22,9 @@ package org.apache.datasketches.characterization.quantiles;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.apache.datasketches.Properties;
 import org.apache.datasketches.memory.Memory;
 import org.apache.datasketches.memory.WritableMemory;
-import org.apache.datasketches.Properties;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;

@@ -23,14 +23,13 @@ import static java.lang.Math.rint;
 
 import java.io.File;
 
-import org.apache.druid.query.aggregation.momentsketch.MomentSketchWrapper;
-
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.LineReader;
 import org.apache.datasketches.ProcessLine;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.UnzipFiles;
+import org.apache.druid.query.aggregation.momentsketch.MomentSketchWrapper;
 
 /**
  * @author Lee Rhodes

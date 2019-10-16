@@ -23,16 +23,15 @@ import static org.apache.datasketches.characterization.quantiles.ProfileUtil.bui
 
 import java.io.File;
 
-import org.apache.druid.query.aggregation.histogram.ApproximateHistogram;
-import org.apache.druid.query.aggregation.histogram.Histogram;
-import org.testng.annotations.Test;
-
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.LineReader;
 import org.apache.datasketches.ProcessLine;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.UnzipFiles;
+import org.apache.druid.query.aggregation.histogram.ApproximateHistogram;
+import org.apache.druid.query.aggregation.histogram.Histogram;
+import org.testng.annotations.Test;
 
 /**
  * @author Lee Rhodes

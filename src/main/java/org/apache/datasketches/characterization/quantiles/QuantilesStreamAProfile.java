@@ -19,8 +19,8 @@
 
 package org.apache.datasketches.characterization.quantiles;
 
-import static org.apache.datasketches.characterization.quantiles.ProfileUtil.buildSplitPointsArr;
 import static java.lang.Math.rint;
+import static org.apache.datasketches.characterization.quantiles.ProfileUtil.buildSplitPointsArr;
 
 import java.io.File;
 

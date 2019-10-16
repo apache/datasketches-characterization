@@ -21,10 +21,10 @@ package org.apache.datasketches.characterization.theta.concurrent;
 
 import static org.apache.datasketches.Util.DEFAULT_UPDATE_SEED;
 
-import org.apache.datasketches.memory.WritableDirectHandle;
-import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.AccuracyStats;
 import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
+import org.apache.datasketches.memory.WritableDirectHandle;
+import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.Sketch;
 import org.apache.datasketches.theta.UpdateSketch;
 import org.apache.datasketches.theta.UpdateSketchBuilder;

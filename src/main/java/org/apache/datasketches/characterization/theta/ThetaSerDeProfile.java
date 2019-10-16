@@ -19,11 +19,11 @@
 
 package org.apache.datasketches.characterization.theta;
 
-import org.apache.datasketches.memory.Memory;
-import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.Family;
 import org.apache.datasketches.ResizeFactor;
 import org.apache.datasketches.characterization.uniquecount.BaseSerDeProfile;
+import org.apache.datasketches.memory.Memory;
+import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.Sketch;
 import org.apache.datasketches.theta.UpdateSketch;
 import org.apache.datasketches.theta.UpdateSketchBuilder;

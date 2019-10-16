@@ -19,11 +19,10 @@
 
 package org.apache.datasketches.characterization.hll;
 
-import org.apache.druid.hll.HyperLogLogCollector;
-import org.apache.druid.hll.HyperLogLogHash;
-
 import org.apache.datasketches.AccuracyStats;
 import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
+import org.apache.druid.hll.HyperLogLogCollector;
+import org.apache.druid.hll.HyperLogLogHash;
 
 public class DruidHllAccuracyProfile extends BaseAccuracyProfile {
 

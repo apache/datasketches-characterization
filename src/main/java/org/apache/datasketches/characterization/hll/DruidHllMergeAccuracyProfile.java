@@ -21,11 +21,10 @@ package org.apache.datasketches.characterization.hll;
 
 import java.util.Random;
 
-import org.apache.druid.hll.HyperLogLogCollector;
-import org.apache.druid.hll.HyperLogLogHash;
-
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
+import org.apache.druid.hll.HyperLogLogCollector;
+import org.apache.druid.hll.HyperLogLogHash;
 
 public class DruidHllMergeAccuracyProfile implements JobProfile {
 

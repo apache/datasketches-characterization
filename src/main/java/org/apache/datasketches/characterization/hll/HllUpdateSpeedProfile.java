@@ -19,10 +19,10 @@
 
 package org.apache.datasketches.characterization.hll;
 
-import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;
+import org.apache.datasketches.memory.WritableMemory;
 
 /**
  * @author Lee Rhodes
