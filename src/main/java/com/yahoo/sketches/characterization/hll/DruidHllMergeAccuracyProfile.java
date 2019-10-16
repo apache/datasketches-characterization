@@ -7,10 +7,11 @@ package com.yahoo.sketches.characterization.hll;
 
 import java.util.Random;
 
+import org.apache.druid.hll.HyperLogLogCollector;
+import org.apache.druid.hll.HyperLogLogHash;
+
 import com.yahoo.sketches.Job;
 import com.yahoo.sketches.JobProfile;
-import com.yahoo.sketches.characterization.hll.druidhll.HyperLogLogCollector;
-import com.yahoo.sketches.characterization.hll.druidhll.HyperLogLogHash;
 
 public class DruidHllMergeAccuracyProfile implements JobProfile {
 

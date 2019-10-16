@@ -9,6 +9,8 @@ import static com.yahoo.sketches.characterization.quantiles.ProfileUtil.buildSpl
 
 import java.io.File;
 
+import org.apache.druid.query.aggregation.histogram.ApproximateHistogram;
+import org.apache.druid.query.aggregation.histogram.Histogram;
 import org.testng.annotations.Test;
 
 import com.yahoo.sketches.Job;
@@ -17,8 +19,6 @@ import com.yahoo.sketches.LineReader;
 import com.yahoo.sketches.ProcessLine;
 import com.yahoo.sketches.Properties;
 import com.yahoo.sketches.UnzipFiles;
-import com.yahoo.sketches.characterization.quantiles.druidhistogram.ApproximateHistogram;
-import com.yahoo.sketches.characterization.quantiles.druidhistogram.Histogram;
 
 /**
  * @author Lee Rhodes
