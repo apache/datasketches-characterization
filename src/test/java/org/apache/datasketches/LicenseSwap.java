@@ -30,23 +30,49 @@ import static java.lang.Math.*;
 import java.io.File;
 
 /**
- * sketches-core-perf/src/test/java/org.apache.datasketches/LicenseSwap
  * @author Lee Rhodes
  */
 @SuppressWarnings("unused")
 public class LicenseSwap {
   private static final String LS = System.getProperty("line.separator");
+  private static enum CommentType { JAVA, SCRIPT }
+  private static String before;
+  private static String esc;
+  private static String after;
+
+
+  //CONFIGURE:
   private static String mySystemPath = "/Users/lrhodes/dev/git/";
-  private static String myRepoPath = "DataSketches.github.io/"; //no incubator here
-  private static String folderPath = "docs/";
+  private static String myRepoPath = "Apache/datasketches-vector/"; //no incubator here
+  private static String folderPath = "src/";  //usually: src or docs
   private static String rootPath = mySystemPath + myRepoPath + folderPath;
-  private static String fileSelector = ".+[.]md";
+  private static String fileSelector = ".+[.]java";
   private static boolean detail = true;
+  private static CommentType comment = CommentType.JAVA;
+
+  static {
+    switch (comment) {
+      case JAVA: {
+        before = "/*" + LS;
+        esc    = " *";
+        after  = " */" + LS;
+        break;
+      }
+      case SCRIPT: {
+        before = "";
+        esc    = "#";
+        after  = LS;
+        break;
+      }
+    }
+  }
 
   /**
-   * Run this test to perform the replaceLicense and/or the replacePackage.
-   * PUT TARGET IN A BRANCH FIRST!
-   * AFTERWARDS, UPDATE POM!
+   * <p>PUT TARGET IN A BRANCH FIRST!</p>
+   *
+   * <p>Run this test to perform the selected operation (below).</p>
+   *
+   * <p>AFTERWARDS, UPDATE POM!</p>
    */
   @Test
   public static void treeWalk() {
@@ -56,17 +82,24 @@ public class LicenseSwap {
     println("Files: " + numFiles + "\n");
     for (int i = 0; i < numFiles; i++) {
       String pathFile = fileList.get(i);
-      replaceStrings(pathFile);
-      //replaceLicense(pathFile);
-      //replacePackage(pathFile);
+      //SELECT!
+      //insertLicense(pathFile);
+      //replaceStrings(pathFile);
+      replaceLicense(pathFile);
+      replacePackage(pathFile);
     }
     println("DONE!");
   }
 
+  private static void insertLicense(String pathFile) {
+    String fileStr = Files.fileToString(pathFile);
+    Files.stringToFile(asfHeader + fileStr, pathFile);
+    if (detail) { println(pathFile); }
+  }
 
   private static void replaceLicense(String pathFile) {
     String fileStr = Files.fileToString(pathFile);
-    int i1 = fileStr.indexOf("/**");
+    int i1 = fileStr.indexOf("/**"); //detects package-info comments before "package" statememt
     int i2 = fileStr.indexOf("package");
     if (i2 > 0) { i2 = fileStr.indexOf("\npackage") + 1; }
     if (i2 < 0) {
@@ -86,10 +119,10 @@ public class LicenseSwap {
   private static void replaceStrings(String pathFile) {
     String fileStr = Files.fileToString(pathFile); //entire contents of file
     //first change the references to memory
-    String fileStr2 = fileStr.replace("org.apache.datasketches.memory", "org.apache.datasketches.memory");
+    String fileStr2 = fileStr.replace("com.yahoo.memory", "org.apache.datasketches.memory");
     String fileStr3 = fileStr2.replace("com/yahoo/memory", "org/apache/datasketches/memory");
     //then change the the rest of the strings
-    String fileStr4 = fileStr3.replace("org.apache.datasketches", "org.apache.datasketches");
+    String fileStr4 = fileStr3.replace("com.yahoo.sketches", "org.apache.datasketches");
     String fileStr5 = fileStr4.replace("com/yahoo/sketches", "org/apache/datasketches");
     Files.stringToFile(fileStr5, pathFile);
   }
@@ -97,9 +130,9 @@ public class LicenseSwap {
   private static void replacePackage(String pathFile) {
     String fileStr = Files.fileToString(pathFile); //entire contents of file
     //first change the references to memory
-    String fileStr2 = fileStr.replace("org.apache.datasketches.memory", "org.apache.datasketches.memory");
+    String fileStr2 = fileStr.replace("com.yahoo.memory", "org.apache.datasketches.memory");
     //then change the the rest of the hierarchy
-    String fileStr3 = fileStr2.replace("org.apache.datasketches", "org.apache.datasketches");
+    String fileStr3 = fileStr2.replace("com.yahoo.sketches", "org.apache.datasketches");
     //now restore in new directory
     int idx = pathFile.lastIndexOf("/") + 1;
     String path = pathFile.substring(0, idx); //with the slash
@@ -124,10 +157,6 @@ public class LicenseSwap {
     File oldFile = new File(pathFile);
     oldFile.delete();
   }
-
-  private static String before = "/*"  + LS;
-  private static String esc    = " *";
-  private static String after  = " */" + LS;
 
   private static String asfHeader =
        before
