@@ -22,6 +22,7 @@ package org.apache.datasketches;
 import static org.apache.datasketches.Files.isFileValid;
 import static org.apache.datasketches.Files.openPrintWriter;
 import static org.apache.datasketches.Util.milliSecToString;
+import static org.apache.datasketches.memory.Util.getResourcePath;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -54,10 +55,13 @@ public class Job {
    * JobProfile to be run.
    */
   public Job(final String jobConfigureFileName) {
-    if (!isFileValid(jobConfigureFileName)) {
-      throw new IllegalArgumentException("File not valid. " + jobConfigureFileName);
+    final String jobConfStr;
+    if (isFileValid(jobConfigureFileName)) { //assumes fully qualified
+      jobConfStr = Files.fileToString(jobConfigureFileName); //includes line feeds
+    } else {
+      final String path = getResourcePath(jobConfigureFileName); //try resources
+      jobConfStr = Files.fileToString(path); //includes line feeds
     }
-    final String jobConfStr = Files.fileToString(jobConfigureFileName); //includes line feeds
     prop = parseJobProperties(jobConfStr);
 
     profile = createJobProfile();
