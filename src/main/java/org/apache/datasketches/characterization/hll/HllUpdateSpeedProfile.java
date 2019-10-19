@@ -22,6 +22,7 @@ package org.apache.datasketches.characterization.hll;
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;
+import org.apache.datasketches.memory.WritableDirectHandle;
 import org.apache.datasketches.memory.WritableMemory;
 
 /**
@@ -29,11 +30,13 @@ import org.apache.datasketches.memory.WritableMemory;
  */
 public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private HllSketch sketch;
+  private WritableDirectHandle handle;
+  private WritableMemory wmem;
 
   @Override
   public void configure() {
     final int lgK = Integer.parseInt(prop.mustGet("LgK"));
-    final boolean direct = Boolean.parseBoolean(prop.mustGet("HLL_direct"));
+    final boolean offheap = Boolean.parseBoolean(prop.mustGet("HLL_offheap"));
 
     final TgtHllType tgtHllType;
     final String type = prop.mustGet("HLL_tgtHllType");
@@ -41,13 +44,19 @@ public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     else if (type.equalsIgnoreCase("HLL6")) { tgtHllType = TgtHllType.HLL_6; }
     else { tgtHllType = TgtHllType.HLL_8; }
 
-    if (direct) {
+    if (offheap) {
       final int bytes = HllSketch.getMaxUpdatableSerializationBytes(lgK, tgtHllType);
-      final WritableMemory wmem = WritableMemory.allocate(bytes);
+      handle = WritableMemory.allocateDirect(bytes);
+      wmem = handle.get();
       sketch = new HllSketch(lgK, tgtHllType, wmem);
     } else {
       sketch = new HllSketch(lgK, tgtHllType);
     }
+  }
+
+  @Override
+  public void cleanup() {
+    handle.close();
   }
 
   @Override
