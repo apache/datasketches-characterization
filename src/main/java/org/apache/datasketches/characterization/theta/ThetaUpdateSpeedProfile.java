@@ -22,6 +22,7 @@ package org.apache.datasketches.characterization.theta;
 import org.apache.datasketches.Family;
 import org.apache.datasketches.ResizeFactor;
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
+import org.apache.datasketches.memory.WritableDirectHandle;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.Sketch;
 import org.apache.datasketches.theta.UpdateSketch;
@@ -32,6 +33,9 @@ import org.apache.datasketches.theta.UpdateSketchBuilder;
  */
 public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   protected UpdateSketch sketch;
+  private WritableDirectHandle handle;
+  private WritableMemory wmem;
+
 
   @Override
   public void configure() {
@@ -40,7 +44,7 @@ public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     final Family family = Family.stringToFamily(prop.mustGet("THETA_famName"));
     final float p = Float.parseFloat(prop.mustGet("THETA_p"));
     final ResizeFactor rf = ResizeFactor.getRF(Integer.parseInt(prop.mustGet("THETA_lgRF")));
-    final boolean direct = Boolean.parseBoolean(prop.mustGet("THETA_direct"));
+    final boolean offheap = Boolean.parseBoolean(prop.mustGet("THETA_offheap"));
 
     final int k = 1 << lgK;
     final UpdateSketchBuilder udBldr = UpdateSketch.builder()
@@ -48,14 +52,19 @@ public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
         .setFamily(family)
         .setP(p)
         .setResizeFactor(rf);
-    if (direct) {
+    if (offheap) {
       final int bytes = Sketch.getMaxUpdateSketchBytes(k);
-      final byte[] memArr = new byte[bytes];
-      final WritableMemory wmem = WritableMemory.wrap(memArr);
+      handle = WritableMemory.allocateDirect(bytes);
+      wmem = handle.get();
       sketch = udBldr.build(wmem);
     } else {
       sketch = udBldr.build();
     }
+  }
+
+  @Override
+  public void cleanup() {
+    if (handle != null) { handle.close(); }
   }
 
   @Override

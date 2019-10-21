@@ -56,7 +56,7 @@ public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
 
   @Override
   public void cleanup() {
-    handle.close();
+    if (handle != null) { handle.close(); }
   }
 
   @Override
