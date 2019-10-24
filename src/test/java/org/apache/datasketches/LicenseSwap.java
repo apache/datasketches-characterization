@@ -35,7 +35,7 @@ import java.io.File;
 @SuppressWarnings("unused")
 public class LicenseSwap {
   private static final String LS = System.getProperty("line.separator");
-  private static enum CommentType { JAVA, SCRIPT }
+  private static enum CommentType { JAVA, SCRIPT, XML }
   private static String before;
   private static String esc;
   private static String after;
@@ -63,6 +63,11 @@ public class LicenseSwap {
         esc    = "#";
         after  = LS;
         break;
+      }
+      case XML: {
+        before = "<!--" + LS;
+        esc    = "    ";
+        after  = "-->" + LS;
       }
     }
   }
