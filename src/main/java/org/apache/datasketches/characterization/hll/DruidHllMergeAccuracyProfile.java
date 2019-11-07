@@ -42,8 +42,8 @@ public class DruidHllMergeAccuracyProfile implements JobProfile {
   }
 
   @Override
-  public void println(final String s) {
-    job.println(s);
+  public void println(final Object obj) {
+    job.println(obj);
   }
 
   @Override

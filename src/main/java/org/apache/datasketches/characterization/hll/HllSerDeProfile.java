@@ -94,6 +94,7 @@ public class HllSerDeProfile extends BaseSerDeProfile {
 
     stats.serializeTime_nS = stopSerTime_nS - startSerTime_nS;
     stats.deserializeTime_nS = stopDeserTime_nS - startDeserTime_nS;
+    stats.size_bytes = byteArr.length;
   }
 
 }

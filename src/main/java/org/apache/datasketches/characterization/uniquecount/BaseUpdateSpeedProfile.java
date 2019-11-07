@@ -69,8 +69,8 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
   public void cleanup() {}
 
   @Override
-  public void println(final String s) {
-    job.println(s);
+  public void println(final Object obj) {
+    job.println(obj);
   }
   //end JobProfile
 
@@ -89,9 +89,6 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
   /**
    * Traverses all the unique axis points and performs trials(u) at each point
    * and outputs a row per unique axis point.
-   *
-   * @param job the given job
-   * @param profile the given profile
    */
   private void doTrials() {
     final int maxU = 1 << lgMaxU;
@@ -143,8 +140,8 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
   /**
    * Process the results
    *
-   * @param statsArr the input Stats array
-   * @param uPerTrial the number of uniques per trial for this trial set.
+   * @param meanUpdateTimePerU_nS mean update time per update in nanoseconds.
+   * @param uPerTrial number of uniques per trial
    * @param sb The StringBuilder object that is reused for each row of output
    */
   private static void process(final double meanUpdateTimePerU_nS, final int trials,

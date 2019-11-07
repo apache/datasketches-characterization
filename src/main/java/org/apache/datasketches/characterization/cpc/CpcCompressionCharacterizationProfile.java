@@ -72,6 +72,8 @@ public class CpcCompressionCharacterizationProfile implements JobProfile {
   public void cleanup() {}
 
   @Override
-  public void println(final String s) {}
+  public void println(final Object obj) {
+    job.println(obj);
+  }
 
 }

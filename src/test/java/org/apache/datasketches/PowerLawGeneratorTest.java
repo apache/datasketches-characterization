@@ -172,7 +172,6 @@ public class PowerLawGeneratorTest {
    * @param gi generating index (for convenience)
    * @param x the value x
    */
-  @SuppressWarnings("unused")
   private static void outputX(int row, int gi, double x) {
     //println(row + "\t" + gi + "\t" + ((int) x));
   }

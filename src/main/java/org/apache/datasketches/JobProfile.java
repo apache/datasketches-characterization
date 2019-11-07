@@ -50,7 +50,7 @@ public interface JobProfile {
    * For sending a string to the configured PrintStream "out", which may be a file
    * and/or to stdOut.
    * A line separator is added at the end.
-   * @param s the string to send to the configured PrintStream "out".
+   * @param obj the obj.toStrin() to send to the configured PrintStream "out".
    */
-  void println(String s);
+  void println(Object obj);
 }

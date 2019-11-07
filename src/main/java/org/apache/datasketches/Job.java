@@ -120,11 +120,11 @@ public class Job {
 
   /**
    * Outputs a line to the configured PrintWriter and stdOut.
-   * @param s The String to print
+   * @param obj The obj.toString() to print
    */
-  public final void println(final String s) {
-    System.out.println(s);
-    pw.println(s);
+  public final void println(final Object obj) {
+    System.out.println(obj.toString());
+    pw.println(obj.toString());
   }
 
   /**
@@ -178,7 +178,6 @@ public class Job {
    * <p>The default time-zone is GMT, with an TimeZoneOffset of zero.
    * This can be overridden using the key "TimeZone" for the 3 letter abreviation of the time
    * zone name, and the key "TimeZoneOffset" to specify the offset in milliseconds.
-   * @param prop Properties
    */
   private final void setDateFormats() {
     String fileSdfStr = prop.get("FileNameDateFormat");
