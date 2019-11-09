@@ -70,8 +70,8 @@ public abstract class BaseSerDeProfile implements JobProfile {
   public void cleanup() {}
 
   @Override
-  public void println(final String s) {
-    job.println(s);
+  public void println(final Object obj) {
+    job.println(obj);
   }
   //end JobProfile
 
@@ -100,15 +100,18 @@ public abstract class BaseSerDeProfile implements JobProfile {
 
       double sumSerialzeTime_nS = 0;
       double sumDeserializeTime_nS = 0;
+      double sumSizeBytes = 0;
       System.gc(); //much slower but cleaner plots
       for (int t = 0; t < trials; t++) {
         doTrial(stats, nextU); //at this # of uniques
         sumSerialzeTime_nS += stats.serializeTime_nS;
         sumDeserializeTime_nS += stats.deserializeTime_nS;
+        sumSizeBytes += stats.size_bytes;
       }
       final double meanSerializeTime_nS = sumSerialzeTime_nS / trials;
       final double meanDeserializeTime_nS = sumDeserializeTime_nS / trials;
-      process(meanSerializeTime_nS, meanDeserializeTime_nS,trials, nextU, dataStr);
+      final long size = Math.round(sumSizeBytes / trials);
+      process(meanSerializeTime_nS, meanDeserializeTime_nS, size, trials, nextU, dataStr);
       println(dataStr.toString());
     }
   }
@@ -139,14 +142,14 @@ public abstract class BaseSerDeProfile implements JobProfile {
   }
 
   private static void process(final double meanSerTime_nS, final double meanDeserTime_nS,
-      final int trials, final int uPerTrial, final StringBuilder dataStr) {
-
+      final long size, final int trials, final int uPerTrial, final StringBuilder dataStr) {
     //OUTPUT
     dataStr.setLength(0);
     dataStr.append(uPerTrial).append(TAB);
     dataStr.append(trials).append(TAB);
     dataStr.append(meanSerTime_nS).append(TAB);
-    dataStr.append(meanDeserTime_nS);
+    dataStr.append(meanDeserTime_nS).append(TAB);
+    dataStr.append(size);
   }
 
   private static String getHeader() {
@@ -154,12 +157,14 @@ public abstract class BaseSerDeProfile implements JobProfile {
     sb.append("InU").append(TAB);
     sb.append("Trials").append(TAB);
     sb.append("Ser_nS").append(TAB);
-    sb.append("DeSer_nS");
+    sb.append("DeSer_nS").append(TAB);
+    sb.append("Size_B");
     return sb.toString();
   }
 
   public static final class Stats {
     public double serializeTime_nS;
     public double deserializeTime_nS;
+    public long size_bytes;
   }
 }

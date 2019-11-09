@@ -85,9 +85,8 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   public void cleanup() {}
 
   @Override
-  public void println(final String s) {
-    System.out.println(s);
-    pw.println(s);
+  public void println(final Object obj) {
+    job.println(obj);
   }
   //end JobProfile
 
@@ -114,9 +113,6 @@ public abstract class BaseAccuracyProfile implements JobProfile {
    * determined by Trials_TPPO until Trials_lgMaxT.  This allows you to stop the testing at
    * any intermediate trials point if you feel you have sufficient trials for the accuracy you
    * need.
-   *
-   * @param job the given job
-   * @param profile the given profile
    */
   private void doTrials() {
     final int minT = 1 << lgMinT;
@@ -150,7 +146,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
       println("Cum Updates            : " + vIn);
       final long currentTime_mS = System.currentTimeMillis();
       final long cumTime_mS = currentTime_mS - job.getStartTime();
-      println("Cum Trials Time        : " + milliSecToString(cumTime_mS));
+      println("Cum Time               : " + milliSecToString(cumTime_mS));
       final double timePerTrial_mS = (cumTime_mS * 1.0) / lastT;
       final double avgUpdateTime_ns = (timePerTrial_mS * 1e6) / maxU;
       println("Time Per Trial, mSec   : " + timePerTrial_mS);
@@ -168,6 +164,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
           println(outputPMF(qArr[i]));
         }
       }
+      job.flush();
     }
   }
 

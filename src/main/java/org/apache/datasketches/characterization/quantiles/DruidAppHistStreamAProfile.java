@@ -213,8 +213,8 @@ public class DruidAppHistStreamAProfile implements JobProfile {
   public void cleanup() {}
 
   @Override
-  public void println(final String s) {
-    job.println(s);
+  public void println(final Object obj) {
+    job.println(obj);
   }
 
   // Callback

@@ -105,8 +105,8 @@ static class Point {
   public void cleanup() {}
 
   @Override
-  public void println(final String s) {
-    job.println(s);
+  public void println(final Object obj) {
+    job.println(obj);
   }
   //end JobProfile
 
@@ -146,7 +146,7 @@ static class Point {
    * trial set. This is used in speed trials and decreases the number of trials
    * as the number of uniques increase.
    *
-   * @param curU the given current number of uniques for a trial set.
+   * @param curX the given current number of uniques for a trial set.
    * @return the number of trials for a given current number of uniques for a
    * trial set.
    */
