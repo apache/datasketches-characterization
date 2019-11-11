@@ -75,12 +75,12 @@ public class HllMergeSpeedProfile extends BaseMergeSpeedProfile {
     long deserTime_nS = 0;
     long mergeTime_nS = 0;
     final HllSketch source = newSketch(lgK);
-    final long vStartUnion = vIn;
+    //final long vStartUnion = vIn;
 
-    final long vStart = vIn;
+    //final long vStart = vIn;
     source.reset();
     for (int u = 0; u < U; u++) { source.update(++vIn); }
-    final long trueU = vIn - vStart;
+    //final long trueU = vIn - vStart;
     //checkEstimate(trueU, source.getEstimate(), lgK, "Source");
     HllSketch source2 = null;
     final byte[] byteArr;
