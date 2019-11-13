@@ -24,6 +24,7 @@
 #include "kll_sketch_timing_profile.hpp"
 #include "kll_sketch_accuracy_profile.hpp"
 #include "kll_merge_accuracy_profile.hpp"
+#include "theta_sketch_timing_profile.hpp"
 
 using namespace datasketches;
 typedef std::unique_ptr<job_profile> job_profile_ptr;
@@ -31,6 +32,7 @@ typedef std::unique_ptr<job_profile> job_profile_ptr;
 int main(int argc, char **argv) {
   job_profile::add("cpc-timing", job_profile_ptr(new cpc_sketch_timing_profile()));
   job_profile::add("kll-timing", job_profile_ptr(new kll_sketch_timing_profile()));
+  job_profile::add("theta-timing", job_profile_ptr(new theta_sketch_timing_profile()));
 
   job_profile::add("kll-sketch-accuracy", job_profile_ptr(new kll_sketch_accuracy_profile()));
   job_profile::add("kll-merge-accuracy", job_profile_ptr(new kll_merge_accuracy_profile()));

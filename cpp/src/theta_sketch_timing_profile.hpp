@@ -17,30 +17,16 @@
  * under the License.
  */
 
-#ifndef JOB_PROFILE_HPP_
-#define JOB_PROFILE_HPP_
+#ifndef THETA_SKETCH_TIMING_PROFILE_HPP_
+#define THETA_SKETCH_TIMING_PROFILE_HPP_
 
-#include <memory>
-#include <string>
-#include <unordered_map>
+#include "job_profile.hpp"
 
 namespace datasketches {
 
-class job_profile {
+class theta_sketch_timing_profile: public job_profile {
 public:
-   virtual ~job_profile() {}
-
-   static void add(const char* name, std::unique_ptr<job_profile> profile);
-   static const job_profile& instance(const char* name);
-
-   virtual void run() const = 0;
-
-   static size_t pwr_2_law_next(size_t ppo, size_t cur_point);
-   static size_t count_points(size_t lg_start, size_t lg_end, size_t ppo);
-   static size_t get_num_trials(size_t x, size_t lg_min_x, size_t lg_max_x, size_t lg_min_trials, size_t lg_max_trials);
-
-private:
-   static std::unordered_map<std::string, std::unique_ptr<job_profile>> registry;
+  void run() const;
 };
 
 }

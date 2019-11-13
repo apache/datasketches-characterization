@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <cmath>
 #include <stdexcept>
 
 #include "job_profile.hpp"
