@@ -82,13 +82,11 @@ void frequent_items_sketch_timing_profile::run() const {
     for (size_t i = 0; i < num_trials; i++) {
       const auto start_build(std::chrono::high_resolution_clock::now());
       frequent_longs_sketch sketch(lg_max_sketch_size);
-      //frequent_longs_sketch sketch(lg_max_sketch_size, lg_max_sketch_size);
       const auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
       // prepare values to exclude cost of random generator from the update loop
       for (size_t j = 0; j < stream_length; j++) {
-        //values[j] = geometric_distribution(generator);
         values[j] = zipf.sample();
       }
 
