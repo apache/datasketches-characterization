@@ -44,11 +44,8 @@ double kll_merge_accuracy_profile::run_trial(float* values, unsigned stream_leng
     if (j == num_sketches) j = 0;
   }
 
-  kll_sketch<float> sketch_tmp(32*200);
-  for (unsigned i = 0; i < num_sketches; i++) sketch_tmp.merge(*sketches[i]);
-
   kll_sketch<float> sketch;
-  sketch.merge(sketch_tmp);
+  for (unsigned i = 0; i < num_sketches; i++) sketch.merge(*sketches[i]);
 
   double max_rank_error = 0;
   for (size_t i = 0; i < stream_length; i++) {
