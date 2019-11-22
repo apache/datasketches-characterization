@@ -35,6 +35,7 @@ public class HllMergeSpeedProfile extends BaseMergeSpeedProfile {
   private boolean direct;
   private TgtHllType tgtHllType;
   private Union union = new Union(21);
+  private HllSketch source;
 
   @Override
   public void configure() {
@@ -51,6 +52,12 @@ public class HllMergeSpeedProfile extends BaseMergeSpeedProfile {
   @Override
   public void resetMerge(final int lgK) {
     union = new Union(lgK);
+    source = newSketch(lgK);
+    int U = 2 << lgK;
+    for (int i = 0; i < U; i++) {
+      union.update(++vIn);
+      source.update(vIn);
+    }
   }
 
   private HllSketch newSketch(final int lgK) {
@@ -74,12 +81,10 @@ public class HllMergeSpeedProfile extends BaseMergeSpeedProfile {
     long serTime_nS = 0;
     long deserTime_nS = 0;
     long mergeTime_nS = 0;
-    final HllSketch source = newSketch(lgK);
+    //final HllSketch source = newSketch(lgK);
     //final long vStartUnion = vIn;
-
     //final long vStart = vIn;
-    source.reset();
-    for (int u = 0; u < U; u++) { source.update(++vIn); }
+    //for (int u = 0; u < U; u++) { source.update(++vIn); }
     //final long trueU = vIn - vStart;
     //checkEstimate(trueU, source.getEstimate(), lgK, "Source");
     HllSketch source2 = null;
