@@ -20,8 +20,8 @@
 package org.apache.datasketches.characterization.uniquecount;
 
 import org.apache.datasketches.Job;
-import org.apache.datasketches.Properties;
 import org.apache.datasketches.JobProfile;
+import org.apache.datasketches.Properties;
 
 /**
  * @author Lee Rhodes

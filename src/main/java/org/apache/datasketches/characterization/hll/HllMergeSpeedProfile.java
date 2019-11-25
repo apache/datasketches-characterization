@@ -53,7 +53,7 @@ public class HllMergeSpeedProfile extends BaseMergeSpeedProfile {
   public void resetMerge(final int lgK) {
     union = new Union(lgK);
     source = newSketch(lgK);
-    int U = 2 << lgK;
+    final int U = 2 << lgK;
     for (int i = 0; i < U; i++) {
       union.update(++vIn);
       source.update(vIn);

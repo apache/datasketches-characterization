@@ -23,6 +23,7 @@ import java.util.Random;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
+
 import com.google.zetasketch.HyperLogLogPlusPlus;
 
 /**
@@ -41,7 +42,7 @@ public class ZetaHllMergeAccuracyProfile  implements JobProfile {
   private int distinctKeysPerSketch;
 
   @Override
-  public void start(Job job) {
+  public void start(final Job job) {
     this.job = job;
     lgK = Integer.parseInt(job.getProperties().mustGet("lgK"));
     numTrials = Integer.parseInt(job.getProperties().mustGet("numTrials"));
@@ -64,7 +65,7 @@ public class ZetaHllMergeAccuracyProfile  implements JobProfile {
   public void cleanup() { }
 
   @Override
-  public void println(Object obj) {
+  public void println(final Object obj) {
     job.println(obj);
   }
 
