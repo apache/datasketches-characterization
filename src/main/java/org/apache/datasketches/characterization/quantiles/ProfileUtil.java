@@ -25,7 +25,6 @@ import static org.apache.datasketches.Util.ceilingPowerOfBdouble;
 import static org.apache.datasketches.Util.logB;
 import static org.apache.datasketches.Util.pwrLawNextDouble;
 
-import org.testng.annotations.Test;
 
 /**
  * @author Lee Rhodes
@@ -91,7 +90,7 @@ public class ProfileUtil {
     }
   }
 
-  @Test
+  //@Test
   public void checkBuildSPArr() {
     final double[] arr = buildSplitPointsArr(0, 999, 2, 10.0, 1E-6);
     for (int i = 0; i < arr.length; i++) { System.out.println("" + arr[i]); }

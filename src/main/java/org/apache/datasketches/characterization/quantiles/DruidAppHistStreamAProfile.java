@@ -31,7 +31,7 @@ import org.apache.datasketches.Properties;
 import org.apache.datasketches.UnzipFiles;
 import org.apache.druid.query.aggregation.histogram.ApproximateHistogram;
 import org.apache.druid.query.aggregation.histogram.Histogram;
-import org.testng.annotations.Test;
+//import org.testng.annotations.Test;
 
 /**
  * @author Lee Rhodes
@@ -180,7 +180,7 @@ public class DruidAppHistStreamAProfile implements JobProfile {
     return fractions;
   }
 
-  @Test
+  //@Test
   public void checkRanks() {
     final int num = 3;
     final float[] arr = buildRanksArr(num);
