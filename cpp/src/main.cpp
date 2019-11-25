@@ -22,9 +22,14 @@
 #include "job_profile.hpp"
 
 #include "cpc_sketch_timing_profile.hpp"
-#include "kll_sketch_timing_profile.hpp"
+#include "cpc_union_timing_profile.hpp"
+
 #include "theta_sketch_timing_profile.hpp"
+#include "theta_union_timing_profile.hpp"
+
+#include "kll_sketch_timing_profile.hpp"
 #include "frequent_items_sketch_timing_profile.hpp"
+#include "hll_union_timing_profile.hpp"
 
 #include "kll_sketch_accuracy_profile.hpp"
 #include "kll_merge_accuracy_profile.hpp"
@@ -34,10 +39,13 @@ using namespace datasketches;
 typedef std::unique_ptr<job_profile> job_profile_ptr;
 
 int main(int argc, char **argv) {
-  job_profile::add("cpc-timing", job_profile_ptr(new cpc_sketch_timing_profile()));
+  job_profile::add("cpc-sketch-timing", job_profile_ptr(new cpc_sketch_timing_profile()));
+  job_profile::add("cpc-union-timing", job_profile_ptr(new cpc_union_timing_profile()));
+  job_profile::add("theta-sketch-timing", job_profile_ptr(new theta_sketch_timing_profile()));
+  job_profile::add("theta-union-timing", job_profile_ptr(new theta_union_timing_profile()));
   job_profile::add("kll-timing", job_profile_ptr(new kll_sketch_timing_profile()));
-  job_profile::add("theta-timing", job_profile_ptr(new theta_sketch_timing_profile()));
   job_profile::add("fi-timing", job_profile_ptr(new frequent_items_sketch_timing_profile()));
+  job_profile::add("hll-union-timing", job_profile_ptr(new hll_union_timing_profile()));
 
   job_profile::add("kll-sketch-accuracy", job_profile_ptr(new kll_sketch_accuracy_profile()));
   job_profile::add("kll-merge-accuracy", job_profile_ptr(new kll_merge_accuracy_profile()));
