@@ -20,7 +20,7 @@
 # Characterization
 We define characterization as the task of comprehensively measuring accuracy or speed performance of our library. These characterization tests are often long running (some can run for days) and very resource intensive, which makes them unsuitable for including in unit tests.  The code in this repository are some of the test suites we use to create some of the plots on our website and provide evidence for our speed and accuracy claims.  This code is shared here so that others can duplicate our own characterizations.
 
-The code here is shared "as-is" and does not pretend to have the same level of quality as the primary repositories (jave, pig, hive and vector).  This code is not archived to Maven Central and will change from time-to-time as we grow these characterization suites.
+The code here is shared "as-is" and does not pretend to have the same level of quality as the primary repositories (java, pig, hive and vector).  This code is not archived to Maven Central and will change from time-to-time as we grow these characterization suites.
 
 ## Documentation
 

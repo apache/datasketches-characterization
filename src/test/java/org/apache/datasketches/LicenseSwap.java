@@ -21,8 +21,6 @@ package org.apache.datasketches;
 
 import java.util.List;
 
-import org.testng.annotations.Test;
-
 import org.apache.datasketches.DirectoryWalker;
 
 import static java.lang.Math.*;
@@ -79,7 +77,7 @@ public class LicenseSwap {
    *
    * <p>AFTERWARDS, UPDATE POM!</p>
    */
-  @Test
+  //@Test
   public static void treeWalk() {
     final boolean recursive = true;
     final List<String> fileList = DirectoryWalker.appendFileList(rootPath, fileSelector, recursive);
@@ -87,7 +85,7 @@ public class LicenseSwap {
     println("Files: " + numFiles + "\n");
     for (int i = 0; i < numFiles; i++) {
       String pathFile = fileList.get(i);
-      //SELECT!
+      //SELECT! THIS MUST BE CUSTOMIZED!
       //insertLicense(pathFile);
       //replaceStrings(pathFile);
       replaceLicense(pathFile);
@@ -187,9 +185,9 @@ public class LicenseSwap {
 
   /**********************************/
 
-  @Test //test individual file first
+  //@Test //test individual file first
   public void checkSingleFile() {
-    String path = rootPath + "main/java/com/yahoo/sketches/theta/AnotB.java";
+    String path = rootPath + "main/java/org/apache/datasketches/theta/AnotB.java";
     replacePackage(path);
   }
 

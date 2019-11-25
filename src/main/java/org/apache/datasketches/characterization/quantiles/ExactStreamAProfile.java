@@ -31,7 +31,7 @@ import org.apache.datasketches.LineReader;
 import org.apache.datasketches.ProcessLine;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.UnzipFiles;
-import org.testng.annotations.Test;
+//import org.testng.annotations.Test;
 
 /**
  * Computes exact quantiles using brute-force methods.
@@ -180,7 +180,7 @@ public class ExactStreamAProfile implements JobProfile {
     }
   }
 
-  @Test
+  //@Test
   public void checkProcessArr() {
     final int[] data = new int[10000];
     for (int i = 0; i < data.length; i++) { data[i] = i; }

@@ -21,21 +21,24 @@ package org.apache.datasketches;
 
 import java.io.File;
 
-import org.testng.annotations.Test;
-
 import org.apache.datasketches.ZipFiles;
 import org.apache.datasketches.UnzipFiles;
 
 /**
+ * Quick zip and unzip test. Must modifiy the "localBaseDir" and "localDstDir" for your environment.
+ *
  * @author Lee Rhodes
  */
 public class ZipFilesTest {
-  final File srcDir = new File("/Users/lrhodes/dev/git/characterization/src/main/resources");
-  final String dstZipDirFile = "/Users/lrhodes/dev/git/characterization/local/test.zip";
-  final String srcZipFile = dstZipDirFile;
-  final String dstDir = "/Users/lrhodes/dev/git/characterization/local/testUnzipedDir";
+  final String localBaseDir = "/Users/lrhodes/dev/git/Apache/datasketches-characterization";
+  final String localDstDir = "/local";
 
-  @Test
+  final File srcDir = new File(localBaseDir + "/src/main/resources");
+  final String dstZipDirFile = localBaseDir + localDstDir + "/test.zip";
+  final String srcZipFile = dstZipDirFile;
+  final String dstDir = localBaseDir + localDstDir + "/testUnzipedDir";
+
+  //@Test
   public void checkZipping() {
     ZipFiles.zipDirectory(srcDir, dstZipDirFile);
     UnzipFiles.unzip(srcZipFile, dstDir);

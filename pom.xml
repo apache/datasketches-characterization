@@ -94,7 +94,7 @@ under the License.
   <properties>
 
     <!-- UNIQUE FOR THIS JAVA COMPONENT -->
-    <datasketches-memory.version>1.1.0-incubating</datasketches-memory.version>
+    <datasketches-memory.version>1.2.0-incubating</datasketches-memory.version>
     <datasketches-java.version>1.1.0-incubating</datasketches-java.version>
     <druid-momentsketch.version>0.16.0-incubating</druid-momentsketch.version>
     <druid-histogram.version>0.16.0-incubating</druid-histogram.version>

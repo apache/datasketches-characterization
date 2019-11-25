@@ -22,7 +22,7 @@ package org.apache.datasketches.characterization.memory;
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
 import static org.apache.datasketches.Util.pwr2LawNext;
-import static org.testng.Assert.fail;
+//import static org.testng.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,7 +210,8 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
    */
   static void checkStrings(final String actual, final String expected) {
     if (!expected.equals(actual)) {
-      fail("Failure: Expected (" + codepoints(expected) + ") Actual (" + codepoints(actual) + ")");
+      throw new IllegalStateException(
+      "Failure: Expected (" + codepoints(expected) + ") Actual (" + codepoints(actual) + ")");
     }
   }
 
