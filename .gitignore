@@ -42,7 +42,7 @@ hs_err_pid*
 #Test config and output
 /target/
 test-output/
-local/
+local/**
 reports/
 .pmd
 tmp/
