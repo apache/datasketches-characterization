@@ -100,6 +100,7 @@ under the License.
     <druid-histogram.version>0.16.0-incubating</druid-histogram.version>
     <druid-hll.version>0.16.0-incubating</druid-hll.version>
     <zetasketch.version>0.1.0</zetasketch.version>
+    <t-digest.version>3.2</t-digest.version>
     <!-- END:UNIQUE FOR THIS JAVA COMPONENT -->
 
     <!-- Test -->
@@ -204,6 +205,13 @@ under the License.
       <groupId>com.google.zetasketch</groupId>
       <artifactId>zetasketch</artifactId>
       <version>${zetasketch.version}</version>
+    </dependency>
+
+    <!-- t-Digest -->
+    <dependency>
+        <groupId>com.tdunning</groupId>
+        <artifactId>t-digest</artifactId>
+        <version>${t-digest.version}</version>
     </dependency>
 
     <!-- Dependency on Test code -->
