@@ -99,6 +99,7 @@ under the License.
     <druid-momentsketch.version>0.16.0-incubating</druid-momentsketch.version>
     <druid-histogram.version>0.16.0-incubating</druid-histogram.version>
     <druid-hll.version>0.16.0-incubating</druid-hll.version>
+    <zetasketch.version>0.1.0</zetasketch.version>
     <!-- END:UNIQUE FOR THIS JAVA COMPONENT -->
 
     <!-- Test -->
@@ -196,6 +197,13 @@ under the License.
       <groupId>org.apache.druid.extensions</groupId>
       <artifactId>druid-histogram</artifactId>
       <version>${druid-histogram.version}</version>
+    </dependency>
+    
+    <!-- ZetaSketch -->
+    <dependency>
+      <groupId>com.google.zetasketch</groupId>
+      <artifactId>zetasketch</artifactId>
+      <version>${zetasketch.version}</version>
     </dependency>
 
     <!-- Dependency on Test code -->

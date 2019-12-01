@@ -61,6 +61,8 @@ public abstract class BaseSerDeProfile implements JobProfile {
     lgK = Integer.parseInt(prop.mustGet("LgK"));
     configure();
     doTrials();
+    shutdown();
+    cleanup();
   }
 
   @Override
