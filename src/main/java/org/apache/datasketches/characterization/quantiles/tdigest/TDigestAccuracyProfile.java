@@ -1,10 +1,11 @@
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.quantiles.tdigest;
 
 import java.util.Arrays;
 
+import org.apache.datasketches.Properties;
+import org.apache.datasketches.characterization.quantiles.tdigest.DataGenerator.Mode;
+
 import com.tdunning.math.stats.TDigest;
-import org.apache.datasketches.characterization.Properties;
-import org.apache.datasketches.characterization.quantiles.DataGenerator.Mode;
 
 public class TDigestAccuracyProfile extends QuantilesAccuracyProfile {
 
@@ -28,7 +29,7 @@ public class TDigestAccuracyProfile extends QuantilesAccuracyProfile {
   @Override
   double doTrial() {
     gen.fillArray(inputValues);
-    
+
     // build sketch
     final TDigest sketch = TDigest.createDigest(compression);
     for (int i = 0; i < inputValues.length; i++) {
@@ -46,6 +47,18 @@ public class TDigestAccuracyProfile extends QuantilesAccuracyProfile {
       maxRankError = Math.max(maxRankError, Math.abs(trueRank - estRank));
     }
     return maxRankError;
+  }
+
+  @Override
+  public void shutdown() {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void cleanup() {
+    // TODO Auto-generated method stub
+
   }
 
 }

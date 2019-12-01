@@ -1,14 +1,15 @@
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.quantiles.tdigest;
 
 import java.nio.ByteBuffer;
 
+import org.apache.datasketches.Properties;
+
 import com.tdunning.math.stats.MergingDigest;
 import com.tdunning.math.stats.TDigest;
-import org.apache.datasketches.characterization.Properties;
 
 public class TDigestSpeedProfile extends QuantilesSpeedProfile {
-
-  private static final ByteBuffer buf = ByteBuffer.allocate(10000); // for serialization, more capacity than necessary
+  //for serialization, more capacity than necessary
+  private static final ByteBuffer buf = ByteBuffer.allocate(10000);
   private int k;
   private double[] inputValues;
   private int numQueryValues;
@@ -41,7 +42,7 @@ public class TDigestSpeedProfile extends QuantilesSpeedProfile {
     resetStats();
   }
 
-  @SuppressWarnings("unused")
+
   @Override
   void doTrial() {
     gen.fillArray(inputValues);
@@ -108,7 +109,7 @@ public class TDigestSpeedProfile extends QuantilesSpeedProfile {
 
   @Override
   String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
-    return(String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d\t%d",
+    return (String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d\t%d",
       streamLength,
       numTrials,
       (double) buildTimeNs / numTrials,
@@ -137,6 +138,18 @@ public class TDigestSpeedProfile extends QuantilesSpeedProfile {
     smallDeserializeTimeNs = 0;
     serializedSizeBytes = 0;
     smallSerializedSizeBytes = 0;
+  }
+
+  @Override
+  public void shutdown() {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void cleanup() {
+    // TODO Auto-generated method stub
+
   }
 
 }
