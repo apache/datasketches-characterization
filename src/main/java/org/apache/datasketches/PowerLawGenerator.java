@@ -25,13 +25,13 @@ import static java.lang.Math.log;
 /**
  * A simple tool to generate (x,y) pairs of points that follow a power-law
  * relationship. This class provides both a convenient dynamic class with
- * simplified get methods or the equalivant static calls with full arguments.
+ * simplified get methods or the equivalent static calls with full arguments.
  * The basic static methods can also be used to generate equally spaced points
  * for a single axis.
  *
  * <p>
  * The equal spacing is created using "generating indices" that are first
- * obtained from these methods and then used to generate the x-coordiantes or
+ * obtained from these methods and then used to generate the x-coordinates or
  * full (x,y) Pairs. Please refer to example code in the associated test class.
  * </p>
  *
