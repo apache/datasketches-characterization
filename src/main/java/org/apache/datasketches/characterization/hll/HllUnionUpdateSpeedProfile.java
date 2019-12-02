@@ -19,11 +19,11 @@
 
 package org.apache.datasketches.characterization.hll;
 
+import java.lang.reflect.Array;
+
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.Union;
-
-import java.lang.reflect.Array;
 
 public class HllUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private int lgK;
@@ -47,7 +47,7 @@ public class HllUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
       int i = 0;
       for (int u = uPerTrial; u-- > 0;) {
         sketches[i++].update(++vIn);
-        if (i == numSketches) i = 0;
+        if (i == numSketches) { i = 0; }
       }
     }
 

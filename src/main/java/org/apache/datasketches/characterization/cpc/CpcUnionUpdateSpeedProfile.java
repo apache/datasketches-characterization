@@ -19,11 +19,11 @@
 
 package org.apache.datasketches.characterization.cpc;
 
+import java.lang.reflect.Array;
+
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
 import org.apache.datasketches.cpc.CpcSketch;
 import org.apache.datasketches.cpc.CpcUnion;
-
-import java.lang.reflect.Array;
 
 public class CpcUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private int lgK;
@@ -47,7 +47,7 @@ public class CpcUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
       int i = 0;
       for (int u = uPerTrial; u-- > 0;) {
         sketches[i++].update(++vIn);
-        if (i == numSketches) i = 0;
+        if (i == numSketches) { i = 0; }
       }
     }
 

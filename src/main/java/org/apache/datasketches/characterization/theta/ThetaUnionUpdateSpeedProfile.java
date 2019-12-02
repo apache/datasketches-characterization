@@ -19,15 +19,15 @@
 
 package org.apache.datasketches.characterization.theta;
 
+import java.lang.reflect.Array;
+
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
-import org.apache.datasketches.theta.Sketches;
-import org.apache.datasketches.theta.UpdateSketch;
-import org.apache.datasketches.theta.UpdateSketchBuilder;
 import org.apache.datasketches.theta.CompactSketch;
 import org.apache.datasketches.theta.SetOperationBuilder;
+import org.apache.datasketches.theta.Sketches;
 import org.apache.datasketches.theta.Union;
-
-import java.lang.reflect.Array;
+import org.apache.datasketches.theta.UpdateSketch;
+import org.apache.datasketches.theta.UpdateSketchBuilder;
 
 public class ThetaUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private int lgK;
@@ -57,7 +57,7 @@ public class ThetaUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
       int i = 0;
       for (int u = uPerTrial; u-- > 0;) {
         updateSketches[i++].update(++vIn);
-        if (i == numSketches) i = 0;
+        if (i == numSketches) { i = 0; }
       }
     }
 
