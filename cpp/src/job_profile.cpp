@@ -62,8 +62,8 @@ size_t job_profile::pwr_2_law_next(size_t ppo, size_t cur_point) {
   size_t gi(round(log2(cur) * ppo)); //current generating index
   size_t next;
   do {
-    next = (size_t) round(pow(2.0, (double) ++gi / ppo));
-  } while ( next <= cur_point);
+    next = round(pow(2.0, (double) ++gi / ppo));
+  } while (next <= cur_point);
   return next;
 }
 
@@ -87,9 +87,9 @@ size_t job_profile::count_points(size_t lg_start, size_t lg_end, size_t ppo) {
 }
 
 size_t job_profile::get_num_trials(size_t x, size_t lg_min_x, size_t lg_max_x, size_t lg_min_trials, size_t lg_max_trials) {
-  const double slope((double) (lg_max_trials - lg_min_trials) / ((int) lg_min_x - (int) lg_max_x));
-  const double lg_trials((slope * log2(x)) + lg_max_trials);
-  return (size_t) pow(2, lg_trials);
+  const double slope = static_cast<double>(lg_max_trials - lg_min_trials) / (static_cast<double>(lg_min_x) - static_cast<double>(lg_max_x));
+  const double lg_trials = slope * (log2(x) - lg_min_x) + lg_max_trials;
+  return pow(2, lg_trials);
 }
 
 }
