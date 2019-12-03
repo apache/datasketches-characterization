@@ -30,7 +30,7 @@ void job_profile::add(const char* name, std::unique_ptr<job_profile> profile) {
    registry[name] = std::move(profile);
 }
 
-const job_profile& job_profile::instance(const char* name) {
+job_profile& job_profile::instance(const char* name) {
   auto profile = registry.find(name);
   if (profile == registry.end()) throw std::invalid_argument("profile not found");
    return *profile->second;
@@ -58,11 +58,11 @@ const job_profile& job_profile::instance(const char* name) {
  * returns the next point in the power series.
  */
 size_t job_profile::pwr_2_law_next(size_t ppo, size_t cur_point) {
-  const size_t cur((cur_point < 1) ? 1 : cur_point);
-  size_t gi(round(log2(cur) * ppo)); //current generating index
+  const size_t cur = (cur_point < 1) ? 1 : cur_point;
+  size_t gi = round(log2(cur) * ppo); //current generating index
   size_t next;
   do {
-    next = round(pow(2.0, (double) ++gi / ppo));
+    next = round(pow(2.0, static_cast<double>(++gi) / ppo));
   } while (next <= cur_point);
   return next;
 }
@@ -76,9 +76,9 @@ size_t job_profile::pwr_2_law_next(size_t ppo, size_t cur_point) {
  * returns the actual number of plotting points between lgStart and lgEnd.
  */
 size_t job_profile::count_points(size_t lg_start, size_t lg_end, size_t ppo) {
-  size_t p(1 << lg_start);
-  const size_t end(1 << lg_end);
-  size_t count(0);
+  size_t p = 1 << lg_start;
+  const size_t end = 1 << lg_end;
+  size_t count = 0;
   while (p <= end) {
     p = pwr_2_law_next(ppo, p);
     count++;

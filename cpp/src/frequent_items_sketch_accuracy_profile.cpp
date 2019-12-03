@@ -27,7 +27,7 @@
 
 namespace datasketches {
 
-void frequent_items_sketch_accuracy_profile::run() const {
+void frequent_items_sketch_accuracy_profile::run() {
   const unsigned lg_num_sketches = 4; // merge if > 0 (more than 1 sketch)
 
   const unsigned lg_min_stream_len = 5;

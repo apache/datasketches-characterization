@@ -31,9 +31,9 @@ public:
    virtual ~job_profile() {}
 
    static void add(const char* name, std::unique_ptr<job_profile> profile);
-   static const job_profile& instance(const char* name);
+   static job_profile& instance(const char* name);
 
-   virtual void run() const = 0;
+   virtual void run() = 0;
 
    static size_t pwr_2_law_next(size_t ppo, size_t cur_point);
    static size_t count_points(size_t lg_start, size_t lg_end, size_t ppo);

@@ -26,8 +26,8 @@ namespace datasketches {
 
 class kll_accuracy_profile: public job_profile {
 public:
-  void run() const;
-  virtual double run_trial(float* values, unsigned stream_length) const = 0;
+  void run();
+  virtual double run_trial(float* values, unsigned stream_length) = 0;
 };
 
 }

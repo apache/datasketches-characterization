@@ -26,7 +26,7 @@ namespace datasketches {
 
 class kll_merge_accuracy_profile: public kll_accuracy_profile {
 public:
-  double run_trial(float* values, unsigned stream_length) const;
+  double run_trial(float* values, unsigned stream_length);
 };
 
 }

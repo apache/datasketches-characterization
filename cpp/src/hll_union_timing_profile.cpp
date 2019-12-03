@@ -29,7 +29,7 @@
 
 namespace datasketches {
 
-void hll_union_timing_profile::run() const {
+void hll_union_timing_profile::run() {
   const size_t lg_min_stream_len = 0;
   const size_t lg_max_stream_len = 26;
   const size_t ppo = 16;

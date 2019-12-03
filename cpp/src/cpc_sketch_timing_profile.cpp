@@ -29,7 +29,7 @@
 
 namespace datasketches {
 
-void cpc_sketch_timing_profile::run() const {
+void cpc_sketch_timing_profile::run() {
   const size_t lg_min_stream_len(0);
   const size_t lg_max_stream_len(23);
   const size_t ppo(16);

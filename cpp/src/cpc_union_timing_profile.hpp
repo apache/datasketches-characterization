@@ -26,7 +26,7 @@ namespace datasketches {
 
 class cpc_union_timing_profile: public job_profile {
 public:
-  void run() const;
+  void run();
 };
 
 }

@@ -27,7 +27,7 @@
 
 namespace datasketches {
 
-double kll_sketch_accuracy_profile::run_trial(float* values, unsigned stream_length) const {
+double kll_sketch_accuracy_profile::run_trial(float* values, unsigned stream_length) {
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::shuffle(values, values + stream_length, std::default_random_engine(seed));
 

@@ -43,7 +43,7 @@ struct hash_long_long {
 };
 typedef frequent_items_sketch<long long, hash_long_long> frequent_longs_sketch;
 
-void frequent_items_sketch_timing_profile::run() const {
+void frequent_items_sketch_timing_profile::run() {
   const unsigned lg_min_stream_len = 0;
   const unsigned lg_max_stream_len = 23;
   const unsigned ppo = 16;

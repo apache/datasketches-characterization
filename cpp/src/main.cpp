@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
   job_profile::add("fi-accuracy", job_profile_ptr(new frequent_items_sketch_accuracy_profile()));
 
   if (argc == 2) {
-    const datasketches::job_profile& profile = datasketches::job_profile::instance(argv[1]);
+    datasketches::job_profile& profile = datasketches::job_profile::instance(argv[1]);
     profile.run();
   } else {
     std::cerr << "One parameter expected: profile name" << std::endl;

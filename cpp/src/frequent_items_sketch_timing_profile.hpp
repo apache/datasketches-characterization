@@ -26,7 +26,7 @@ namespace datasketches {
 
 class frequent_items_sketch_timing_profile: public job_profile {
 public:
-  void run() const;
+  void run();
 };
 
 }
