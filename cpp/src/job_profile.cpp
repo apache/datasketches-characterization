@@ -76,8 +76,8 @@ size_t job_profile::pwr_2_law_next(size_t ppo, size_t cur_point) {
  * returns the actual number of plotting points between lgStart and lgEnd.
  */
 size_t job_profile::count_points(size_t lg_start, size_t lg_end, size_t ppo) {
-  size_t p = 1 << lg_start;
-  const size_t end = 1 << lg_end;
+  size_t p = 1ULL << lg_start;
+  const size_t end = 1ULL << lg_end;
   size_t count = 0;
   while (p <= end) {
     p = pwr_2_law_next(ppo, p);
