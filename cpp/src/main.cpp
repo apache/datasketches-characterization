@@ -40,6 +40,7 @@
 #include "cpc_union_accuracy_profile.hpp"
 
 #include "hll_sketch_accuracy_profile.hpp"
+#include "hll_union_accuracy_profile.hpp"
 
 using namespace datasketches;
 typedef std::unique_ptr<job_profile> job_profile_ptr;
@@ -59,6 +60,7 @@ int main(int argc, char **argv) {
   job_profile::add("cpc-sketch-accuracy", job_profile_ptr(new cpc_sketch_accuracy_profile()));
   job_profile::add("cpc-union-accuracy", job_profile_ptr(new cpc_union_accuracy_profile()));
   job_profile::add("hll-sketch-accuracy", job_profile_ptr(new hll_sketch_accuracy_profile()));
+  job_profile::add("hll-union-accuracy", job_profile_ptr(new hll_sketch_accuracy_profile()));
 
   if (argc == 2) {
     datasketches::job_profile& profile = datasketches::job_profile::instance(argv[1]);
