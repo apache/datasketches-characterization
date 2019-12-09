@@ -156,7 +156,8 @@ void distinct_count_accuracy_profile::print_stats() const {
     const auto quants = stat.get_quantiles(FRACTIONS, FRACT_LEN);
     for (size_t i = 0; i < FRACT_LEN; i++) {
       const double quantile = quants[i];
-      std::cout << quantile << "\t";
+      std::cout << quantile;
+      if (i != FRACT_LEN - 1) std::cout << "\t";
     }
     std::cout << std::endl;
   }
