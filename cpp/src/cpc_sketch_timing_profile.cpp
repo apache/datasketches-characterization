@@ -30,32 +30,32 @@
 namespace datasketches {
 
 void cpc_sketch_timing_profile::run() {
-  const size_t lg_min_stream_len(0);
-  const size_t lg_max_stream_len(23);
-  const size_t ppo(16);
+  const size_t lg_min_stream_len = 0;
+  const size_t lg_max_stream_len = 23;
+  const size_t ppo = 16;
 
-  const size_t lg_max_trials(17);
-  const size_t lg_min_trials(10);
+  const size_t lg_max_trials = 17;
+  const size_t lg_min_trials = 10;
 
-  const int lg_k(10);
+  const size_t lg_k = 10;
 
   // some arbitrary starting value
-  uint64_t counter(35538947);
+  uint64_t counter = 35538947;
 
-  const uint64_t golden64(0x9e3779b97f4a7c13ULL);  // the golden ratio
+  const uint64_t golden64 = 0x9e3779b97f4a7c13ULL;  // the golden ratio
 
   std::cout << "Stream\tTrials\tBuild\tUpdate\tSer\tDeser\tSize\tCoupons" << std::endl;
 
   std::unique_ptr<cpc_sketch> sketches[1 << lg_max_trials];
 
-  size_t stream_length(1 << lg_min_stream_len);
+  size_t stream_length = 1 << lg_min_stream_len;
   while (stream_length <= (1 << lg_max_stream_len)) {
 
     std::chrono::nanoseconds build_time_ns(0);
     std::chrono::nanoseconds update_time_ns(0);
     std::chrono::nanoseconds serialize_time_ns(0);
     std::chrono::nanoseconds deserialize_time_ns(0);
-    size_t size_bytes(0);
+    size_t size_bytes = 0;
 
     const size_t num_trials = get_num_trials(stream_length, lg_min_stream_len, lg_max_stream_len, lg_min_trials, lg_max_trials);
 
@@ -93,7 +93,7 @@ void cpc_sketch_timing_profile::run() {
 
     size_bytes += s.tellp();
 
-    double total_c(0);
+    double total_c = 0;
     for (size_t i = 0; i < num_trials; i++) {
       total_c += (double) sketches[i]->get_num_coupons();
     }
