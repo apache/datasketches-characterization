@@ -45,8 +45,7 @@ public:
   double get_mean_rel_err() const;
   double get_rms_rel_err() const;
   size_t get_count() const;
-  std::unique_ptr<double[], std::function<void(double*)>>
-      get_quantiles(const double* fractions, size_t size) const;
+  std::vector<double> get_quantiles(const double* fractions, size_t size) const;
 
 private:
   size_t true_value;
