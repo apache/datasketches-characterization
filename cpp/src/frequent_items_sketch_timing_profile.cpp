@@ -114,12 +114,12 @@ void frequent_items_sketch_timing_profile::run() {
 
       {
         auto start_bytes_serialize(std::chrono::high_resolution_clock::now());
-        auto pair = sketch.serialize();
+        auto bytes = sketch.serialize();
         const auto finish_bytes_serialize(std::chrono::high_resolution_clock::now());
         bytes_serialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_bytes_serialize - start_bytes_serialize);
 
         const auto start_bytes_deserialize(std::chrono::high_resolution_clock::now());
-        auto deserialized_sketch = frequent_longs_sketch::deserialize(pair.first.get(), pair.second);
+        auto deserialized_sketch = frequent_longs_sketch::deserialize(bytes.data(), bytes.size());
         const auto finish_bytes_deserialize(std::chrono::high_resolution_clock::now());
         bytes_deserialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_bytes_deserialize - start_bytes_deserialize);
       }
