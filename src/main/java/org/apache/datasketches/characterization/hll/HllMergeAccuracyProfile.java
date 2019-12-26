@@ -24,6 +24,7 @@ import java.util.Random;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.hll.HllSketch;
+import org.apache.datasketches.hll.TgtHllType;
 import org.apache.datasketches.hll.Union;
 
 public class HllMergeAccuracyProfile implements JobProfile {
@@ -64,7 +65,7 @@ public class HllMergeAccuracyProfile implements JobProfile {
       final Union union = new Union(lgK);
 
       for (int s = 0; s < numSketches; s++) {
-        final HllSketch sketch = new HllSketch(lgK);
+        final HllSketch sketch = new HllSketch(lgK, TgtHllType.HLL_8);
         for (int k = 0; k < distinctKeysPerSketch; k++) {
           sketch.update(key++);
         }

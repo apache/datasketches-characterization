@@ -19,10 +19,9 @@
 
 package org.apache.datasketches.characterization.hll;
 
-import java.lang.reflect.Array;
-
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
 import org.apache.datasketches.hll.HllSketch;
+import org.apache.datasketches.hll.TgtHllType;
 import org.apache.datasketches.hll.Union;
 
 public class HllUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
@@ -34,13 +33,13 @@ public class HllUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   public void configure() {
     lgK = Integer.parseInt(prop.mustGet("LgK"));
     numSketches = Integer.parseInt(prop.mustGet("NumSketches"));
-    sketches = (HllSketch[]) Array.newInstance(HllSketch.class, numSketches);
+    sketches = new HllSketch[numSketches];
   }
 
   @Override
   public double doTrial(final int uPerTrial) {
     for (int i = 0; i < numSketches; i++) {
-      sketches[i] = new HllSketch(lgK);
+      sketches[i] = new HllSketch(lgK, TgtHllType.HLL_8);
     }
 
     { // spray values across all sketches
