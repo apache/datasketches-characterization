@@ -26,12 +26,14 @@ import org.apache.datasketches.hll.Union;
 
 public class HllUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private int lgK;
+  private TgtHllType tgtHllType;
   private int numSketches;
   private HllSketch[] sketches;
 
   @Override
   public void configure() {
     lgK = Integer.parseInt(prop.mustGet("LgK"));
+    tgtHllType = TgtHllType.valueOf(prop.mustGet("TgtHllType"));
     numSketches = Integer.parseInt(prop.mustGet("NumSketches"));
     sketches = new HllSketch[numSketches];
   }
@@ -39,7 +41,7 @@ public class HllUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   @Override
   public double doTrial(final int uPerTrial) {
     for (int i = 0; i < numSketches; i++) {
-      sketches[i] = new HllSketch(lgK, TgtHllType.HLL_8);
+      sketches[i] = new HllSketch(lgK, tgtHllType);
     }
 
     { // spray values across all sketches
