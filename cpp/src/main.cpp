@@ -50,6 +50,7 @@
 #include "cpc_sketch_memory_profile.hpp"
 #include "hll_sketch_memory_profile.hpp"
 #include "theta_sketch_memory_profile.hpp"
+#include "kll_sketch_memory_profile.hpp"
 
 using namespace datasketches;
 typedef std::unique_ptr<job_profile> job_profile_ptr;
@@ -77,6 +78,7 @@ int main(int argc, char **argv) {
   job_profile::add("cpc-sketch-memory", job_profile_ptr(new cpc_sketch_memory_profile()));
   job_profile::add("hll-sketch-memory", job_profile_ptr(new hll_sketch_memory_profile()));
   job_profile::add("theta-sketch-memory", job_profile_ptr(new theta_sketch_memory_profile()));
+  job_profile::add("kll-sketch-memory", job_profile_ptr(new kll_sketch_memory_profile()));
 
   if (argc == 2) {
     datasketches::job_profile& profile = datasketches::job_profile::instance(argv[1]);
