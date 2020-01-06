@@ -23,25 +23,37 @@ import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfi
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;
 import org.apache.datasketches.hll.Union;
+import org.apache.datasketches.memory.WritableMemory;
 
 public class HllUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private int lgK;
   private TgtHllType tgtHllType;
   private int numSketches;
   private HllSketch[] sketches;
+  private boolean direct;
 
   @Override
   public void configure() {
     lgK = Integer.parseInt(prop.mustGet("LgK"));
     tgtHllType = TgtHllType.valueOf(prop.mustGet("TgtHllType"));
+
     numSketches = Integer.parseInt(prop.mustGet("NumSketches"));
     sketches = new HllSketch[numSketches];
+    direct = Boolean.parseBoolean(prop.mustGet("Direct"));
   }
 
   @Override
   public double doTrial(final int uPerTrial) {
-    for (int i = 0; i < numSketches; i++) {
-      sketches[i] = new HllSketch(lgK, tgtHllType);
+    if (direct) {
+      final int bytes = HllSketch.getMaxUpdatableSerializationBytes(lgK, tgtHllType);
+      for (int i = 0; i < numSketches; i++) {
+        final WritableMemory wmem = WritableMemory.allocate(bytes);
+        sketches[i] = new HllSketch(lgK, tgtHllType, wmem);
+      }
+    } else {
+      for (int i = 0; i < numSketches; i++) {
+        sketches[i] = new HllSketch(lgK, tgtHllType);
+      }
     }
 
     { // spray values across all sketches
