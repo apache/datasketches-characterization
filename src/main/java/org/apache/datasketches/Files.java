@@ -711,6 +711,7 @@ public final class Files {
    * @return a BufferedReader object
    * @throws RuntimeException if FileNotFoundException occurs.
    */
+  //TODO This could have potential resource leaks
   public static BufferedReader openBufferedReader(final File file, final int bufSize,
       final Charset charset) {
     final int bufSz = (bufSize < DEFAULT_BUFSIZE) ? DEFAULT_BUFSIZE : bufSize;
@@ -734,6 +735,7 @@ public final class Files {
    * @param fileName the name of the file to configure
    * @return a PrintWriter
    */
+  //TODO This could have potential output resource leaks
   public static final PrintWriter openPrintWriter(final String fileName) {
     File file = null;
     PrintWriter pw = null;
@@ -751,8 +753,8 @@ public final class Files {
       final BufferedWriter bw;
       try {
         final FileOutputStream fos = new FileOutputStream(file, true);
-        final OutputStreamWriter osw = new OutputStreamWriter(fos, Charset.defaultCharset());
-        bw = new BufferedWriter(osw, 8192);
+        final OutputStreamWriter osw = new OutputStreamWriter(fos, Charset.defaultCharset()); //LEAK?
+        bw = new BufferedWriter(osw, 8192); //LEAK?
       } catch (final IOException e) {
         // never opened, so don't close it.
         throw new RuntimeException("Could not create: " + file.getPath() + LS + e);
@@ -941,13 +943,14 @@ public final class Files {
    * @return BufferedWriter object
    * @throws RuntimeException if IOException occurs.
    */
+  //TODO This could have potential output resource leaks
   public static BufferedWriter openBufferedWriter(final File file, final int bufSize,
       final boolean append, final Charset charset) {
     final int bufSz = (bufSize < DEFAULT_BUFSIZE) ? DEFAULT_BUFSIZE : bufSize;
     BufferedWriter out = null; // default bufsize is 8192.
     try {
       final FileOutputStream fos = new FileOutputStream(file, append);
-      final OutputStreamWriter osw = new OutputStreamWriter(fos, charset);
+      final OutputStreamWriter osw = new OutputStreamWriter(fos, charset); //LEAK?
       out = new BufferedWriter(osw, bufSz);
     } catch (final IOException e) {
       // never opened, so don't close it.

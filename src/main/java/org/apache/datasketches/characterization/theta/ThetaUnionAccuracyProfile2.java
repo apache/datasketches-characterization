@@ -79,12 +79,12 @@ public class ThetaUnionAccuracyProfile2 extends BaseAccuracyProfile {
   public void doTrial() {
     final int qArrLen = qArr.length;
     union.reset(); //reuse the same union
-    int lastUniques = 0;
+    long lastUniques = 0;
     for (int i = 0; i < qArrLen; i++) {
       final AccuracyStats q = qArr[i];
-      final double delta = q.trueValue - lastUniques;
+      final long delta = (long)(q.trueValue - lastUniques);
       sketch.reset(); //reuse the same sketch
-      for (int u = 0; u < delta; u++) {
+      for (long u = 0; u < delta; u++) {
         sketch.update(++vIn);
       }
       if (rebuild) { sketch.rebuild(); } //Resizes down to k. Only useful with QSSketch

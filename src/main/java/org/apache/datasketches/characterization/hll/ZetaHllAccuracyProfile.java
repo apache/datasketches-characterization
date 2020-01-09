@@ -68,11 +68,11 @@ public class ZetaHllAccuracyProfile extends BaseAccuracyProfile {
   public void doTrial() {
     final int qArrLen = qArr.length;
     reset();
-    int lastUniques = 0;
+    long lastUniques = 0;
     for (int i = 0; i < qArrLen; i++) {
       final AccuracyStats q = qArr[i];
-      final double delta = q.trueValue - lastUniques;
-      for (int u = 0; u < delta; u++) {
+      final long delta = (long)(q.trueValue - lastUniques);
+      for (long u = 0; u < delta; u++) {
         sketch.add(++vIn);
       }
       lastUniques += delta;

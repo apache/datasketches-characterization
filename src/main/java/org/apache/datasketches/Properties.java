@@ -144,8 +144,8 @@ public class Properties {
   public static String removeLastPairSeparator(final String kvPairs, final char pairSeparator) {
     final StringBuilder sb = new StringBuilder(kvPairs);
     final int len = sb.length();
-    final Character last = sb.charAt(len - 1);
-    if (last.equals(pairSeparator)) {
+    final char last = sb.charAt(len - 1);
+    if (last == pairSeparator) {
       sb.deleteCharAt(len - 1);
     }
     return sb.toString();

@@ -77,11 +77,11 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     //reuse the same sketches
     sharedSketch.reset(); // reset shared sketch first
     localSketch.reset();  // local sketch reset is reading the theta from shared sketch
-    int lastUniques = 0;
+    long lastUniques = 0;
     for (int i = 0; i < qArrLen; i++) {
       final AccuracyStats q = qArr[i];
-      final double delta = q.trueValue - lastUniques;
-      for (int u = 0; u < delta; u++) {
+      final long delta = (long)(q.trueValue - lastUniques);
+      for (long u = 0; u < delta; u++) {
         localSketch.update(++vIn);
       }
       lastUniques += delta;

@@ -52,7 +52,9 @@ public class UnzipFiles {
       while ((ze != null) && !ze.getName().startsWith("__")) {
         final String fileName = ze.getName();
         final File newFile = new File(destDir + File.separator + fileName);
-
+        if (!newFile.toPath().normalize().startsWith(new File(destDir).toPath())) {
+          throw new IOException("Bad zip entry");
+        }
         //create directories for sub directories in zip
         new File(newFile.getParent()).mkdirs();
         try (FileOutputStream fos = new FileOutputStream(newFile)) {

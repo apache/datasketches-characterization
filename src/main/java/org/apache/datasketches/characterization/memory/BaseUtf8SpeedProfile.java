@@ -103,7 +103,7 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
 
     String getRow() {
       final double lgCP = Math.log(numCPPerTrial) / LN2;
-      final long totCP = trials * numCPPerTrial;
+      final long totCP = (long)trials * numCPPerTrial;
       final double meanJavaEncodePerCP_nS = sumJavaEncodeTrials_nS / totCP;
       final double meanJavaDecodePerCP_nS = sumJavaDecodeTrials_nS / totCP;
       final double meanMemEncodePerCP_nS = sumMemEncodeTrials_nS / totCP;

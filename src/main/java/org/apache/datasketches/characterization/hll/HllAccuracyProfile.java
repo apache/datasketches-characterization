@@ -57,14 +57,14 @@ public class HllAccuracyProfile extends BaseAccuracyProfile {
   public void doTrial() {
     final int qArrLen = qArr.length;
     sketch.reset(); //reuse the same sketch
-    int lastUniques = 0;
+    long lastUniques = 0;
     final int sw = (useCharArr ? 2 : 0) | (useComposite ? 1 : 0);
     switch (sw) {
       case 0: { //use longs; use HIP
         for (int i = 0; i < qArrLen; i++) {
           final AccuracyStats q = qArr[i];
-          final double delta = q.trueValue - lastUniques;
-          for (int u = 0; u < delta; u++) {
+          final long delta = (long)(q.trueValue - lastUniques);
+          for (long u = 0; u < delta; u++) {
             sketch.update(++vIn);
           }
           lastUniques += delta;
@@ -79,8 +79,8 @@ public class HllAccuracyProfile extends BaseAccuracyProfile {
       case 1: { //use longs; use Composite
         for (int i = 0; i < qArrLen; i++) {
           final AccuracyStats q = qArr[i];
-          final double delta = q.trueValue - lastUniques;
-          for (int u = 0; u < delta; u++) {
+          final long delta = (long)(q.trueValue - lastUniques);
+          for (long u = 0; u < delta; u++) {
             sketch.update(++vIn);
           }
           lastUniques += delta;
@@ -95,8 +95,8 @@ public class HllAccuracyProfile extends BaseAccuracyProfile {
       case 2: { //use char[]; use HIP
         for (int i = 0; i < qArrLen; i++) {
           final AccuracyStats q = qArr[i];
-          final double delta = q.trueValue - lastUniques;
-          for (int u = 0; u < delta; u++) {
+          final long delta = (long)(q.trueValue - lastUniques);
+          for (long u = 0; u < delta; u++) {
             final String vstr = Long.toHexString(++vIn);
             sketch.update(vstr.toCharArray());
           }
@@ -112,8 +112,8 @@ public class HllAccuracyProfile extends BaseAccuracyProfile {
       case 3: { //use char[]; use Composite
         for (int i = 0; i < qArrLen; i++) {
           final AccuracyStats q = qArr[i];
-          final double delta = q.trueValue - lastUniques;
-          for (int u = 0; u < delta; u++) {
+          final long delta = (long)(q.trueValue - lastUniques);
+          for (long u = 0; u < delta; u++) {
             final String vstr = Long.toHexString(++vIn);
             sketch.update(vstr.toCharArray());
           }
