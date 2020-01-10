@@ -44,11 +44,15 @@ void kll_sketch_timing_profile::run() {
 
   std::cout << "Stream\tTrials\tBuild\tUpdate\tQuant\tQuants\tRank\tCDF\tSer\tDeser\tItems\tSize" << std::endl;
 
-  size_t max_len(1 << lg_max_stream_len);
-  float* values = new float[max_len];
+  size_t max_len = 1 << lg_max_stream_len;
 
-  float rank_query_values[num_queries];
+  std::vector<float> values(max_len);
+  //std::vector<std::string> values(max_len);
+
+  std::vector<float> rank_query_values(num_queries);
   for (size_t i = 0; i < num_queries; i++) rank_query_values[i] = distribution(generator);
+  //std::vector<std::string> rank_query_values(num_queries);
+  //for (size_t i = 0; i < num_queries; i++) rank_query_values[i] = std::to_string(distribution(generator));
   std::sort(&rank_query_values[0], &rank_query_values[num_queries]);
 
   double quantile_query_values[num_queries];
@@ -71,9 +75,11 @@ void kll_sketch_timing_profile::run() {
     const size_t num_trials = get_num_trials(stream_length, lg_min_stream_len, lg_max_stream_len, lg_min_trials, lg_max_trials);
     for (size_t i = 0; i < num_trials; i++) {
       for (size_t i = 0; i < stream_length; i++) values[i] = distribution(generator);
+      //for (size_t i = 0; i < stream_length; i++) values[i] = std::to_string(distribution(generator));
 
       auto start_build(std::chrono::high_resolution_clock::now());
       kll_sketch<float> sketch;
+      //kll_sketch<std::string> sketch;
       auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
@@ -100,7 +106,7 @@ void kll_sketch_timing_profile::run() {
       get_rank_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_rank - start_get_rank);
 
       auto start_get_cdf(std::chrono::high_resolution_clock::now());
-      sketch.get_CDF(rank_query_values, num_queries);
+      sketch.get_CDF(rank_query_values.data(), num_queries);
       auto finish_get_cdf(std::chrono::high_resolution_clock::now());
       get_cdf_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_cdf - start_get_cdf);
 
@@ -111,7 +117,8 @@ void kll_sketch_timing_profile::run() {
       serialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_serialize - start_serialize);
 
       auto start_deserialize(std::chrono::high_resolution_clock::now());
-      auto sketch_ptr(kll_sketch<float>::deserialize(s));
+      auto deserialized_sketch = kll_sketch<float>::deserialize(s);
+      //auto deserialized_sketch = kll_sketch<std::string>::deserialize(s);
       auto finish_deserialize(std::chrono::high_resolution_clock::now());
       deserialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_deserialize - start_deserialize);
 
@@ -132,7 +139,6 @@ void kll_sketch_timing_profile::run() {
         << size_bytes / num_trials << std::endl;
     stream_length = pwr_2_law_next(ppo, stream_length);
   }
-  delete [] values;
 }
 
 }
