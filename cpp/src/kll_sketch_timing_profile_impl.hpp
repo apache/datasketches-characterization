@@ -17,6 +17,9 @@
  * under the License.
  */
 
+#ifndef KLL_SKETCH_TIMING_PROFILE_IMPL_HPP_
+#define KLL_SKETCH_TIMING_PROFILE_IMPL_HPP_
+
 #include <iostream>
 #include <algorithm>
 #include <random>
@@ -25,11 +28,16 @@
 
 #include <kll_sketch.hpp>
 
-#include "kll_sketch_timing_profile.hpp"
-
 namespace datasketches {
 
-void kll_sketch_timing_profile::run() {
+template<typename T>
+kll_sketch_timing_profile<T>::kll_sketch_timing_profile():
+generator(std::chrono::system_clock::now().time_since_epoch().count()),
+distribution(0.0, 1.0)
+{}
+
+template<typename T>
+void kll_sketch_timing_profile<T>::run() {
   const size_t lg_min_stream_len(0);
   const size_t lg_max_stream_len(23);
   const size_t ppo(16);
@@ -39,20 +47,14 @@ void kll_sketch_timing_profile::run() {
 
   const size_t num_queries(20);
 
-  std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-  std::uniform_real_distribution<float> distribution(0.0, 1.0);
-
   std::cout << "Stream\tTrials\tBuild\tUpdate\tQuant\tQuants\tRank\tCDF\tSer\tDeser\tItems\tSize" << std::endl;
 
   size_t max_len = 1 << lg_max_stream_len;
 
-  std::vector<float> values(max_len);
-  //std::vector<std::string> values(max_len);
+  std::vector<T> values(max_len);
 
-  std::vector<float> rank_query_values(num_queries);
-  for (size_t i = 0; i < num_queries; i++) rank_query_values[i] = distribution(generator);
-  //std::vector<std::string> rank_query_values(num_queries);
-  //for (size_t i = 0; i < num_queries; i++) rank_query_values[i] = std::to_string(distribution(generator));
+  std::vector<T> rank_query_values(num_queries);
+  for (size_t i = 0; i < num_queries; i++) rank_query_values[i] = sample();
   std::sort(&rank_query_values[0], &rank_query_values[num_queries]);
 
   double quantile_query_values[num_queries];
@@ -74,12 +76,10 @@ void kll_sketch_timing_profile::run() {
 
     const size_t num_trials = get_num_trials(stream_length, lg_min_stream_len, lg_max_stream_len, lg_min_trials, lg_max_trials);
     for (size_t i = 0; i < num_trials; i++) {
-      for (size_t i = 0; i < stream_length; i++) values[i] = distribution(generator);
-      //for (size_t i = 0; i < stream_length; i++) values[i] = std::to_string(distribution(generator));
+      for (size_t i = 0; i < stream_length; i++) values[i] = sample();
 
       auto start_build(std::chrono::high_resolution_clock::now());
-      kll_sketch<float> sketch;
-      //kll_sketch<std::string> sketch;
+      kll_sketch<T> sketch;
       auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
@@ -117,8 +117,7 @@ void kll_sketch_timing_profile::run() {
       serialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_serialize - start_serialize);
 
       auto start_deserialize(std::chrono::high_resolution_clock::now());
-      auto deserialized_sketch = kll_sketch<float>::deserialize(s);
-      //auto deserialized_sketch = kll_sketch<std::string>::deserialize(s);
+      auto deserialized_sketch = kll_sketch<T>::deserialize(s);
       auto finish_deserialize(std::chrono::high_resolution_clock::now());
       deserialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_deserialize - start_deserialize);
 
@@ -141,4 +140,16 @@ void kll_sketch_timing_profile::run() {
   }
 }
 
+template<>
+float kll_sketch_timing_profile<float>::sample() {
+  return distribution(generator);
 }
+
+template<>
+std::string kll_sketch_timing_profile<std::string>::sample() {
+  return std::to_string(distribution(generator));
+}
+
+}
+
+#endif

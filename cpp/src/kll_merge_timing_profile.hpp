@@ -17,8 +17,8 @@
  * under the License.
  */
 
-#ifndef KLL_SKETCH_TIMING_PROFILE_HPP_
-#define KLL_SKETCH_TIMING_PROFILE_HPP_
+#ifndef KLL_MERGE_TIMING_PROFILE_HPP_
+#define KLL_MERGE_TIMING_PROFILE_HPP_
 
 #include <random>
 
@@ -27,9 +27,9 @@
 namespace datasketches {
 
 template<typename T>
-class kll_sketch_timing_profile: public job_profile {
+class kll_merge_timing_profile: public job_profile {
 public:
-  kll_sketch_timing_profile();
+  kll_merge_timing_profile();
   void run();
   T sample();
 private:
@@ -39,6 +39,6 @@ private:
 
 }
 
-#include "kll_sketch_timing_profile_impl.hpp"
+#include "kll_merge_timing_profile_impl.hpp"
 
 #endif
