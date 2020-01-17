@@ -31,6 +31,8 @@
 #include "theta_union_timing_profile.hpp"
 
 #include "kll_sketch_timing_profile.hpp"
+#include "kll_merge_timing_profile.hpp"
+
 #include "frequent_items_sketch_timing_profile.hpp"
 
 #include "kll_sketch_accuracy_profile.hpp"
@@ -62,8 +64,11 @@ int main(int argc, char **argv) {
   job_profile::add("hll-union-timing", job_profile_ptr(new hll_union_timing_profile()));
   job_profile::add("theta-sketch-timing", job_profile_ptr(new theta_sketch_timing_profile()));
   job_profile::add("theta-union-timing", job_profile_ptr(new theta_union_timing_profile()));
-  job_profile::add("kll-timing", job_profile_ptr(new kll_sketch_timing_profile()));
-  job_profile::add("fi-timing", job_profile_ptr(new frequent_items_sketch_timing_profile()));
+  job_profile::add("kll-sketch-timing-float", job_profile_ptr(new kll_sketch_timing_profile<float>()));
+  job_profile::add("kll-sketch-timing-string", job_profile_ptr(new kll_sketch_timing_profile<std::string>()));
+  job_profile::add("kll-merge-timing-float", job_profile_ptr(new kll_merge_timing_profile<float>()));
+  job_profile::add("kll-merge-timing-string", job_profile_ptr(new kll_merge_timing_profile<std::string>()));
+  job_profile::add("fi-sketch-timing", job_profile_ptr(new frequent_items_sketch_timing_profile()));
 
   job_profile::add("cpc-sketch-accuracy", job_profile_ptr(new cpc_sketch_accuracy_profile()));
   job_profile::add("cpc-union-accuracy", job_profile_ptr(new cpc_union_accuracy_profile()));
