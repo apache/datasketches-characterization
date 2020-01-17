@@ -13,6 +13,6 @@ semilogx(kll_str(:,1), kll_str(:,5), 'linewidth', 2);
 set(gca, 'fontsize', 16);
 title 'Update time of KLL sketch K=200'
 xlabel 'stream size'
-legend('java', 'c++ float', 'c++ string', 'location', 'northwest');
+legend('c++ float', 'c++ string', 'location', 'northwest');
 ylabel 'update time, nanoseconds'
 grid minor on
