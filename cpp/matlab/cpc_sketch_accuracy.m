@@ -21,6 +21,6 @@ h7=semilogx(d(:,1), d(:,13) * 100, 'g', 'linewidth', 2);
 set(gca, 'fontsize', 16);
 title 'Relative Error of CPC Sketch lgk=12 (2896 trials)'
 xlabel 'number of distinct values'
-legend([h1, h2, h4, h6], 'median', '67% interval', '95% interval', '99% interval');
+legend([h1, h2, h4, h6], 'median', '67% interval', '95% interval', '99% interval', 'location', 'southeast');
 ylabel 'relative error, %'
 grid minor on

@@ -29,7 +29,7 @@ void kll_accuracy_profile::run() {
   const unsigned lg_min = 0;
   const unsigned lg_max = 23;
   const unsigned ppo = 16;
-  const unsigned num_trials = 100;
+  const unsigned num_trials = 1000;
   const unsigned error_pct = 99;
 
   double rank_errors[num_trials];

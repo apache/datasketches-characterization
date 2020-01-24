@@ -17,5 +17,5 @@ set(gca, 'fontsize', 16);
 title 'Maximum error of frequent items sketch<long long>(10)'
 xlabel 'n / k'
 ylabel 'max error'
-legend('zipf 0.7', 'zipf 1.0', 'zipf 1.1', 'geom 0.005');
+legend('zipf 0.7', 'zipf 1.0', 'zipf 1.1', 'geom 0.005', 'location', 'northwest');
 grid minor on
