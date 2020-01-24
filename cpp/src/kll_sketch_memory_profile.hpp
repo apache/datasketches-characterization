@@ -24,13 +24,16 @@
 
 namespace datasketches {
 
+template<typename T>
 class kll_sketch_memory_profile: public memory_usage_profile {
 public:
   void run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo);
 private:
-  uint64_t value;
+  T value;
 };
 
 }
+
+#include "kll_sketch_memory_profile_impl.hpp"
 
 #endif
