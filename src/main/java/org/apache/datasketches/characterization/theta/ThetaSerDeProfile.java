@@ -80,6 +80,7 @@ public class ThetaSerDeProfile extends BaseSerDeProfile {
 
     stats.serializeTime_nS = startDeSerTime_nS - startSerTime_nS;
     stats.deserializeTime_nS = endDeTime_nS - startDeSerTime_nS;
+    stats.size_bytes = byteArr.length;
   }
 
 }
