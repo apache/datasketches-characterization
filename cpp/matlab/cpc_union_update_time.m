@@ -5,7 +5,7 @@ cpc2=load('../results/cpc_union_timing_lgk10_16way_gcc9.tsv');
 cpc3=load('../results/cpc_union_timing_lgk12_16way_gcc9.tsv');
 cpc4=load('../results/cpc_union_timing_lgk12_32way_gcc9.tsv');
 
-cpc5=load('../../results/cpc_union_timing_lgk12_32way.tsv');
+cpc5=load('../../results/cpc_union_update_timing_lgk12_32way.tsv');
 
 semilogx(cpc1(:,1) / 1024, cpc1(:,5), 'linewidth', 2);
 hold on;
