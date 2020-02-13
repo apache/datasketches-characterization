@@ -23,6 +23,8 @@ import static java.lang.Math.log;
 import static java.lang.Math.pow;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
+import java.util.Arrays;
+
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
@@ -43,7 +45,13 @@ public abstract class BaseSerDeProfile implements JobProfile {
   int lgMaxBpU;
   double slope;
   public int lgK;
-  public Stats stats = new Stats();
+
+  //stat measurements
+  public static final int ser_ns = 0;
+  public static final int deser_ns = 1;
+  public static final int est_ns = 2;
+  public static final int size_bytes = 3;
+  public static final int numStats = 4;
 
   //JobProfile
   @Override
@@ -84,36 +92,39 @@ public abstract class BaseSerDeProfile implements JobProfile {
 
   /**
    * Populates the sketch with the given uPerTrial and loads the stats.
-   * @param stats the given stats class
+   * @param stats the given stats array
    * @param uPerTrial the given uniques per trial to be offered
    */
-  public abstract void doTrial(Stats stats, int uPerTrial);
+  public abstract void doTrial(long[] stats, int uPerTrial);
 
   private void doTrials() {
     final int maxU = 1 << lgMaxU;
     final int minU = 1 << lgMinU;
     int lastU = 0;
     final StringBuilder dataStr = new StringBuilder();
+    final long[] rawStats = new long[numStats];
+    final long[] sumStats = new long[numStats];
+    final double[] meanStats = new double[numStats];
     println(getHeader());
+
     while (lastU < maxU) { //for each U point on X-axis, OR one row on output
       final int nextU = (lastU == 0) ? minU : pwr2LawNext(uPPO, lastU);
       lastU = nextU;
       final int trials = getNumTrials(nextU);
 
-      double sumSerialzeTime_nS = 0;
-      double sumDeserializeTime_nS = 0;
-      double sumSizeBytes = 0;
+      Arrays.fill(sumStats, 0);
+
       System.gc(); //much slower but cleaner plots
       for (int t = 0; t < trials; t++) {
-        doTrial(stats, nextU); //at this # of uniques
-        sumSerialzeTime_nS += stats.serializeTime_nS;
-        sumDeserializeTime_nS += stats.deserializeTime_nS;
-        sumSizeBytes += stats.size_bytes;
+        doTrial(rawStats, nextU); //at this # of uniques
+        for (int i = 0; i < numStats; i++) {
+          sumStats[i] += rawStats[i];
+        }
       }
-      final double meanSerializeTime_nS = sumSerialzeTime_nS / trials;
-      final double meanDeserializeTime_nS = sumDeserializeTime_nS / trials;
-      final long size = Math.round(sumSizeBytes / trials);
-      process(meanSerializeTime_nS, meanDeserializeTime_nS, size, trials, nextU, dataStr);
+      for (int i = 0; i < numStats; i++) {
+        meanStats[i] = (double)sumStats[i] / trials;
+      }
+      process(meanStats, trials, nextU, dataStr);
       println(dataStr.toString());
     }
   }
@@ -143,15 +154,16 @@ public abstract class BaseSerDeProfile implements JobProfile {
     return (int) pow(2.0, lgTrials);
   }
 
-  private static void process(final double meanSerTime_nS, final double meanDeserTime_nS,
-      final long size, final int trials, final int uPerTrial, final StringBuilder dataStr) {
+  private static void process(final double[] meanStats, final int trials, final int uPerTrial,
+      final StringBuilder dataStr) {
     //OUTPUT
-    dataStr.setLength(0);
+    dataStr.setLength(0); //reset
     dataStr.append(uPerTrial).append(TAB);
     dataStr.append(trials).append(TAB);
-    dataStr.append(meanSerTime_nS).append(TAB);
-    dataStr.append(meanDeserTime_nS).append(TAB);
-    dataStr.append(size);
+    dataStr.append(String.format("%12.1f", meanStats[ser_ns])).append(TAB);
+    dataStr.append(String.format("%12.1f", meanStats[deser_ns])).append(TAB);
+    dataStr.append(String.format("%12.1f", meanStats[est_ns])).append(TAB);
+    dataStr.append(String.format("%12.1f", meanStats[size_bytes]));
   }
 
   private static String getHeader() {
@@ -160,13 +172,9 @@ public abstract class BaseSerDeProfile implements JobProfile {
     sb.append("Trials").append(TAB);
     sb.append("Ser_nS").append(TAB);
     sb.append("DeSer_nS").append(TAB);
+    sb.append("Est_nS").append(TAB);
     sb.append("Size_B");
     return sb.toString();
   }
 
-  public static final class Stats {
-    public double serializeTime_nS;
-    public double deserializeTime_nS;
-    public long size_bytes;
-  }
 }

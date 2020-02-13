@@ -19,6 +19,8 @@
 
 package org.apache.datasketches.characterization.theta;
 
+import static org.testng.Assert.assertEquals;
+
 import org.apache.datasketches.Family;
 import org.apache.datasketches.ResizeFactor;
 import org.apache.datasketches.characterization.uniquecount.BaseSerDeProfile;
@@ -33,6 +35,9 @@ import org.apache.datasketches.theta.UpdateSketchBuilder;
  */
 public class ThetaSerDeProfile extends BaseSerDeProfile {
   private UpdateSketch sketch;
+  private boolean serde = false;
+  private boolean est = false;
+  private double err;
 
   @Override
   public void configure() {
@@ -41,8 +46,11 @@ public class ThetaSerDeProfile extends BaseSerDeProfile {
     final float p = Float.parseFloat(prop.mustGet("THETA_p"));
     final ResizeFactor rf = ResizeFactor.getRF(Integer.parseInt(prop.mustGet("THETA_lgRF")));
     final boolean direct = Boolean.parseBoolean(prop.mustGet("THETA_direct"));
+    serde = Boolean.parseBoolean(prop.mustGet("THETA_SerDe"));
+    est = Boolean.parseBoolean(prop.mustGet("THETA_Est"));
 
     final int k = 1 << lgK;
+    err = 5.0 / Math.sqrt(k);
     final UpdateSketchBuilder udBldr = UpdateSketch.builder()
         .setNominalEntries(k)
         .setFamily(family)
@@ -59,28 +67,41 @@ public class ThetaSerDeProfile extends BaseSerDeProfile {
   }
 
   @Override
-  public void doTrial(final Stats stats, final int uPerTrial) {
+  public void doTrial(final long[] stats, final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
+    double est1 = 0;
+    double est2 = 0;
+    UpdateSketch sketch2 = null;
 
     for (int u = uPerTrial; u-- > 0;) { //populate the sketch
       sketch.update(++vIn);
     }
-    final double est1 = sketch.getEstimate();
+    if (est) {
+      final long startEstTime_nS = System.nanoTime();
+      est1 = sketch.getEstimate();
+      final long stopEstTime_nS = System.nanoTime();
 
-    final long startSerTime_nS = System.nanoTime();
-    final byte[] byteArr = sketch.toByteArray();
+      assertEquals(est1, uPerTrial, uPerTrial * err);
+      stats[est_ns] = est ? stopEstTime_nS - startEstTime_nS : 0;
+    }
+    if (serde) {
+      final long startSerTime_nS = System.nanoTime();
+      final byte[] byteArr = sketch.toByteArray();
 
-    final long startDeSerTime_nS = System.nanoTime();
+      final long startDeserTime_nS = System.nanoTime();
+      sketch2 = UpdateSketch.heapify(Memory.wrap(byteArr));
+      final long stopSerDeTime_nS = System.nanoTime();
 
-    final UpdateSketch sketch2 = UpdateSketch.heapify(Memory.wrap(byteArr));
-    final long endDeTime_nS = System.nanoTime();
+      est2 = sketch2.getEstimate();
+      assertEquals(est2, uPerTrial, uPerTrial * err);
+      stats[ser_ns] = serde ? startDeserTime_nS - startSerTime_nS : 0;
+      stats[deser_ns] = serde ? stopSerDeTime_nS - startDeserTime_nS : 0;
+      stats[size_bytes] = serde ? byteArr.length : 0;
+    }
+    if (est && serde) {
+      assertEquals(est1, est2, 0.0);
+    }
 
-    final double est2 = sketch2.getEstimate();
-    assert est1 == est2;
-
-    stats.serializeTime_nS = startDeSerTime_nS - startSerTime_nS;
-    stats.deserializeTime_nS = endDeTime_nS - startDeSerTime_nS;
-    stats.size_bytes = byteArr.length;
   }
 
 }

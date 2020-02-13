@@ -56,15 +56,18 @@ public class HllSerDeProfile extends BaseSerDeProfile {
   }
 
   @Override
-  public void doTrial(final Stats stats, final int uPerTrial) {
+  public void doTrial(final long[] stats, final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
+    final byte[] byteArr;
 
     for (int u = uPerTrial; u-- > 0;) {
       sketch.update(++vIn);
     }
-    final double est1 = sketch.getEstimate();
 
-    final byte[] byteArr;
+    final long startEstTime_nS = System.nanoTime();
+    final double est1 = sketch.getEstimate();
+    final long stopEstTime_nS = System.nanoTime();
+
     final long startSerTime_nS, stopSerTime_nS;
     if (compact) {
       startSerTime_nS = System.nanoTime();
@@ -92,9 +95,10 @@ public class HllSerDeProfile extends BaseSerDeProfile {
     final double est2 = sketch2.getEstimate();
     assert est1 == est2;
 
-    stats.serializeTime_nS = stopSerTime_nS - startSerTime_nS;
-    stats.deserializeTime_nS = stopDeserTime_nS - startDeserTime_nS;
-    stats.size_bytes = byteArr.length;
+    stats[est_ns] = stopEstTime_nS - startEstTime_nS;
+    stats[ser_ns] = stopSerTime_nS - startSerTime_nS;
+    stats[deser_ns] = stopDeserTime_nS - startDeserTime_nS;
+    stats[size_bytes] = byteArr.length;
   }
 
 }

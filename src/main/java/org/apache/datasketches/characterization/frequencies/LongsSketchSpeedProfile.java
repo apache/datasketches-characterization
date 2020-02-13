@@ -85,7 +85,7 @@ public class LongsSketchSpeedProfile extends BaseFrequenciesSpeedProfile {
 
   @Override
   String getHeader() {
-    return "Stream\tTrials\tBuild\tUpdate\tSer\tDeser\tItems\tSize";
+    return "Stream\tTrials\tBuild\tUpdate\tSer\tDeser\tItems\tstatsSize";
   }
 
   @Override

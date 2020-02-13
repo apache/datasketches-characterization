@@ -129,7 +129,7 @@ public class KllFloatsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
   @Override
   String getHeader() {
-    return "Stream\tTrials\tBuild\tUpdate\tQuant\tQuants\tRank\tCDF\tSer\tDeser\tItems\tSize";
+    return "Stream\tTrials\tBuild\tUpdate\tQuant\tQuants\tRank\tCDF\tSer\tDeser\tItems\tstatsSize";
   }
 
   @Override

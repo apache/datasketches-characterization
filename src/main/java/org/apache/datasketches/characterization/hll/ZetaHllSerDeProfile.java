@@ -78,33 +78,30 @@ public class ZetaHllSerDeProfile extends BaseSerDeProfile {
   }
 
   @Override
-  public void doTrial(final Stats stats, final int uPerTrial) {
+  public void doTrial(final long[] stats, final int uPerTrial) {
     reset();
-    //Serialize
+
     for (int u = uPerTrial; u-- > 0;) {
       sketch1.add(++vIn);
     }
+
+    final long startEstTime_nS = System.nanoTime();
     final double est1 = sketch1.result();
 
-    final byte[] byteArr;
-    final long startSerTime_nS, stopSerTime_nS;
+    final long startSerTime_nS = System.nanoTime();
+    final byte[] byteArr = sketch1.serializeToByteArray();
 
-    startSerTime_nS = System.nanoTime();
-    byteArr = sketch1.serializeToByteArray();
-    stopSerTime_nS = System.nanoTime();
-
-    //Deserialize
-    final long startDeserTime_nS, stopDeserTime_nS;
-    startDeserTime_nS = System.nanoTime();
+    final long startDeSerTime_nS = System.nanoTime();
     sketch2 = HyperLogLogPlusPlus.forProto(byteArr);
-    stopDeserTime_nS = System.nanoTime();
+    final long endTime_nS = System.nanoTime();
 
     final double est2 = sketch2.result();
     assert est1 == est2;
 
-    stats.serializeTime_nS = stopSerTime_nS - startSerTime_nS;
-    stats.deserializeTime_nS = stopDeserTime_nS - startDeserTime_nS;
-    stats.size_bytes = byteArr.length;
+    stats[est_ns] = startSerTime_nS - startEstTime_nS;
+    stats[ser_ns] = startDeSerTime_nS - startSerTime_nS;
+    stats[deser_ns] = endTime_nS - startDeSerTime_nS;
+    stats[size_bytes] = byteArr.length;
   }
 
 }

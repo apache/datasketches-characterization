@@ -196,8 +196,8 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
   @Override
   String getHeader() {
-    return "Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tRank\tSer\tDeser\tSize"
-        + "\tCompact\tQuant\tCDF\tRank\tSer\tDeser\tSize\tItems";
+    return "Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tRank\tSer\tDeser\tstatsSize"
+        + "\tCompact\tQuant\tCDF\tRank\tSer\tDeser\tstatsSize\tItems";
   }
 
   @Override

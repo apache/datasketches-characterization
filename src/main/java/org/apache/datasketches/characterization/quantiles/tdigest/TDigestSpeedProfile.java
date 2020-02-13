@@ -123,7 +123,7 @@ public class TDigestSpeedProfile extends QuantilesSpeedProfile {
 
   @Override
   String getHeader() {
-    return "Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tSer\tDe\tSer\tDe\tItems\tSize\tSmall";
+    return "Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tSer\tDe\tSer\tDe\tItems\tstatsSize\tSmall";
   }
 
   @Override
