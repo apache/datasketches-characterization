@@ -34,6 +34,7 @@
 #include "kll_merge_timing_profile.hpp"
 
 #include "frequent_items_sketch_timing_profile.hpp"
+#include "frequent_items_merge_timing_profile.hpp"
 
 #include "kll_sketch_accuracy_profile.hpp"
 #include "kll_merge_accuracy_profile.hpp"
@@ -69,6 +70,7 @@ int main(int argc, char **argv) {
   job_profile::add("kll-merge-timing-float", job_profile_ptr(new kll_merge_timing_profile<float>()));
   job_profile::add("kll-merge-timing-string", job_profile_ptr(new kll_merge_timing_profile<std::string>()));
   job_profile::add("fi-sketch-timing", job_profile_ptr(new frequent_items_sketch_timing_profile()));
+  job_profile::add("fi-merge-timing", job_profile_ptr(new frequent_items_merge_timing_profile()));
 
   job_profile::add("cpc-sketch-accuracy", job_profile_ptr(new cpc_sketch_accuracy_profile()));
   job_profile::add("cpc-union-accuracy", job_profile_ptr(new cpc_union_accuracy_profile()));
