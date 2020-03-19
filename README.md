@@ -69,7 +69,7 @@ See the pom.xml file for test dependencies.
 * These tests have many parameters that are specified in a corresponding configuration ".conf" file located in directories:
     * src/main/resources/&lt;type&gt;/&lt;test&gt;.conf
     * One of the parameters specified by the .conf file is the specific "Job Profile" that is to be run using that configuration.
-* It is recommended that you use your IDE and run the test by executing *org.apache.datasketches.job.main(&lt;location of .conf file&gt;). 
+* It is recommended that you use your IDE and run the test by executing *org.apache.datasketches.job.main(&lt;location of .conf file&gt;)*. 
 The IDE should resolve all the required dependencies specified by the pom.xml file for you.  With Eclipse, the command is "run as java application".
 IntelliJ should have something similar.  The output is sent to Standard Out.
 
