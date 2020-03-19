@@ -37,7 +37,8 @@ void hll_union_timing_profile::run() {
   const size_t lg_max_trials = 14;
   const size_t lg_min_trials = 6;
 
-  const int lg_k = 11;
+  const int lg_k = 12;
+  const target_hll_type hll_type = HLL_8;
   const int num_sketches_to_union = 32;
 
   // some arbitrary starting value
@@ -62,7 +63,7 @@ void hll_union_timing_profile::run() {
     for (size_t t = 0; t < num_trials; t++) {
       const auto start_build(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches_to_union; i++) {
-        sketches[i] = std::unique_ptr<hll_sketch>(new hll_sketch(lg_k));
+        sketches[i] = std::unique_ptr<hll_sketch>(new hll_sketch(lg_k, hll_type));
       }
       hll_union u(lg_k);
       const auto finish_build(std::chrono::high_resolution_clock::now());
@@ -96,13 +97,13 @@ void hll_union_timing_profile::run() {
 
       const auto start_union(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches_to_union; i++) {
-        u.update(*sketches[i]);
+        u.update(std::move(*sketches[i]));
       }
       const auto finish_union(std::chrono::high_resolution_clock::now());
       union_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_union - start_union);
 
       const auto start_result(std::chrono::high_resolution_clock::now());
-      hll_sketch result = u.get_result();
+      hll_sketch result = u.get_result(hll_type);
       const auto finish_result(std::chrono::high_resolution_clock::now());
       result_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_result - start_result);
     }
