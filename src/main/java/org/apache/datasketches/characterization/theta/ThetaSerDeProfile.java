@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.theta;
 
-import static org.testng.Assert.assertEquals;
+//import static org.testng.Assert.assertEquals;
 
 import org.apache.datasketches.Family;
 import org.apache.datasketches.ResizeFactor;
@@ -33,7 +33,7 @@ import org.apache.datasketches.theta.UpdateSketchBuilder;
 /**
  * @author Lee Rhodes
  */
-public class ThetaSerDeProfile extends BaseSerDeProfile {
+public final class ThetaSerDeProfile extends BaseSerDeProfile {
   private UpdateSketch sketch;
   private boolean serde = false;
   private boolean est = false;
@@ -101,7 +101,13 @@ public class ThetaSerDeProfile extends BaseSerDeProfile {
     if (est && serde) {
       assertEquals(est1, est2, 0.0);
     }
+  }
 
+  private static void assertEquals(final double a, final double b, final double thresh) {
+    final double err = Math.abs(a - b);
+    if (err > thresh) {
+      throw new IllegalArgumentException("Error = " + err + "> Thresh = " + thresh);
+    }
   }
 
 }

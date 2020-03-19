@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.quantiles;
 
-import java.util.Random;
+import static org.apache.datasketches.characterization.Shuffle.shuffle;
 
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.kll.KllFloatsSketch;
@@ -80,20 +80,4 @@ public class KllFloatsSketchAccuracyProfile extends BaseQuantilesAccuracyProfile
     }
     return maxRankError;
   }
-
-  static final Random rnd = new Random();
-
-  static void shuffle(final float[] array) {
-    for (int i = 0; i < array.length; i++) {
-      final int r = rnd.nextInt(i + 1);
-      swap(array, i, r);
-    }
-  }
-
-  private static void swap(final float[] array, final int i1, final int i2) {
-    final float value = array[i1];
-    array[i1] = array[i2];
-    array[i2] = value;
-  }
-
 }
