@@ -43,9 +43,17 @@ void hll_union_accuracy_profile::run_trial() {
     }
     count += delta;
     for (auto& sketch: sketches) {
-      u.update(*sketch);
+      u.update(std::move(*sketch));
     }
-    stat.update(u.get_result().get_estimate());
+    stat.update(
+      u.get_estimate(),
+      u.get_lower_bound(1),
+      u.get_lower_bound(2),
+      u.get_lower_bound(3),
+      u.get_upper_bound(1),
+      u.get_upper_bound(2),
+      u.get_upper_bound(3)
+    );
   }
 }
 

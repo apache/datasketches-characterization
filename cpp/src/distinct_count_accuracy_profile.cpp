@@ -33,6 +33,12 @@ sum_est(0),
 sum_rel_err(0),
 sum_sq_rel_err(0),
 count(0),
+below_lb1_cnt(0),
+below_lb2_cnt(0),
+below_lb3_cnt(0),
+above_ub1_cnt(0),
+above_ub2_cnt(0),
+above_ub3_cnt(0),
 rel_err_distribution(k)
 {}
 
@@ -43,6 +49,17 @@ void accuracy_stats::update(double estimate) {
   sum_sq_rel_err += relative_error * relative_error;
   rel_err_distribution.update(relative_error);
   count++;
+}
+
+void accuracy_stats::update(double estimate, double lb1, double lb2, double lb3,
+    double ub1, double ub2, double ub3) {
+  update(estimate);
+  if (true_value < lb1) below_lb1_cnt++;
+  if (true_value < lb2) below_lb2_cnt++;
+  if (true_value < lb3) below_lb3_cnt++;
+  if (true_value > ub1) above_ub1_cnt++;
+  if (true_value > ub2) above_ub2_cnt++;
+  if (true_value > ub3) above_ub3_cnt++;
 }
 
 size_t accuracy_stats::get_true_value() const {
@@ -63,6 +80,30 @@ double accuracy_stats::get_rms_rel_err() const {
 
 size_t accuracy_stats::get_count() const {
   return count;
+}
+
+double accuracy_stats::get_below_lb1_ratio() const {
+  return static_cast<double>(below_lb1_cnt) / count;
+}
+
+double accuracy_stats::get_below_lb2_ratio() const {
+  return static_cast<double>(below_lb2_cnt) / count;
+}
+
+double accuracy_stats::get_below_lb3_ratio() const {
+  return static_cast<double>(below_lb3_cnt) / count;
+}
+
+double accuracy_stats::get_above_ub1_ratio() const {
+  return static_cast<double>(above_ub1_cnt) / count;
+}
+
+double accuracy_stats::get_above_ub2_ratio() const {
+  return static_cast<double>(above_ub2_cnt) / count;
+}
+
+double accuracy_stats::get_above_ub3_ratio() const {
+  return static_cast<double>(above_ub3_cnt) / count;
 }
 
 std::vector<double> accuracy_stats::get_quantiles(
@@ -159,6 +200,12 @@ void distinct_count_accuracy_profile::print_stats() const {
       std::cout << quantile;
       if (i != FRACT_LEN - 1) std::cout << "\t";
     }
+    std::cout << "\t" << stat.get_below_lb1_ratio();
+    std::cout << "\t" << stat.get_below_lb2_ratio();
+    std::cout << "\t" << stat.get_below_lb3_ratio();
+    std::cout << "\t" << stat.get_above_ub1_ratio();
+    std::cout << "\t" << stat.get_above_ub2_ratio();
+    std::cout << "\t" << stat.get_above_ub3_ratio();
     std::cout << std::endl;
   }
 }

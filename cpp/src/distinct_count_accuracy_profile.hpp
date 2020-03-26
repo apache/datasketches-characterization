@@ -40,11 +40,19 @@ class accuracy_stats {
 public:
   accuracy_stats(size_t k, size_t true_value);
   void update(double estimate);
+  void update(double estimate, double lb1, double lb2, double lb3,
+      double ub1, double ub2, double ub3);
   size_t get_true_value() const;
   double get_mean_est() const;
   double get_mean_rel_err() const;
   double get_rms_rel_err() const;
   size_t get_count() const;
+  double get_below_lb1_ratio() const;
+  double get_below_lb2_ratio() const;
+  double get_below_lb3_ratio() const;
+  double get_above_ub1_ratio() const;
+  double get_above_ub2_ratio() const;
+  double get_above_ub3_ratio() const;
   std::vector<double> get_quantiles(const double* fractions, size_t size) const;
 
 private:
@@ -53,6 +61,12 @@ private:
   double sum_rel_err;
   double sum_sq_rel_err;
   size_t count;
+  size_t below_lb1_cnt;
+  size_t below_lb2_cnt;
+  size_t below_lb3_cnt;
+  size_t above_ub1_cnt;
+  size_t above_ub2_cnt;
+  size_t above_ub3_cnt;
   kll_sketch<double> rel_err_distribution;
 };
 
