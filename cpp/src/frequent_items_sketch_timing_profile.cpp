@@ -41,7 +41,7 @@ struct hash_long_long {
     return key;
   }
 };
-typedef frequent_items_sketch<long long, hash_long_long> frequent_longs_sketch;
+typedef frequent_items_sketch<long long, long, hash_long_long> frequent_longs_sketch;
 
 void frequent_items_sketch_timing_profile::run() {
   const unsigned lg_min_stream_len = 0;

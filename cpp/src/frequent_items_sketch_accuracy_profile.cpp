@@ -56,7 +56,7 @@ void frequent_items_sketch_accuracy_profile::run() {
     const size_t num_trials = get_num_trials(stream_length, lg_min_stream_len, lg_max_stream_len, lg_min_trials, lg_max_trials);
 
     // trust sketch to compute epsilon
-    unsigned threshold = frequent_items_sketch<unsigned, unsigned>::get_epsilon(lg_max_sketch_size) * stream_length;
+    unsigned threshold = frequent_items_sketch<unsigned>::get_epsilon(lg_max_sketch_size) * stream_length;
 
     unsigned* values = new unsigned[stream_length];
 
