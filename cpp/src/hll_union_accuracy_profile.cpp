@@ -47,12 +47,8 @@ void hll_union_accuracy_profile::run_trial() {
     }
     stat.update(
       u.get_estimate(),
-      u.get_lower_bound(1),
-      u.get_lower_bound(2),
-      u.get_lower_bound(3),
-      u.get_upper_bound(1),
-      u.get_upper_bound(2),
-      u.get_upper_bound(3)
+      u.get_lower_bound(1), u.get_lower_bound(2), u.get_lower_bound(3),
+      u.get_upper_bound(1), u.get_upper_bound(2), u.get_upper_bound(3)
     );
   }
 }

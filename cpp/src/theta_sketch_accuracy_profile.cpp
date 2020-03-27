@@ -35,7 +35,11 @@ void theta_sketch_accuracy_profile::run_trial() {
       s.update(key++);
     }
     count += delta;
-    stat.update(s.get_estimate());
+    stat.update(
+      s.get_estimate(),
+      s.get_lower_bound(1), s.get_lower_bound(2), s.get_lower_bound(3),
+      s.get_upper_bound(1), s.get_upper_bound(2), s.get_upper_bound(3)
+    );
   }
 }
 

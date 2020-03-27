@@ -47,7 +47,12 @@ void theta_union_accuracy_profile::run_trial() {
     for (auto& sketch: sketches) {
       u.update(*sketch);
     }
-    stat.update(u.get_result().get_estimate());
+    compact_theta_sketch result = u.get_result();
+    stat.update(
+      result.get_estimate(),
+      result.get_lower_bound(1), result.get_lower_bound(2), result.get_lower_bound(3),
+      result.get_upper_bound(1), result.get_upper_bound(2), result.get_upper_bound(3)
+    );
   }
 }
 
