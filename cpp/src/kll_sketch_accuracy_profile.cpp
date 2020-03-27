@@ -38,7 +38,7 @@ double kll_sketch_accuracy_profile::run_trial(float* values, unsigned stream_len
   for (size_t i = 0; i < stream_length; i++) {
     double true_rank = (double) i / stream_length;
     double est_rank = sketch.get_rank(i);
-    max_rank_error = std::max(max_rank_error, abs(true_rank - est_rank));
+    max_rank_error = std::max(max_rank_error, fabs(true_rank - est_rank));
   }
 
   return max_rank_error;

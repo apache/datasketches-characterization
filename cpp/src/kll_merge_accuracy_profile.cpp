@@ -45,13 +45,13 @@ double kll_merge_accuracy_profile::run_trial(float* values, unsigned stream_leng
   }
 
   kll_sketch<float> sketch;
-  for (unsigned i = 0; i < num_sketches; i++) sketch.merge(*sketches[i]);
+  for (unsigned i = 0; i < num_sketches; i++) sketch.merge(std::move(*sketches[i]));
 
   double max_rank_error = 0;
   for (size_t i = 0; i < stream_length; i++) {
     double true_rank = static_cast<double>(i) / stream_length;
     double est_rank = sketch.get_rank(i);
-    max_rank_error = std::max(max_rank_error, abs(true_rank - est_rank));
+    max_rank_error = std::max(max_rank_error, fabs(true_rank - est_rank));
   }
 
   return max_rank_error;
