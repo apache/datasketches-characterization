@@ -43,7 +43,7 @@ void cpc_union_accuracy_profile::run_trial() {
     }
     count += delta;
     for (auto& sketch: sketches) {
-      u.update(*sketch);
+      u.update(std::move(*sketch));
     }
     cpc_sketch result = u.get_result();
     stat.update(

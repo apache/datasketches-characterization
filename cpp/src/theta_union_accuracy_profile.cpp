@@ -45,7 +45,7 @@ void theta_union_accuracy_profile::run_trial() {
     }
     count += delta;
     for (auto& sketch: sketches) {
-      u.update(*sketch);
+      u.update(std::move(*sketch));
     }
     compact_theta_sketch result = u.get_result();
     stat.update(
