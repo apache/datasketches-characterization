@@ -172,9 +172,16 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
     sb.setLength(0);
     for (int pt = 0; pt < points; pt++) {
       final BoundsAccuracyStats q = qArr[pt];
+      final double uniques = q.trueValue;
+      final double relLb3 = q.sumLB3 / cumTrials / uniques - 1.0;
+      final double relLb2 = q.sumLB2 / cumTrials / uniques - 1.0;
+      final double relLb1 = q.sumLB1 / cumTrials / uniques - 1.0;
+      final double relUb1 = q.sumUB1 / cumTrials / uniques - 1.0;
+      final double relUb2 = q.sumUB2 / cumTrials / uniques - 1.0;
+      final double relUb3 = q.sumUB3 / cumTrials / uniques - 1.0;
 
       //OUTPUT
-      sb.append(q.trueValue).append(TAB);
+      sb.append(uniques).append(TAB);
       //TRIALS
       sb.append(cumTrials).append(TAB);
 
@@ -182,15 +189,15 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
       final double[] quants = q.qskEst.getQuantiles(FRACTIONS_3SD);
       final int len = quants.length;
       for (int i = 0; i < len; i++) {
-        sb.append(quants[i] / q.trueValue - 1.0).append(TAB);
+        sb.append(quants[i] / uniques - 1.0).append(TAB);
       }
       //Bound averages
-      sb.append(q.sumLB3 / cumTrials).append(TAB);
-      sb.append(q.sumLB2 / cumTrials).append(TAB);
-      sb.append(q.sumLB1 / cumTrials).append(TAB);
-      sb.append(q.sumUB1 / cumTrials).append(TAB);
-      sb.append(q.sumUB2 / cumTrials).append(TAB);
-      sb.append(q.sumUB3 / cumTrials).append(TAB);
+      sb.append(relLb3).append(TAB);
+      sb.append(relLb2).append(TAB);
+      sb.append(relLb1).append(TAB);
+      sb.append(relUb1).append(TAB);
+      sb.append(relUb2).append(TAB);
+      sb.append(relUb3).append(TAB);
       sb.append(LS);
     }
   }
