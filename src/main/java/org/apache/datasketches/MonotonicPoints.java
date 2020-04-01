@@ -23,22 +23,24 @@ import static java.lang.Math.abs;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 import static java.lang.Math.min;
+import static org.apache.datasketches.Util.pwr2LawNext;
 
 import java.util.Random;
 
-public class TestingUtil2 {
+public class MonotonicPoints {
   public static Random rand = new Random();
 
   /**
-   *
-   * @param x1 given
-   * @param x2 given
-   * @param points given
-   * @param log given
+   * Generates an double[] of monotonic points that are uniformly spaced.
+   * @param x1 one endpoint
+   * @param x2 the other endpoint
+   * @param points to be returned
+   * @param useLog set this true if you want the sequence to be logarithmically spaced. If
+   * true, x1 and x2 must be greater than zero.
    * @return double array
    */
   public static double[] evenlySpaced(final double x1, final double x2, final int points,
-      final boolean log) {
+      final boolean useLog) {
     if (points <= 0) {
       throw new IllegalArgumentException("points must be > 0");
     }
@@ -52,8 +54,8 @@ public class TestingUtil2 {
       return out;
     }
     // 3 or more
-    if (log) {
-      if ((x2 <= 0) || (x1 <= 0)) {
+    if (useLog) {
+      if (x2 <= 0 || x1 <= 0) {
         throw new IllegalArgumentException("x1 and x2 must be > 0.");
       }
       final double logMin = log(x1);
@@ -71,22 +73,23 @@ public class TestingUtil2 {
   }
 
   /**
-   *
-   * @param x1 given
-   * @param x2 given
-   * @param points given
-   * @param log given
+   * Generates an double[] of monotonic points that are uniform random spaced.
+   * @param x1 one endpoint
+   * @param x2 the other endpoint
+   * @param points to be returned
+   * @param useLog set this true if you want the sequence to be logarithmically spaced. If
+   * true, x1 and x2 must be greater than zero.
    * @return double array
    */
   public static double[] uniformRandom(final double x1, final double x2, final int points,
-      final boolean log) {
+      final boolean useLog) {
     if (points <= 0) {
       throw new IllegalArgumentException("points must be > 0");
     }
     final double[] out = new double[points];
 
-    if (log) {
-      if ((x2 <= 0) || (x1 <= 0)) {
+    if (useLog) {
+      if (x2 <= 0 || x1 <= 0) {
         throw new IllegalArgumentException("x1 and x2 must be > 0.");
       }
       final double logX1 = log(x1);
@@ -122,7 +125,7 @@ public class TestingUtil2 {
 
   public static final double linXlinYline(final double slope, final double x, final double x0,
       final double y0) {
-    return mXplusY(slope, (x - x0), y0);
+    return mXplusY(slope, x - x0, y0);
   }
 
   public static final double logXlogYline(final double slope, final double x, final double x0,
@@ -131,7 +134,26 @@ public class TestingUtil2 {
   }
 
   public static final double mXplusY(final double m, final double x, final double y) {
-    return (m * x) + y;
+    return m * x + y;
+  }
+
+  /**
+   * Counts the actual number of plotting points between lgStart and lgEnd assuming the given PPO.
+   * This is not a simple linear function due to points that may be skipped in the low range.
+   * @param lgStart Log2 of the starting value
+   * @param lgEnd Log2 of the ending value
+   * @param ppo the number of logrithmically evenly spaced points per octave.
+   * @return the actual number of plotting points between lgStart and lgEnd.
+   */
+  public static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {
+    int p = 1 << lgStart;
+    final int end = 1 << lgEnd;
+    int count = 0;
+    while (p <= end) {
+      p = pwr2LawNext(ppo, p);
+      count++;
+    }
+    return count;
   }
 
 }
