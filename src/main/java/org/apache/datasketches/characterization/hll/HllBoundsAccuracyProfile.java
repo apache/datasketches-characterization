@@ -72,7 +72,7 @@ public class HllBoundsAccuracyProfile extends BaseBoundsAccuracyProfile {
             sketch.getUpperBound(1), sketch.getUpperBound(2), sketch.getUpperBound(3));
       }
     } else { //use longs; use HIP
-      for (int i = 0; i < qArrLen; i++) {
+      for (int i = 0; i < qArrLen; i++) { //loop through all Trials Points
         final BoundsAccuracyStats q = qArr[i];
         final long delta = (long)(q.trueValue - lastUniques);
         for (long u = 0; u < delta; u++) {
