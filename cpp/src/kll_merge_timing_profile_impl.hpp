@@ -42,7 +42,7 @@ void kll_merge_timing_profile<T>::run() {
   const size_t ppo = 16;
 
   const size_t lg_max_trials = 16;
-  const size_t lg_min_trials = 6;
+  const size_t lg_min_trials = 4;
 
   const size_t num_sketches = 32;
 
@@ -84,7 +84,7 @@ void kll_merge_timing_profile<T>::run() {
 
       const auto start_merge(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches; i++) {
-        merge_sketch.merge(*sketches[i]);
+        merge_sketch.merge(std::move(*sketches[i]));
       }
       const auto finish_merge(std::chrono::high_resolution_clock::now());
       merge_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_merge - start_merge);
@@ -96,7 +96,7 @@ void kll_merge_timing_profile<T>::run() {
         << (double) build_time_ns.count() / num_trials << "\t"
         << (double) update_time_ns.count() / num_trials / stream_length << "\t"
         << (double) merge_time_ns.count() / num_trials << "\t"
-        << num_retained / num_trials << "\t"
+        << num_retained / num_trials
         << std::endl;
     stream_length = pwr_2_law_next(ppo, stream_length);
   }
