@@ -40,7 +40,7 @@ public class BoundsAccuracyStats {
   public double trueValue; //set by constructor
 
   public BoundsAccuracyStats(final int k, final int trueValue) {
-    qskEst = new DoublesSketchBuilder().setK(k).build(); //Quantiles
+    qskEst = new DoublesSketchBuilder().setK(k).build(); //Quantiles of estimates
     this.trueValue = trueValue;
   }
 
