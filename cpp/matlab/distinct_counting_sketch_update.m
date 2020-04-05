@@ -17,6 +17,6 @@ semilogx(theta_12(:,1), theta_12(:,4), 'linewidth', 2);
 set(gca, 'fontsize', 16);
 title 'Update time of CPC, HLL and Theta sketches'
 xlabel 'number of distinct values'
-legend('CPC lgk=12 gcc9', 'HLL4 lgk=12 gcc9', 'Theta lgk=12 x8 gcc9', "location", 'northeast');
+legend('CPC lgk=12 gcc9', 'HLL4 lgk=12 gcc9', 'Theta lgk=12 x8 gcc9', 'location', 'northeast');
 ylabel 'update time, ns'
 grid minor on

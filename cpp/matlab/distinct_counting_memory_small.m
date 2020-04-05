@@ -15,6 +15,6 @@ semilogx(hll4_5(:,1), hll4_5(:,11), 'linewidth', 2);
 set(gca, 'fontsize', 16);
 title 'Memory usage by CPC and HLL sketches (updates, no transients, C++)'
 xlabel 'number of distinct values'
-legend('CPC lgk=4', 'CPC lgk=5', 'HLL4 lgk=4', 'HLL4 lgk=5', "location", 'northeast');
+legend('CPC lgk=4', 'CPC lgk=5', 'HLL4 lgk=4', 'HLL4 lgk=5', 'location', 'northwest');
 ylabel 'size in memory, bytes'
 grid minor on

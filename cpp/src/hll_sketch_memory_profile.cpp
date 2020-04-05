@@ -28,10 +28,11 @@ namespace datasketches {
 extern long long int total_allocated_memory;
 
 void hll_sketch_memory_profile::run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo) {
-  const size_t lg_k = 21;
+  const size_t lg_k = 12;
+  const target_hll_type hll_type = HLL_4;
 
   typedef hll_sketch_alloc<counting_allocator<void>> hll_sketch_a;
-  hll_sketch_a* s = new (counting_allocator<hll_sketch_a>().allocate(1)) hll_sketch_a(lg_k);
+  hll_sketch_a* s = new (counting_allocator<hll_sketch_a>().allocate(1)) hll_sketch_a(lg_k, hll_type);
 
   size_t count = 0;
   size_t p = 1 << lg_min_x;
