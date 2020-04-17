@@ -23,7 +23,7 @@ import static org.apache.datasketches.Util.pwr2LawNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
-import org.apache.datasketches.PerformanceUtil;
+import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
@@ -60,7 +60,7 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
 
     job.println("StreamLength\tError");
 
-    final int numSteps = PerformanceUtil.countPoints(lgMin, lgMax, ppo);
+    final int numSteps = MonotonicPoints.countPoints(lgMin, lgMax, ppo);
     int streamLength = 1 << lgMin;
     for (int i = 0; i < numSteps; i++) {
       prepareTrial(streamLength);

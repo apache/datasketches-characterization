@@ -17,25 +17,26 @@
  * under the License.
  */
 
-package org.apache.datasketches;
+package org.apache.datasketches.characterization;
 
 import static org.apache.datasketches.Util.pwr2LawNext;
 
+import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
 
 /**
- * Holds key metrics from a single accuracy trial
+ * Holds key metrics from a set of accuracy trials
  *
  * @author Lee Rhodes
  */
 public class AccuracyStats {
-  public UpdateDoublesSketch qsk;
+  public UpdateDoublesSketch qsk; //quantile sketch created by constructor
   public double sumEst = 0;
   public double sumRelErr = 0;
   public double sumSqErr = 0;
-  public double rmsre = 0;
-  public double trueValue;
+  public double rmsre = 0; //used later for plotting
+  public double trueValue; //set by constructor
   public int bytes = 0;
 
   /**
@@ -50,19 +51,18 @@ public class AccuracyStats {
   /**
    * Update
    *
-   * @param est the value of the estimate for this trial
-   * nanoSeconds.
+   * @param est the value of the estimate for a single trial
    */
   public void update(final double est) {
     qsk.update(est);
     sumEst += est;
-    sumRelErr += (est / trueValue) - 1.0;
+    sumRelErr += est / trueValue - 1.0;
     final double error = est - trueValue;
     sumSqErr += error * error;
   }
 
   /**
-   * Build the Accuracy Stats Array
+   * Build the AccuracyStats Array
    * @param lgMin log_base2 of the minimum number of uniques used
    * @param lgMax log_base2 of the maximum number of uniques used
    * @param ppo the number of points per octave
@@ -71,7 +71,7 @@ public class AccuracyStats {
    */
   public static final AccuracyStats[] buildAccuracyStatsArray(
       final int lgMin, final int lgMax, final int ppo, final int lgQK) {
-    final int qLen = PerformanceUtil.countPoints(lgMin, lgMax, ppo);
+    final int qLen = MonotonicPoints.countPoints(lgMin, lgMax, ppo);
     final AccuracyStats[] qArr = new AccuracyStats[qLen];
     int p = 1 << lgMin;
     for (int i = 0; i < qLen; i++) {

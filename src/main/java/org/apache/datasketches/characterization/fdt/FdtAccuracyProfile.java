@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.fdt;
 
-import static org.apache.datasketches.PerformanceUtil.FRACTIONS;
+import static org.apache.datasketches.GaussianRanks.FRACTIONS;
 import static org.apache.datasketches.PowerLawGenerator.getSlope;
 import static org.apache.datasketches.PowerLawGenerator.getY;
 import static org.apache.datasketches.Util.pwr2LawNext;
@@ -34,11 +34,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.datasketches.AccuracyStats;
 import org.apache.datasketches.DoublePair;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.characterization.AccuracyStats;
 import org.apache.datasketches.fdt.FdtSketch;
 import org.apache.datasketches.fdt.Group;
 import org.apache.datasketches.fdt.PostProcessor;
