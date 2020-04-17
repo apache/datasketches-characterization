@@ -37,7 +37,7 @@ import org.apache.datasketches.Files;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;
 import org.apache.datasketches.hll.Union;
-import org.testng.annotations.Test;
+//import org.testng.annotations.Test;
 
 /**
  *
@@ -75,7 +75,7 @@ public class HllJavaCppGenerator {
    * Builds the binary sketch files in sub directory under "user.dir", see top of this class.
    * This only needs to be done once.
    */
-  @Test
+  //@Test
   public void buildBinarySketchFiles() {
     genBaseSketches();
     genResultSketches();
@@ -86,7 +86,7 @@ public class HllJavaCppGenerator {
    * identical with the union binaries created in <i>genResultSketches()</i>. This code should be
    * translated to different languages to confirm binary compatibility with Java.
    */
-  @Test
+  //@Test
   public void runJavaTest() {
     buildFileMapAndFileList();
     for (String s : uList) {
@@ -225,5 +225,14 @@ public class HllJavaCppGenerator {
   private void println(final Object obj) {
     System.out.println(obj.toString());
     if (pw != null) { pw.println(obj.toString()); }
+  }
+
+  /**
+   * Run the Java test.  This assumes that the sketch files already exist.
+   * @param args not used.
+   */
+  public static void main(final String[] args) {
+    final HllJavaCppGenerator gen = new HllJavaCppGenerator();
+    gen.runJavaTest();
   }
 }
