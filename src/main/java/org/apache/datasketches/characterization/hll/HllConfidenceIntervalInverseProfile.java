@@ -43,6 +43,7 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
  * @author Lee Rhodes
  */
 public class HllConfidenceIntervalInverseProfile implements JobProfile {
+  static final int FRACTIONS_3SD_LEN = FRACTIONS_3SD.length;
   Job job;
   PrintWriter pw;
   public Properties prop;
@@ -73,10 +74,11 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
 
   //Other stats:
   int srcNlen;
+  int tgtEstArrLen;
   int maxTgtHits = 0;
   int minTgtHits = Integer.MAX_VALUE;
   int totalTgtHits = 0;
-  double[] sumRanksArr = new double[FRACTIONS_3SD.length];
+  double[] sumRanksArr = new double[FRACTIONS_3SD_LEN];
   UpdateDoublesSketch qNinTgtEstRange; //distribution of N values in the target estimate range
 
   @Override
@@ -90,6 +92,7 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
     deltaTgtEst = Integer.parseInt(prop.mustGet("DeltaTgtEst"));
     minTgtEst = centerTgtEst - deltaTgtEst;
     maxTgtEst = centerTgtEst + deltaTgtEst;
+    tgtEstArrLen = maxTgtEst - minTgtEst + 1;
     minT = 1 << Integer.parseInt(prop.mustGet("Trials_lgMinT"));
     maxT = 1 << Integer.parseInt(prop.mustGet("Trials_lgMaxT"));
     tPPO = Integer.parseInt(prop.mustGet("Trials_TPPO"));
@@ -207,13 +210,12 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
       ) {
     //Reset for this Trials Set
     final int totalEsts = trials * srcNlen;
-    final int estStatsArrLen = estStatsArr.length;
     minTgtHits = Integer.MAX_VALUE;
     Arrays.fill(sumRanksArr, 0.0);
     sb.setLength(0);
     sb.append(getHeader()).append(LS);
 
-    for (int pt = 0; pt < estStatsArrLen; pt++) { //output each target est bin per row
+    for (int pt = 0; pt < tgtEstArrLen; pt++) { //output each target est bin per row
       final DoublesSketch qsk = estStatsArr[pt].qskN;
       final int est = estStatsArr[pt].estimate;
       final int hits = (int) qsk.getN();
@@ -227,15 +229,14 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
 
       //output quantiles for each target est bin on the row
       final double[] quants = qsk.getQuantiles(FRACTIONS_3SD);
-      final int len = FRACTIONS_3SD.length;
       if (hits > 0) {
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < FRACTIONS_3SD_LEN; i++) {
           final double relV = quants[i] / est - 1.0;
           sumRanksArr[i] += relV;
           sb.append(relV).append(TAB);
         }
       } else {
-        for (int i = 0; i < len; i++) { sb.append("-").append(TAB); }
+        for (int i = 0; i < FRACTIONS_3SD_LEN; i++) { sb.append("-").append(TAB); }
       }
       sb.append(LS);
     }
@@ -245,15 +246,14 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
     sb.append(centerTgtEst).append(TAB);
     sb.append(totalTgtHits).append(TAB);
     final double[] qNarr = qNinTgtEstRange.getQuantiles(FRACTIONS_3SD);
-    final int len = FRACTIONS_3SD.length;
-    for (int i = 0; i < len; i++) {
+    for (int i = 0; i < FRACTIONS_3SD_LEN; i++) {
       final String relV = totalTgtHits > 0 ? Double.toString(qNarr[i] / centerTgtEst - 1.0) : "-";
       sb.append(relV).append(TAB);
     }
     sb.append(LS);
     sb.append("Ave").append(TAB).append(TAB);
-    for (int i = 0; i < len; i++) {
-      final double relV = sumRanksArr[i] / srcNlen - 1.0;
+    for (int i = 0; i < FRACTIONS_3SD_LEN; i++) {
+      final double relV = sumRanksArr[i] / tgtEstArrLen;
       sb.append(relV).append(TAB);
     }
 
@@ -319,8 +319,7 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
 
   private final EstimateStats[] buildEstimateStatsArray(
       final int minTgtEst, final int maxTgtEst, final int lgQK) {
-    final int qLen = maxTgtEst - minTgtEst + 1;
-    final EstimateStats[] estStatsArr = new EstimateStats[qLen];
+    final EstimateStats[] estStatsArr = new EstimateStats[tgtEstArrLen];
     for (int i = minTgtEst; i <= maxTgtEst; i++) {
       estStatsArr[i - minTgtEst] = new EstimateStats(1 << lgQK, i);
     }
