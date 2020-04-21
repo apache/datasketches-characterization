@@ -21,9 +21,6 @@ package org.apache.datasketches;
 
 import java.io.File;
 
-import org.apache.datasketches.ZipFiles;
-import org.apache.datasketches.UnzipFiles;
-
 /**
  * Quick zip and unzip test. Must modifiy the "localBaseDir" and "localDstDir" for your environment.
  *
