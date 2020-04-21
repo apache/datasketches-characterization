@@ -108,7 +108,7 @@ void distinct_count_accuracy_profile::run() {
 
   key = 0;
 
-  const auto start_time = std::chrono::high_resolution_clock::now();
+  const auto start_time = std::chrono::system_clock::now();
 
   // this will generate a table of data up to each intermediate number of trials
   size_t last_trials = 0;
@@ -126,19 +126,19 @@ void distinct_count_accuracy_profile::run() {
 
     std::cout << "Cum Trials             : " << last_trials << std::endl;
     std::cout << "Cum Updates            : " << key << std::endl;
-    const auto current_time = std::chrono::high_resolution_clock::now();
-    const std::chrono::nanoseconds cum_time_ns =
-        std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - start_time);
-    std::cout << "Cum Time, ms           : " << cum_time_ns.count() / 1e6 << std::endl;
-    const double time_per_trial_ms = (cum_time_ns.count()) / last_trials / 1e6;
+    const auto current_time = std::chrono::system_clock::now();
+    const std::chrono::milliseconds cum_time_ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time);
+    std::cout << "Cum Time, ms           : " << cum_time_ms.count() << std::endl;
+    const double time_per_trial_ms = (cum_time_ms.count()) / last_trials;
     std::cout << "Avg Time Per Trial, ms : " << time_per_trial_ms << std::endl;
 
-    const std::time_t current_time_t = std::chrono::system_clock::to_time_t(current_time);
+    const auto current_time_t = std::chrono::system_clock::to_time_t(current_time);
     std::cout << "Current time           : " << std::ctime(&current_time_t);
 
-    const auto time_to_complete_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-        cum_time_ns / last_trials * (max_trials - last_trials));
-    const std::time_t est_completion_time = std::chrono::system_clock::to_time_t(current_time + time_to_complete_ns);
+    const auto time_to_complete_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+        cum_time_ms / last_trials * (max_trials - last_trials));
+    const auto est_completion_time = std::chrono::system_clock::to_time_t(current_time + time_to_complete_ms);
     std::cout << "Est Time of Completion : " << std::ctime(&est_completion_time);
 
     std::cout << std::endl;
