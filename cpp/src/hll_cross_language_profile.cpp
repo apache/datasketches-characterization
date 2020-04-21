@@ -27,22 +27,6 @@
 namespace datasketches {
 
 void hll_cross_language_profile::run() {
-  /*
-  for (int t = 0; t < 3; t++) {
-    std::string t_str = std::to_string(t * 2 + 4);
-    for (int lg_k = BASE_LG_K; lg_k <= BASE_LG_K + 1; lg_k++) {
-      for (int m = 0; m < 4; m++) {
-        std::string mode = MODE_ARR[m];
-        std::string fname = "Hll" + t_str + "K" + std::to_string(lg_k) + mode + ".bin";
-        std::cout << "reading " << fname << std::endl;
-        std::ifstream is;
-        is.exceptions(std::ios::failbit | std::ios::badbit);
-        is.open(DATA_PATH + "/" + fname, std::ios::binary);
-        hll_sketch sketch = hll_sketch::deserialize(is);
-      }
-    }
-  }
-  */
   for (int i = 0; i < 4; i++) {
     const int lg_k_seq = LG_K_SEQ_ARR[i];
     const int u_lg_k = BASE_LG_K + ((lg_k_seq & 4) > 0 ? 1 : 0);
@@ -92,15 +76,14 @@ void hll_cross_language_profile::run() {
             std::cerr << "Expected bytes:" << std::endl << std::hex;
             for (auto byte: expected_bytes) std::cerr << std::setw(2) << std::setfill('0') << (int) byte;
             std::cerr  << std::endl;
+            std::cerr << "Actual unon:" << std::endl;
+            test_union.to_string(std::cout);
             throw std::runtime_error(u_fname + " mismatch");
           }
         }
       }
     }
   }
-}
-
-void hll_cross_language_profile::build_file_map_and_file_list() {
 }
 
 }

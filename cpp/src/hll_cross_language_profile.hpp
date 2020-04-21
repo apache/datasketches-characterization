@@ -27,7 +27,6 @@ namespace datasketches {
 class hll_cross_language_profile: public job_profile {
 public:
   void run();
-  void build_file_map_and_file_list();
 private:
   const std::string DATA_PATH = "../src/main/resources/hll/data";
   const int BASE_LG_K = 8;
