@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.hll;
 
-import org.apache.datasketches.AccuracyStats;
+import org.apache.datasketches.characterization.AccuracyStats;
 import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;

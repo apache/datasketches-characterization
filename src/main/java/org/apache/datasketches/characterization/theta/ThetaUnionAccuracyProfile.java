@@ -19,8 +19,8 @@
 
 package org.apache.datasketches.characterization.theta;
 
-import org.apache.datasketches.AccuracyStats;
 import org.apache.datasketches.ResizeFactor;
+import org.apache.datasketches.characterization.AccuracyStats;
 import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.SetOperationBuilder;

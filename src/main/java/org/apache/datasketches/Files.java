@@ -109,10 +109,11 @@ public final class Files {
   }
 
   /**
-   * Gets the System.getProperty("user.dir"), which is the expected location of
-   * the user root directory.
+   * Gets the System.getProperty("user.dir"), which is the location of
+   * the user root directory path below the package hierarchy and below
+   * "src/main/java".
    *
-   * @return location of user root directory
+   * @return location of user root directory path.
    */
   public static String getUserDir() {
     return System.getProperty("user.dir");
@@ -326,7 +327,7 @@ public final class Files {
     if (rem == 0) {
       return 0;
     }
-    final int nBytes = (rem < numBytes) ? rem : numBytes;
+    final int nBytes = rem < numBytes ? rem : numBytes;
     bb.get(out);
     return nBytes;
   }
@@ -504,6 +505,7 @@ public final class Files {
    * @return the total number of bytes written.
    * @throws RuntimeException if an IOException occurs.
    */
+  @SuppressWarnings("resource")
   public static int stringToFileNIO(final String text, final String fileName,
       final Charset charset) {
     checkFileName(fileName);
@@ -554,6 +556,7 @@ public final class Files {
    * @throws RuntimeException if IOException or SecurityException occurs, or if
    * fileName is null or empty.
    */
+  @SuppressWarnings("resource")
   public static int appendStringToFileNIO(final String text, final String fileName,
       final Charset charset) {
     checkFileName(fileName);
@@ -714,8 +717,8 @@ public final class Files {
   //TODO This could have potential resource leaks
   public static BufferedReader openBufferedReader(final File file, final int bufSize,
       final Charset charset) {
-    final int bufSz = (bufSize < DEFAULT_BUFSIZE) ? DEFAULT_BUFSIZE : bufSize;
-    final Charset cSet = (charset == null) ? Charset.defaultCharset() : charset;
+    final int bufSz = bufSize < DEFAULT_BUFSIZE ? DEFAULT_BUFSIZE : bufSize;
+    final Charset cSet = charset == null ? Charset.defaultCharset() : charset;
     BufferedReader in = null; // default bufsize is 8192.
     try {
       final FileInputStream fis = new FileInputStream(file);
@@ -739,7 +742,7 @@ public final class Files {
   public static final PrintWriter openPrintWriter(final String fileName) {
     File file = null;
     PrintWriter pw = null;
-    if ((fileName != null) && !fileName.isEmpty()) {
+    if (fileName != null && !fileName.isEmpty()) {
       file = new File(fileName);
       if (file.isFile()) {
         file.delete(); //remove old file if it exists
@@ -946,7 +949,7 @@ public final class Files {
   //TODO This could have potential output resource leaks
   public static BufferedWriter openBufferedWriter(final File file, final int bufSize,
       final boolean append, final Charset charset) {
-    final int bufSz = (bufSize < DEFAULT_BUFSIZE) ? DEFAULT_BUFSIZE : bufSize;
+    final int bufSz = bufSize < DEFAULT_BUFSIZE ? DEFAULT_BUFSIZE : bufSize;
     BufferedWriter out = null; // default bufsize is 8192.
     try {
       final FileOutputStream fos = new FileOutputStream(file, append);

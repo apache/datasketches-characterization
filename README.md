@@ -75,11 +75,43 @@ IntelliJ should have something similar.  The output is sent to Standard Out.
 
 ## Build Instructions (C++)
 
-### From within Eclipse
-1. After your project is created, from "Project Properties"
-2. From the Eclipse C++ Build Menu, check "Generate Makefiles automatically".
-3. Under "Settings", select "Compiler", then "Includes" and add incude directories for the appropriate sketches and common.
-4. Under "Optimization" select "-O3" and "-DNDEBUG".
+### Using Eclipse
+
+#### **Installing CDT** 
+If you already have Eclipse you will need to install the CDT extensions, or you can install Eclipse with CDT only.  We had to upgrade our Eclipse to the latest version before we could successfully install the CDT extensions.
+#### **Setting up the Eclipse Project** 
+We have found it convenient to setup two projects in Eclipse:
+
+* **Java project**: where the root directory is the root of your local copy of the datasketches-characterization repository. We named it "datasketches-characterization".
+* **C++ project**: where the root directory is the cpp directory just under the Java project root. We named it "datasketches-characterization-CPP".
+
+#### **Choosing the Tool Chain** 
+After your project is created, open *Project Properties*
+
+* **C/C++ Build** In this menu select *Use default build command*, *Generate Makefiles automatically*, and *Expand Env. Variable Refs in Makefiles*.
+    
+    * **Tool Chain Editor** Choose the compatible tool chain for your system. We use *MacOSX GCC* and *Gnu Make Builder*.
+    * **Settings**
+        * **GCC C++ Compiler**
+            * **Dialect** *Other dialect flags*: "-std=c++11"
+            * **Includes** Select from the directory where you have datasketches-cpp installed. Then add complete paths for:
+                * .../datasketches-cpp/common/include
+                * .../datasketches-cpp/cpc/include
+                * .../datasketches-cpp/fi/include
+                * .../datasketches-cpp/hll/include
+                * .../datasketches-cpp/kll/include
+                * .../datasketches-cpp/theta/include
+            * **Optimization**
+                * **Optimization Level** Optimize most (-O3)
+                * **Other optimization flags** "-DNDEBUG"
+            * **Warnings** Check *All Warnings (-Wall)*
+            * **Miscellaneous** *Other flags* "-c fmessage-length=0"
+
+* **C/C++ General**
+    * **Paths and Symbols** Tab: *Source Locations*, Action: *Add Folder...*: Add reference to "/datasketches-characterization_CPP/src"
+
+#### **Build Project**
+After this setup you should be able to *Build Project* from the top-level *Eclipse / Project* Menu.  You may need to unselect the *Build Automatically* option.
 
 ## How to Contact Us
 * We have two ASF [the-ASF.slack.com](http://the-ASF.slack.com) slack channels:

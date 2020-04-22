@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,27 +17,8 @@
  * under the License.
  */
 
-package org.apache.datasketches;
-
-import java.io.File;
-
 /**
- * Quick zip and unzip test. Must modifiy the "localBaseDir" and "localDstDir" for your environment.
- *
  * @author Lee Rhodes
  */
-public class ZipFilesTest {
-  final String localBaseDir = "/Users/lrhodes/dev/git/Apache/datasketches-characterization";
-  final String localDstDir = "/local";
 
-  final File srcDir = new File(localBaseDir + "/src/main/resources");
-  final String dstZipDirFile = localBaseDir + localDstDir + "/test.zip";
-  final String srcZipFile = dstZipDirFile;
-  final String dstDir = localBaseDir + localDstDir + "/testUnzipedDir";
-
-  //@Test
-  public void checkZipping() {
-    ZipFiles.zipDirectory(srcDir, dstZipDirFile);
-    UnzipFiles.unzip(srcZipFile, dstDir);
-  }
-}
+package org.apache.datasketches.hll;

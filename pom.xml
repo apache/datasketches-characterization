@@ -340,6 +340,7 @@ under the License.
               <exclude>src/main/resources/**/*.conf</exclude>
               <exclude>cpp/matlab/**</exclude>
               <exclude>cpp/results/**</exclude>
+              <exclude>results/**</exclude>
               <exclude>LICENSE</exclude>
               <exclude>NOTICE</exclude>
               <exclude>DISCLAIMER-WIP</exclude>
