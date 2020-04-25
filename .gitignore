@@ -18,7 +18,7 @@
 
 # Compiler output, class files
 **/*.class
-**/bin/
+bin/
 
 # Log files
 **/*.log
