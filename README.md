@@ -91,7 +91,7 @@ After your project is created, open *Project Properties*
 * **C/C++ Build** In this menu select *Use default build command*, *Generate Makefiles automatically*, and *Expand Env. Variable Refs in Makefiles*.
     
     * **Tool Chain Editor** Choose the compatible tool chain for your system. We use *MacOSX GCC* and *Gnu Make Builder*.
-    * **Settings**
+    * **Settings/Tool Settings**
         * **GCC C++ Compiler**
             * **Dialect** *Other dialect flags*: "-std=c++11"
             * **Includes** Select from the directory where you have datasketches-cpp installed. Then add complete paths for:

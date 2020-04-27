@@ -1,68 +1,71 @@
 # Eclipse project files 
-.classpath
-.project
-.settings/
-.checkstyle
+**/.classpath
+**/.project
+**/.cproject
+**/.settings/
+**/.checkstyle
 
 # IntelliJ project files
-*.iml
-*.ipr
-*.iws
+**/*.iml
+**/*.ipr
+**/*.iws
 
 # Additional tools
-.clover/
+**/.clover/
 
 # OSX files
-.DS_Store
+**/.DS_Store
 
 # Compiler output, class files
-*.class
+**/*.class
 bin/
 
-# Log file
-*.log
+# Log files
+**/*.log
 
 # BlueJ files
-*.ctxt
+**/*.ctxt
 
 # Mobile Tools for Java (J2ME)
-.mtj.tmp/
+**/.mtj.tmp/
 
 # Package Files #
-# *.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
+**/*.jar
+**/*.war
+**/*.ear
+**/*.zip
+**/*.tar.gz
+**/*.rar
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+**/hs_err_pid*
 
 #Test config and output
-/target/
-test-output/
-local/
-reports/
-.pmd
-tmp/
-/*.txt
-streamA.txt
+**/target/
+**/test-output/
+**/local/
+**/reports/
+**/.pmd
+**/tmp/
+**/*.txt
+**/streamA.txt
 
 # Build artifacts
-out/
-build/
-jarsIn/
-build.xml
-.idea
-*.properties
-*.releaseBackup
-*.next
-*.tag
+cpp/Default/
+**/out/
+**/build/
+**/jarsIn/
+**/build.xml
+**/.idea
+**/*.properties
+**/*.releaseBackup
+**/*.next
+**/*.tag
+**/results/
 
 # Jekyll
-Gemfile
-Gemfile.lock
-_site/
-_*
-_*/
+**/Gemfile
+**/Gemfile.lock
+**/_site/
+**/_*
+**/_*/
