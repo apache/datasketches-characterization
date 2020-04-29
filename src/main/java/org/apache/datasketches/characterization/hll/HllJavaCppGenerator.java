@@ -89,8 +89,8 @@ public class HllJavaCppGenerator {
   @Test
   public void runJavaTest() {
     buildFileMapAndFileList();
-    for (String s : uList) {
-      final String[] split1 = s.split("_");
+    for (String uFname : uList) {
+      final String[] split1 = uFname.split("_");
       final int ulgK = Integer.parseInt(split1[0].substring(2));
       final String gdtFname = split1[1] + ".bin";
       final String srcFname = split1[2];
@@ -100,13 +100,19 @@ public class HllJavaCppGenerator {
       final HllSketch srcSk = HllSketch.heapify(map.get(srcFname));
       union1.update(srcSk);
       final byte[] testBin = union1.toUpdatableByteArray();
-      final byte[] trueBin = map.get(s);
-      assertEquals(testBin, trueBin);
-      //optional printing of sketch summaries for debugging
-      //final Union union2 = Union.heapify(trueBin);
-      //println(union1.toString(true, false, false, false));
-      //println(union2.toString(true, false, false, false));
-      //println("");
+      final byte[] trueBin = map.get(uFname);
+      try {
+        assertEquals(testBin, trueBin);
+      } catch (final AssertionError e) {
+        final String str = gdtFname + "\t" + srcFname + "\t" + uFname;
+        println("Error: " + str);
+        println("");
+        //optional printing of sketch summaries for debugging
+        final Union union2 = Union.heapify(trueBin);
+        println(union1.toString(true, false, false, false));
+        println(union2.toString(true, false, false, false));
+        println("************************");
+      }
     }
   }
 
