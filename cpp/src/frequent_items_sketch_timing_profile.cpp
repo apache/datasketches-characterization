@@ -30,18 +30,7 @@
 
 namespace datasketches {
 
-// This hash function is taken from the internals of Austin Appleby's MurmurHash3 algorithm
-struct hash_long_long {
-  size_t operator()(long long key) const {
-    key ^= key >> 33;
-    key *= 0xff51afd7ed558ccdL;
-    key ^= key >> 33;
-    key *= 0xc4ceb9fe1a85ec53L;
-    key ^= key >> 33;
-    return key;
-  }
-};
-typedef frequent_items_sketch<long long, long, hash_long_long> frequent_longs_sketch;
+typedef frequent_items_sketch<long long> frequent_longs_sketch;
 
 void frequent_items_sketch_timing_profile::run() {
   const unsigned lg_min_stream_len = 0;

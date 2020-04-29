@@ -336,11 +336,6 @@ under the License.
             <useDefaultExcludes>true</useDefaultExcludes>
             <excludes>
               <!-- rat uses .gitignore for excludes by default -->
-              <exclude>**/*.txt</exclude>
-              <exclude>src/main/resources/**/*.conf</exclude>
-              <exclude>cpp/matlab/**</exclude>
-              <exclude>cpp/results/**</exclude>
-              <exclude>results/**</exclude>
               <exclude>LICENSE</exclude>
               <exclude>NOTICE</exclude>
               <exclude>DISCLAIMER-WIP</exclude>
