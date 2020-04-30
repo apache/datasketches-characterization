@@ -154,7 +154,7 @@ public class HllJavaCppGenerator {
   }
 
   private void genResultSketches() {
-    pw = Files.openPrintWriter(path + "FileCombinationsList.txt");
+    //pw = Files.openPrintWriter(path + "FileCombinationsList.txt");
     for (int i = 0; i < 4; i++) {
       final int lgKSeq = lgKSeqArr[i];
       final int maxLgK = baseLgK + ((lgKSeq & 4) > 0 ? 1 : 0);
@@ -177,15 +177,15 @@ public class HllJavaCppGenerator {
             final byte[] srcSkbin = readByteArrayFromFileName(path + srcFname + ".bin");
             final HllSketch srcSk = HllSketch.heapify(srcSkbin);
             union.update(srcSk);
-            final byte[] uSkbin = union.toUpdatableByteArray();
+            final byte[] uSkbin = union.getResult(HLL_8).toUpdatableByteArray();
             writeByteArrayToFile(uSkbin, path + uFname + ".bin");
           }
         }
       }
     }
-    pw.flush();
-    pw.close();
-    pw = null;
+    //pw.flush();
+    //pw.close();
+    //pw = null;
   }
 
   private static byte[] readByteArrayFromFileName(final String fullFileName) {
