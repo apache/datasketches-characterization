@@ -1040,4 +1040,40 @@ public final class Files {
       throw new RuntimeException(e);
     }
   }
+
+  public static byte[] readByteArrayFromFileName(final String fullFileName) {
+    Files.checkFileName(fullFileName); //checks for null, empty
+    final File file = new File(fullFileName);
+    if (!file.exists() || !file.isFile()) {
+      throw new IllegalArgumentException(fullFileName + " does not exist.");
+    }
+    return readByteArrayFromFile(file);
+  }
+
+  public static byte[] readByteArrayFromFile(final File file) {
+    try (FileInputStream fis = new FileInputStream(file)) {
+      final int len = fis.available();
+      final byte[] out = new byte[len];
+      fis.read(out);
+      fis.close();
+      return out;
+    } catch (final IOException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
+
+  public static void writeByteArrayToFile(final byte[] arr, final String fullFileName) {
+    Files.checkFileName(fullFileName); //checks for null, empty
+    final File file = new File(fullFileName);
+    if (file.exists() && file.isFile()) {
+      file.delete();
+    }
+    try (FileOutputStream fos = new FileOutputStream(file)) {
+      fos.write(arr);
+      fos.flush();
+      fos.close();
+    } catch (final IOException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
 }
