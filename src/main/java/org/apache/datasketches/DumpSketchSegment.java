@@ -61,6 +61,7 @@ public class DumpSketchSegment {
 
   }
 
+  @SuppressWarnings("unused")
   private static void writeByteArrayToFile(final byte[] arr, final String fullFileName) {
     Files.checkFileName(fullFileName); //checks for null, empty
     final File file = new File(fullFileName);

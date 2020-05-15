@@ -31,6 +31,9 @@ import org.apache.datasketches.theta.UpdateSketch;
 import org.apache.datasketches.theta.UpdateSketchBuilder;
 
 /**
+ * This builds a new sketch with <i>n</i> uniques and directly merges it into a new union,
+ * then measures the error of getResult.
+ *
  * @author Lee Rhodes
  */
 public class ThetaUnionAccuracyProfile2 extends BaseAccuracyProfile {

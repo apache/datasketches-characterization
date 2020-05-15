@@ -40,39 +40,38 @@ import org.apache.datasketches.hll.Union;
 import org.testng.annotations.Test;
 
 /**
- *
- *
  * @author Lee Rhodes
  */
 public class HllJavaCppGenerator {
-  final String userDir;
-  final String subDir = "src/main/resources/hll/data/";
-  final String path;
-  final String[] modeArr = {"Empty", "List", "Set", "Hll"};
-  final int[] nArr = {0, 4, 16, 64};
-  final String[] srcGdtArr = {"Src", "Gdt" };
-  final int baseLgK = 8;
-  final TgtHllType[] tgtHllTypeArr = {HLL_4, HLL_6, HLL_8};
-  final int[] lgKSeqArr = {0, 1, 5, 6};
-  long vIn = 0;
-  private PrintWriter pw = null;
-  final Filter filter = new Filter();
-  final HashMap<String, byte[]> map = new HashMap<>();
-  final List<String> uList = new ArrayList<>();
+  private final String userDir = System.getProperty("user.dir") + "/";
+  private final String ext = ".sk";
+  private final Filter filter = new Filter(ext);
+  private final HashMap<String, byte[]> map = new HashMap<>();
+  private final List<String> uList = new ArrayList<>();
 
-  /**
-   * This constructor discovers the root user package directory for Java, which is the directory
-   * just below <i>src/main/java/...</i>. It then constructs a path for the directory containing
-   * all of the binary sketch files, which is determined by the <i>subDir</i> constant defined
-   * at the top of this class.
-   */
+  //Unique to HLL
+  private final TgtHllType[] tgtHllTypeArr = {HLL_4, HLL_6, HLL_8};
+  private final String[] modeArr = {"Empty", "List", "Set", "Hll"};
+  private final int[] nArr = {0, 4, 16, 64};
+  private final int[] lgKSeqArr = {0, 1, 5, 6};
+
+  //Set in Constructor
+  private final String subDir;
+  private final String path;
+  private final int baseLgK;
+
+  //Dynamic
+  private PrintWriter pw = null;
+  private long vIn = 0;
+
   public HllJavaCppGenerator() {
-    userDir = System.getProperty("user.dir") + "/";
+    subDir = "src/main/resources/hll/data/";
     path = userDir + subDir;
+    baseLgK = 8;
   }
 
   /**
-   * Builds the binary sketch files in sub directory under "user.dir", see top of this class.
+   * Builds the binary sketch files in the sub directory under "user.dir".
    * This only needs to be done once.
    */
   @Test
@@ -92,7 +91,7 @@ public class HllJavaCppGenerator {
     for (String uFname : uList) {
       final String[] split1 = uFname.split("_");
       final int ulgK = Integer.parseInt(split1[0].substring(2));
-      final String gdtFname = split1[1] + ".bin";
+      final String gdtFname = split1[1] + ext;
       final String srcFname = split1[2];
       final Union union1 = new Union(ulgK);
       final HllSketch gdtSk = HllSketch.heapify(map.get(gdtFname));
@@ -129,9 +128,15 @@ public class HllJavaCppGenerator {
   }
 
   private static class Filter implements java.io.FileFilter {
+    final String myExt;
+
+    Filter(final String extension) {
+      myExt = extension;
+    }
+
     @Override
     public boolean accept(final File pathname) {
-      return pathname.getName().endsWith(".bin");
+      return pathname.getName().endsWith(myExt);
     }
   }
 
@@ -142,7 +147,7 @@ public class HllJavaCppGenerator {
       for (int lgK = baseLgK; lgK <= baseLgK + 1; lgK++) {
         for (int m = 0; m < 4; m++) {
           final String mode = modeArr[m];
-          final String fname = "Hll" + tStr + "K" + lgK + mode + ".bin";
+          final String fname = "Hll" + tStr + "K" + lgK + mode + ext;
           final HllSketch sk = new HllSketch(lgK, tgtHllType);
           final int n = nArr[m];
           for (int i = 0; i < n; i++) { sk.update(vIn++); }
@@ -169,16 +174,16 @@ public class HllJavaCppGenerator {
             final String gdtFname = "Hll8" + "K" + gdtLgK + gdtMode;
             final String srcFname = "Hll" + tStr + "K" + srcLgK + srcMode;
             final String uFname = "UK" + maxLgK + "_" + gdtFname + "_" + srcFname;
-            println(gdtFname + ".bin\t" + srcFname + ".bin\t" + uFname + ".bin");
+            println(gdtFname + ext + "\t" + srcFname + ext + "\t" + uFname + ext);
             final Union union = new Union(maxLgK);
-            final byte[] gdtSkbin = readByteArrayFromFileName(path + gdtFname + ".bin");
+            final byte[] gdtSkbin = readByteArrayFromFileName(path + gdtFname + ext);
             final HllSketch gdtSk = HllSketch.heapify(gdtSkbin);
             union.update(gdtSk);
-            final byte[] srcSkbin = readByteArrayFromFileName(path + srcFname + ".bin");
+            final byte[] srcSkbin = readByteArrayFromFileName(path + srcFname + ext);
             final HllSketch srcSk = HllSketch.heapify(srcSkbin);
             union.update(srcSk);
             final byte[] uSkbin = union.getResult(HLL_8).toUpdatableByteArray();
-            writeByteArrayToFile(uSkbin, path + uFname + ".bin");
+            writeByteArrayToFile(uSkbin, path + uFname + ext);
           }
         }
       }
