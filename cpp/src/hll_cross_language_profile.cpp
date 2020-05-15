@@ -76,7 +76,7 @@ void hll_cross_language_profile::run() {
             for (auto byte: expected_bytes) std::cerr << std::setw(2) << std::setfill('0') << (int) byte;
             std::cerr  << std::endl;
             std::cerr << "Actual sketch:" << std::endl;
-            test_result.to_string(std::cout);
+            std::cout << test_result.to_string();
             throw std::runtime_error(u_fname + " mismatch");
           }
         }
