@@ -57,6 +57,8 @@ public class HllUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     }
 
     { // spray values across all sketches
+      // if uPerTrial < numSketches, some sketches will be empty.
+      // if (uPerTrial % numSketches != 0) some sketches will have one less update.
       int i = 0;
       for (int u = uPerTrial; u-- > 0;) {
         sketches[i++].update(++vIn);

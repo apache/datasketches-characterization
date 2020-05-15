@@ -28,6 +28,9 @@ import org.apache.datasketches.theta.Sketches;
 import org.apache.datasketches.theta.Union;
 
 /**
+ * This tests the union as if it were a sketch: directly updating the union with <i>n</i>
+ * uniques and measuring the error of getResult.
+ *
  * @author Lee Rhodes
  */
 public class ThetaUnionAccuracyProfile extends BaseAccuracyProfile {
