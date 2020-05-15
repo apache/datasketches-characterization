@@ -56,9 +56,7 @@ void hll_cross_language_profile::run() {
           std::ifstream u_is;
           u_is.exceptions(std::ios::failbit | std::ios::badbit);
           u_is.open(DATA_PATH + "/" + u_fname + ".bin", std::ios::binary);
-//          hll_union ref_union = hll_union::deserialize(u_is);
-//          u_is.seekg(0);
-          hll_union::vector_bytes expected_bytes;
+          hll_sketch::vector_bytes expected_bytes;
           auto begin = std::istreambuf_iterator<char>(u_is);
           auto end = std::istreambuf_iterator<char>();
           for (auto it = begin; it != end; ++it) expected_bytes.push_back(*it);
@@ -67,7 +65,8 @@ void hll_cross_language_profile::run() {
           hll_union test_union(u_lg_k);
           test_union.update(gdt);
           test_union.update(src);
-          hll_union::vector_bytes actual_bytes = test_union.serialize_updatable();
+          hll_sketch test_result = test_union.get_result(HLL_8); // no transformation, just copy
+          hll_sketch::vector_bytes actual_bytes = test_result.serialize_updatable();
           std::cout << "Actual size " << actual_bytes.size() << std::endl;
           if (actual_bytes != expected_bytes) {
             std::cerr << "Actual bytes:" << std::endl << std::hex;
@@ -76,8 +75,8 @@ void hll_cross_language_profile::run() {
             std::cerr << "Expected bytes:" << std::endl << std::hex;
             for (auto byte: expected_bytes) std::cerr << std::setw(2) << std::setfill('0') << (int) byte;
             std::cerr  << std::endl;
-            std::cerr << "Actual unon:" << std::endl;
-            test_union.to_string(std::cout);
+            std::cerr << "Actual sketch:" << std::endl;
+            test_result.to_string(std::cout);
             throw std::runtime_error(u_fname + " mismatch");
           }
         }
