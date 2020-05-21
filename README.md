@@ -18,6 +18,11 @@
 -->
 
 # Characterization Java & C++ Component
+
+Please visit the main [DataSketches website](https://datasketches.apache.org) for more information. 
+
+If you are interested in making contributions to this site please see our [Community](https://datasketches.apache.org/docs/Community/) page for how to contact us.
+
 We define characterization as the task of comprehensively measuring accuracy 
 or speed performance of our library. These characterization tests are often long running 
 (some can run for days) and very resource intensive, which makes them unsuitable for including 
@@ -113,14 +118,7 @@ After your project is created, open *Project Properties*
 #### **Build Project**
 After this setup you should be able to *Build Project* from the top-level *Eclipse / Project* Menu.  You may need to unselect the *Build Automatically* option.
 
-## How to Contact Us
-* We have two ASF [the-ASF.slack.com](http://the-ASF.slack.com) slack channels:
-    * datasketches -- general user questions
-    * datasketches-dev -- similar to our Apache [Developers Mail list](https://lists.apache.org/list.html?dev@datasketches.apache.org), except more interactive, but not as easily searchable.
+----
 
-* For bugs and performance issues: [Issues for datasketches-characterization](https://github.com/apache/incubator-datasketches-characterization/issues) 
-
-* For general questions about using the library please subscribe: [Users Mail List](https://lists.apache.org/list.html?users@datasketches.apache.org)
-
-* If you are interested in contributing please subscribe: [Developers Mail list](https://lists.apache.org/list.html?dev@datasketches.apache.org)
+Disclaimer: Apache DataSketches is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
 
