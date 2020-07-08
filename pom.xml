@@ -101,6 +101,8 @@ under the License.
     <druid-hll.version>0.16.0-incubating</druid-hll.version>
     <zetasketch.version>0.1.0</zetasketch.version>
     <t-digest.version>3.2</t-digest.version>
+    <hamcrest.version>2.2</hamcrest.version>
+    <junit.version>4.13</junit.version>
     <!-- END:UNIQUE FOR THIS JAVA COMPONENT -->
 
     <!-- Test -->
@@ -214,6 +216,13 @@ under the License.
         <version>${t-digest.version}</version>
     </dependency>
 
+    <!-- Hamcrest Matcher -->
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>${hamcrest.version}</version>
+    </dependency>
+
     <!-- Dependency on Test code -->
     <dependency>
         <groupId>org.apache.datasketches</groupId>
@@ -221,7 +230,13 @@ under the License.
         <version>${datasketches-java.version}</version>
         <type>test-jar</type>
     </dependency>
-    <!-- END: UNIQUE FOR THIS JAVA COMPONENT -->
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.testng</groupId>
@@ -229,6 +244,7 @@ under the License.
       <version>${testng.version}</version>
       <!-- <scope>test</scope> -->
     </dependency>
+    <!-- END: UNIQUE FOR THIS JAVA COMPONENT -->
   </dependencies>
   <build>
     <pluginManagement>
