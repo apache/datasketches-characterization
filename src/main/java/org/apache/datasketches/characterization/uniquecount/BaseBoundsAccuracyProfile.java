@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.uniquecount;
 
-import static org.apache.datasketches.GaussianRanks.FRACTIONS_3SD;
+import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.milliSecToString;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
@@ -186,7 +186,7 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
       sb.append(cumTrials).append(TAB);
 
       //Quantiles
-      final double[] quants = q.qskEst.getQuantiles(FRACTIONS_3SD);
+      final double[] quants = q.qskEst.getQuantiles(GAUSSIANS_3SD);
       final int len = quants.length;
       for (int i = 0; i < len; i++) {
         sb.append(quants[i] / uniques - 1.0).append(TAB);
@@ -232,7 +232,7 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
    */
   private static String outputPMF(final BoundsAccuracyStats q) {
     final DoublesSketch qSk = q.qskEst;
-    final double[] splitPoints = qSk.getQuantiles(FRACTIONS_3SD); //1:1
+    final double[] splitPoints = qSk.getQuantiles(GAUSSIANS_3SD); //1:1
     final double[] reducedSp = reduceSplitPoints(splitPoints);
     final double[] pmfArr = qSk.getPMF(reducedSp); //pmfArr is one larger
     final long trials = qSk.getN();

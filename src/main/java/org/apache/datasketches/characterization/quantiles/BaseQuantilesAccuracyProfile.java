@@ -58,7 +58,6 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
     final int lgMax = Integer.parseInt(job.getProperties().mustGet("lgMax"));
     final int ppo = Integer.parseInt(job.getProperties().mustGet("PPO"));
     final int numTrials = Integer.parseInt(job.getProperties().mustGet("trials"));
-
     final int errorSketchLgK = Integer.parseInt(job.getProperties().mustGet("errLgK"));
     final int errorPct = Integer.parseInt(job.getProperties().mustGet("errPct"));
 

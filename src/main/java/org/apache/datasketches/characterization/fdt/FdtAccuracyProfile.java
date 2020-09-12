@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.fdt;
 
-import static org.apache.datasketches.GaussianRanks.FRACTIONS;
+import static org.apache.datasketches.GaussianRanks.GAUSSIANS_4SD;
 import static org.apache.datasketches.PowerLawGenerator.getSlope;
 import static org.apache.datasketches.PowerLawGenerator.getY;
 import static org.apache.datasketches.Util.pwr2LawNext;
@@ -229,7 +229,7 @@ public class FdtAccuracyProfile implements JobProfile {
       as.rmsre = rmsRE;
 
       //OUTPUT
-      final double[] qarr = as.qsk.getQuantiles(FRACTIONS);
+      final double[] qarr = as.qsk.getQuantiles(GAUSSIANS_4SD);
       final String out = String.format(fmt,
         uniq, meanEst, meanRelErr, rmsRE, trials,
         qf(qarr[0],uniq),qf(qarr[1],uniq),qf(qarr[2],uniq),qf(qarr[3],uniq),qf(qarr[4],uniq),

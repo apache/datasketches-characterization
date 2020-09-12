@@ -19,8 +19,7 @@
 
 package org.apache.datasketches.characterization.uniquecount;
 
-import static org.apache.datasketches.GaussianRanks.FRACTIONS;
-import static org.apache.datasketches.GaussianRanks.FRACT_LEN;
+import static org.apache.datasketches.GaussianRanks.GAUSSIANS_4SD;
 import static org.apache.datasketches.Util.milliSecToString;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
@@ -197,8 +196,9 @@ public abstract class BaseAccuracyProfile implements JobProfile {
       sb.append(cumTrials).append(TAB);
 
       //Quantiles
-      final double[] quants = qArr[pt].qsk.getQuantiles(FRACTIONS);
-      for (int i = 0; i < FRACT_LEN; i++) {
+      final double[] quants = qArr[pt].qsk.getQuantiles(GAUSSIANS_4SD);
+      final int quantsLen = quants.length;
+      for (int i = 0; i < quantsLen; i++) {
         sb.append(quants[i] / uniques - 1.0).append(TAB);
       }
       if (getSize) {
@@ -246,7 +246,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
    */
   private static String outputPMF(final AccuracyStats q) {
     final DoublesSketch qSk = q.qsk;
-    final double[] splitPoints = qSk.getQuantiles(FRACTIONS); //1:1
+    final double[] splitPoints = qSk.getQuantiles(GAUSSIANS_4SD); //1:1
     final double[] reducedSp = reduceSplitPoints(splitPoints);
     final double[] pmfArr = qSk.getPMF(reducedSp); //pmfArr is one larger
     final long trials = qSk.getN();

@@ -36,7 +36,7 @@ import java.util.SimpleTimeZone;
  * @author Lee Rhodes
  */
 public class Job {
-  private static final String LS = System.getProperty("line.separator");
+  static final String LS = System.getProperty("line.separator");
   private Properties prop;
   //Output to File
   private PrintWriter pw = null;
@@ -119,6 +119,15 @@ public class Job {
   }
 
   /**
+   * Outputs a string to the configured PrintWriter and stdOut.
+   * @param obj The obj.toString() to print
+   */
+  public final void print(final Object obj) {
+    System.out.print(obj.toString());
+    pw.print(obj.toString());
+  }
+
+  /**
    * Outputs a line to the configured PrintWriter and stdOut.
    * @param obj The obj.toString() to print
    */
@@ -126,6 +135,17 @@ public class Job {
     System.out.println(obj.toString());
     pw.println(obj.toString());
   }
+
+  /**
+   * Outputs a formatted set of arguments to PrintWriter and stdOut.
+   * @param format the format specificaton
+   * @param args the list of objects
+   */
+  public final void printf(final String format, final Object ...args) {
+    System.out.printf(format, args);
+    pw.printf(format, args);
+  }
+
 
   /**
    * Flush any buffered output to the configured PrintWriter.

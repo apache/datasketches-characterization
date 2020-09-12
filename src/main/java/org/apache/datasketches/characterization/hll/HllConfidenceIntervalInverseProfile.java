@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.hll;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.apache.datasketches.GaussianRanks.FRACTIONS_3SD;
+import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.milliSecToString;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
@@ -43,7 +43,7 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
  * @author Lee Rhodes
  */
 public class HllConfidenceIntervalInverseProfile implements JobProfile {
-  static final int FRACTIONS_3SD_LEN = FRACTIONS_3SD.length;
+  static final int FRACTIONS_3SD_LEN = GAUSSIANS_3SD.length;
   Job job;
   PrintWriter pw;
   public Properties prop;
@@ -228,7 +228,7 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
       sb.append(hits).append(TAB);
 
       //output quantiles for each target est bin on the row
-      final double[] quants = qsk.getQuantiles(FRACTIONS_3SD);
+      final double[] quants = qsk.getQuantiles(GAUSSIANS_3SD);
       if (hits > 0) {
         for (int i = 0; i < FRACTIONS_3SD_LEN; i++) {
           final double relV = quants[i] / est - 1.0;
@@ -245,7 +245,7 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
     sb.append("Summary quantiles of N over all target estimates").append(LS);
     sb.append(centerTgtEst).append(TAB);
     sb.append(totalTgtHits).append(TAB);
-    final double[] qNarr = qNinTgtEstRange.getQuantiles(FRACTIONS_3SD);
+    final double[] qNarr = qNinTgtEstRange.getQuantiles(GAUSSIANS_3SD);
     for (int i = 0; i < FRACTIONS_3SD_LEN; i++) {
       final String relV = totalTgtHits > 0 ? Double.toString(qNarr[i] / centerTgtEst - 1.0) : "-";
       sb.append(relV).append(TAB);
