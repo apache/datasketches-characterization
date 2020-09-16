@@ -20,6 +20,7 @@
 package org.apache.datasketches.characterization.quantiles;
 
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.req.Criteria;
 import org.apache.datasketches.req.ReqSketch;
 
 /**
@@ -34,11 +35,11 @@ public class ReqSketchAccuracyProfile extends BaseReqSketchAccuracyProfile {
   @Override
   void configure(final Properties props) {
     final int K = Integer.parseInt(job.getProperties().mustGet("K"));
-    final boolean lteq = Boolean.parseBoolean(job.getProperties().mustGet("lteq"));
+    final Criteria criterion = Criteria.valueOf(job.getProperties().mustGet("criterion"));
     final boolean hra = Boolean.parseBoolean(job.getProperties().mustGet("hra"));
     useBulk = Boolean.parseBoolean(job.getProperties().mustGet("useBulk"));
     sk = new ReqSketch(K, hra);
-    sk.setLtEq(lteq);
+    sk.setCriterion(criterion);
   }
 
   @Override
@@ -53,9 +54,9 @@ public class ReqSketchAccuracyProfile extends BaseReqSketchAccuracyProfile {
 
     final double[] rawRanks = sk.getRanks(evenlySpacedValues);
     final double[] re = new double[numEvenlySpaced];
-    //compute relative error
+    //compute error
     for (int i = 1; i < numEvenlySpaced; i++) {
-      re[i] = rawRanks[i] / evenlySpacedRanks[i] - 1.0;
+      re[i] = rawRanks[i] - evenlySpacedRanks[i];
     }
     sk.reset();
     return re;
