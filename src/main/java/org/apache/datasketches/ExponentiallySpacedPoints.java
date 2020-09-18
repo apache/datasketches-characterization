@@ -47,12 +47,12 @@ public class ExponentiallySpacedPoints {
 
     if (denseHigh) {
       for (int i = 0; i < numPoints; i++) {
-        final double y = (exp(pow(outArr[i], exponent)) - 1.0) / (E - 1.0);
+        final double y = 1.0 - ( exp(pow(1.0 - outArr[i], exponent)) - 1.0) / (E - 1.0);
         outArr[i] = y * range + x1;
       }
     } else { //denseLow
       for (int i = 0; i < numPoints; i++) {
-        final double y = 1.0 - ( exp(pow(1.0 - outArr[i], exponent)) - 1.0) / (E - 1.0);
+        final double y = (exp(pow(outArr[i], exponent)) - 1.0) / (E - 1.0);
         outArr[i] = y * range + x1;
       }
     }
