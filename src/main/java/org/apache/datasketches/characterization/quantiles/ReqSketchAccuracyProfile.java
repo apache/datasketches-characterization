@@ -55,7 +55,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private double exponent;
 
   private final String sFmt = "%3s\t%5s\t%4s\t%4s\t%4s\t%5s\t%4s\t%4s\n";
-  private final String fFmt = "%3d\t%12.0f\t%12.4f\t%12.7f\t%12.7f\t%12.7f\t%12.7f\t%12.7f\n";
+  private final String fFmt = "%12.7f\t%12.0f\t%12.7f\t%12.7f\t%12.7f\t%12.7f\t%12.7f\t%12.7f\n";
 
   //Target sketch configuration & error analysis
   private int K;
@@ -122,7 +122,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   }
 
   void configureSketch() {
-    sk = new ReqSketch(K, hra);
+    sk = ReqSketch.builder().setK(K).setHighRankAccuracy(hra).build();
     sk.setCriterion(criterion);
   }
 
@@ -157,7 +157,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   void doStreamLength(final int streamLength) {
     //print at the top of each stream length
     job.println(LS + "Stream Length: " + streamLength );
-    job.printf(sFmt, "PP", "Value", "Rank", "-2SD", "-1SD", "Med", "+1SD", "+2SD");
+    job.printf(sFmt, "rPP", "Value", "Rank", "-2SD", "-1SD", "Med", "+1SD", "+2SD");
 
     //build the stream
     //the values themselves reflect their integer ranks starting with 1.
@@ -177,14 +177,15 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
     //at this point each of the errQSkArr sketches has a distribution of error from numTrials
     for (int pp = 0 ; pp < numPlotPoints; pp++) {
-      final double v = trueValues[pp]; //the true values
-      final double r = v / streamLength; //the true rank
+      final double v = trueValues[pp];
+      final double tr = v / streamLength; //the true rank
 
       //for each of the numErrDistRanks distributions extract the sd quantiles
       final double[] errQ = errQSkArr[pp].getQuantiles(gRanks); //get error values at the Gaussian ranks
 
       //Plot the row. We ignore quantiles collected at 0 and 1.0.
-      job.printf(fFmt, pp + 1, v, r, errQ[0], errQ[1], errQ[2], errQ[3], errQ[4]);
+      final double relPP = (double)(pp + 1) / numPlotPoints;
+      job.printf(fFmt, relPP, v, tr, errQ[0], errQ[1], errQ[2], errQ[3], errQ[4]);
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
     }
   }
