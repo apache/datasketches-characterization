@@ -197,6 +197,8 @@ public class ReqSketchAccuracyProfile implements JobProfile {
       job.printf(fFmt, relPP, v, tr, errQ[0], errQ[1], errQ[2], errQ[3], errQ[4]);
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
     }
+    job.println(LS + "Serialization Bytes: " + sk.getSerializationBytes());
+    job.println(sk.viewCompactorDetail("%5d", false));
   }
 
   /**
