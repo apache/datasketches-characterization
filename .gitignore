@@ -61,7 +61,6 @@ cpp/Default/
 **/*.releaseBackup
 **/*.next
 **/*.tag
-**/results/
 
 # Jekyll
 **/Gemfile
