@@ -24,6 +24,8 @@ import static org.apache.datasketches.ExponentiallySpacedPoints.expSpacedFloats;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_2SD;
 import static org.apache.datasketches.Util.evenlySpacedFloats;
 import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.req.Criteria.GE;
+import static org.apache.datasketches.req.Criteria.LT;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -54,8 +56,10 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private boolean evenlySpaced;
   private double exponent;
 
+  private final String[] columnLabels =
+                             {"rPP", "Value", "Rank", "-2SD", "-1SD", "Med", "+1SD", "+2SD"};
   private final String sFmt = "%3s\t%5s\t%4s\t%4s\t%4s\t%5s\t%4s\t%4s\n";
-  private final String fFmt = "%12.7f\t%12.0f\t%12.7f\t%12.7f\t%12.7f\t%12.7f\t%12.7f\t%12.7f\n";
+  private final String fFmt = "%14.10f\t%14.0f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\n";
 
   //Target sketch configuration & error analysis
   private int K;
@@ -67,10 +71,11 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private double[] gRanks;
   private UpdateDoublesSketch[] errQSkArr;
 
-
   //Specific to a streamLength
   private float[] stream;
   private float[] trueValues;
+  private int trueValueCorrection;
+  private float[] corrTrueValues;
 
   //JobProfile interface
   @Override
@@ -109,6 +114,8 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   void configureCommon() {
     configureSketch();
     trueValues = new float[numPlotPoints];
+    corrTrueValues = new float[numPlotPoints];
+    trueValueCorrection = criterion == GE || criterion == LT ? 1 : 0;
     errQSkArr = new UpdateDoublesSketch[numPlotPoints];
     //configure the error quantiles array
     final DoublesSketchBuilder builder = DoublesSketch.builder().setK(1 << errorSkLgK);
@@ -157,7 +164,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   void doStreamLength(final int streamLength) {
     //print at the top of each stream length
     job.println(LS + "Stream Length: " + streamLength );
-    job.printf(sFmt, "rPP", "Value", "Rank", "-2SD", "-1SD", "Med", "+1SD", "+2SD");
+    job.printf(sFmt, (Object[])columnLabels);
 
     //build the stream
     //the values themselves reflect their integer ranks starting with 1.
@@ -168,12 +175,14 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     final float[] fltValues = evenlySpaced
         ? evenlySpacedFloats(1.0f, streamLength, numPlotPoints)
         : expSpacedFloats(1.0f, streamLength, numPlotPoints, exponent, hra);
+
     for (int pp = 0; pp < numPlotPoints; pp++) {
       trueValues[pp] = round(fltValues[pp]);
+      corrTrueValues[pp] = trueValues[pp] - trueValueCorrection;
     }
 
     //Do numTrials for all plotpoints
-    doTrials(sk, stream, trueValues, errQSkArr, numTrials);
+    doTrials(sk, stream, trueValues, corrTrueValues, errQSkArr, numTrials);
 
     //at this point each of the errQSkArr sketches has a distribution of error from numTrials
     for (int pp = 0 ; pp < numPlotPoints; pp++) {
@@ -197,9 +206,9 @@ public class ReqSketchAccuracyProfile implements JobProfile {
    * @param errQSkArr the quantile error sketches for each plot point
    */
   static void doTrials(final ReqSketch sk, final float[] stream, final float[] trueValues,
-      final UpdateDoublesSketch[] errQSkArr, final int numTrials) {
+      final float[] corrTrueValues, final UpdateDoublesSketch[] errQSkArr, final int numTrials) {
     for (int t = 0; t < numTrials; t++) {
-      doTrial(sk, stream, trueValues, errQSkArr);
+      doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
     }
   }
 
@@ -212,7 +221,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
    * @param errQSkArr the quantile error sketches for each plot point to be updated
    */
   static void doTrial(final ReqSketch sk, final float[] stream, final float[] trueValues,
-      final UpdateDoublesSketch[] errQSkArr) {
+      final float[] corrTrueValues, final UpdateDoublesSketch[] errQSkArr) {
     sk.reset();
     Shuffle.shuffle(stream);
     final int sl = stream.length;
@@ -224,7 +233,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     final int numPP = trueValues.length;
     //compute errors for each plotPoint
     for (int pp = 0; pp < numPP; pp++) {
-      final double errorAtPlotPoint = estRanks[pp] - (double)trueValues[pp] / sl;
+      final double errorAtPlotPoint = estRanks[pp] - (double)corrTrueValues[pp] / sl;
       errQSkArr[pp].update(errorAtPlotPoint); //update each of the errQArr sketches
     }
   }
