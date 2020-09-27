@@ -46,11 +46,6 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
   //end JobProfile
 
   private void doTrials() {
@@ -76,7 +71,7 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
         final double maxRankErrorInTrial = doTrial();
         rankErrorSketch.update(maxRankErrorInTrial);
       }
-      println(streamLength + "\t"
+      job.println(streamLength + "\t"
           + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
       streamLength = pwr2LawNext(ppo, streamLength);
     }

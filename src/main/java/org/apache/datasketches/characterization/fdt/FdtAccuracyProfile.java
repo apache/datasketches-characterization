@@ -114,11 +114,6 @@ public class FdtAccuracyProfile implements JobProfile {
   @Override
   public void cleanup() { }
 
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
-
   void configure() {
     if (lgK <= 0) {
       sketch = new FdtSketch(threshold, rse);
@@ -254,12 +249,12 @@ public class FdtAccuracyProfile implements JobProfile {
         job.println(gp.toString());
       }
     }
-    println("");
-    println(sketch.toString());
+    job.println("");
+    job.println(sketch.toString());
   }
 
   private static final double qf(final double q, final int u) {
-    return (q / u) - 1.0;
+    return q / u - 1.0;
   }
 
 

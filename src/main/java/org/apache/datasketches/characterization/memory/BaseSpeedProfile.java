@@ -103,11 +103,6 @@ static class Point {
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
   //end JobProfile
 
   abstract void configure(int arrLongs);
@@ -117,12 +112,12 @@ static class Point {
   abstract void close();
 
   private void doTrials() {
-    println(Point.getHeader());
+    job.println(Point.getHeader());
     final int maxX = 1 << lgMaxX;
     final int minX = 1 << lgMinX;
     int lastX = 0;
     while (lastX < maxX) {
-      final int nextX = (lastX == 0) ? minX : pwr2LawNext(xPPO, lastX);
+      final int nextX = lastX == 0 ? minX : pwr2LawNext(xPPO, lastX);
       lastX = nextX;
       final int trials = getNumTrials(nextX);
       configure(nextX);
@@ -137,7 +132,7 @@ static class Point {
       for (int t = 0; t < trials; t++) { //do # trials
         p.sumReadTrials_nS += doTrial(true); //a single trial read
       }
-      println(p.getRow());
+      job.println(p.getRow());
     }
   }
 
@@ -155,14 +150,14 @@ static class Point {
     final int maxBpX = 1 << lgMaxBpX;
     final int maxT = 1 << lgMaxT;
     final int minT = 1 << lgMinT;
-    if ((lgMinT == lgMaxT) || (curX <= (minBpX))) {
+    if (lgMinT == lgMaxT || curX <= minBpX) {
       return maxT;
     }
     if (curX >= maxBpX) {
       return minT;
     }
     final double lgCurX = log(curX) / LN2;
-    final double lgTrials = (slope * (lgCurX - lgMinBpX)) + lgMaxT;
+    final double lgTrials = slope * (lgCurX - lgMinBpX) + lgMaxT;
     return (int) pow(2.0, lgTrials);
   }
 

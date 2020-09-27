@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.quantiles;
 
 import static java.lang.Math.round;
 import static org.apache.datasketches.ExponentiallySpacedPoints.expSpacedFloats;
-import static org.apache.datasketches.GaussianRanks.GAUSSIANS_2SD;
+import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.evenlySpacedFloats;
 import static org.apache.datasketches.Util.pwr2LawNext;
 import static org.apache.datasketches.req.Criteria.GE;
@@ -35,18 +35,22 @@ import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
 import org.apache.datasketches.req.Criteria;
+import org.apache.datasketches.req.ReqDebugImpl;
 import org.apache.datasketches.req.ReqSketch;
+import org.apache.datasketches.req.ReqSketchBuilder;
 
 /**
  * @author Lee Rhodes
  */
 public class ReqSketchAccuracyProfile implements JobProfile {
   private Job job;
+
+  //FROM PROPERTIES
   //For computing the different stream lengths
   private int lgMin;
   private int lgMax;
   private int lgDelta;
-  private int ppo;
+  private int ppo; //not currently used
 
   private int numTrials; //num of Trials per plotPoint
   private int errorSkLgK; //size of the error quantiles sketches
@@ -55,16 +59,16 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private int numPlotPoints;
   private boolean evenlySpaced;
   private double exponent;
-
-  private final String[] columnLabels =
-                             {"rPP", "Value", "Rank", "-2SD", "-1SD", "Med", "+1SD", "+2SD"};
-  private final String sFmt = "%3s\t%5s\t%4s\t%4s\t%4s\t%5s\t%4s\t%4s\n";
-  private final String fFmt = "%14.10f\t%14.0f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\n";
+  private int sd;
+  private double rankRange;
 
   //Target sketch configuration & error analysis
   private int K;
   private boolean hra; //high rank accuracy
   private Criteria criterion;
+  private org.apache.datasketches.req.ReqDebugImpl reqDebugImpl = null;
+
+  //DERIVED globals
   private ReqSketch sk;
 
   //The array of Gaussian quantiles for +/- StdDev error analysis
@@ -76,6 +80,15 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private float[] trueValues;
   private int trueValueCorrection;
   private float[] corrTrueValues;
+
+  private final String[] columnLabels =
+    {"rPP", "Value", "Rank", "-3SD","-2SD", "-1SD", "Med", "+1SD", "+2SD", "+3SD", "RLB", "RUB"};
+  private final String sFmt =
+    "%3s\t%5s\t%4s\t%4s\t%4s\t%4s\t%5s\t%4s\t%4s\t%4s\t%3s\t%3s\n";
+  private final String fFmt =
+    "%14.10f\t%14.0f\t%14.10f\t" //rPP, Value, Rank
+  + "%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t" //-3sd to +3sd
+  + "%14.10f\t%14.10f\n"; //rlb, rub
 
   //JobProfile interface
   @Override
@@ -91,24 +104,33 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) { job.println(obj); }
   //end JobProfile
 
   private void extractProperties() {
-    lgMin = Integer.parseInt(job.getProperties().mustGet("lgMin"));
-    lgMax = Integer.parseInt(job.getProperties().mustGet("lgMax"));
-    lgDelta = Integer.parseInt(job.getProperties().mustGet("lgDelta"));
+    //stream length
+    lgMin = Integer.parseInt(job.getProperties().mustGet("LgMin"));
+    lgMax = Integer.parseInt(job.getProperties().mustGet("LgMax"));
+    lgDelta = Integer.parseInt(job.getProperties().mustGet("LgDelta"));
     ppo = Integer.parseInt(job.getProperties().mustGet("PPO"));
-    numTrials = 1 << Integer.parseInt(job.getProperties().mustGet("lgTrials"));
-    errorSkLgK = Integer.parseInt(job.getProperties().mustGet("errSkLgK"));
-    numPlotPoints = Integer.parseInt(job.getProperties().mustGet("numPlotPoints"));
-    evenlySpaced = Boolean.valueOf(job.getProperties().mustGet("evenlySpaced"));
-    exponent = Double.parseDouble(job.getProperties().mustGet("exponent"));
+    //numTrials & error quantiles sketch config
+    numTrials = 1 << Integer.parseInt(job.getProperties().mustGet("LgTrials"));
+    errorSkLgK = Integer.parseInt(job.getProperties().mustGet("ErrSkLgK"));
+    //plotting & x-axis config
+    numPlotPoints = Integer.parseInt(job.getProperties().mustGet("NumPlotPoints"));
+    evenlySpaced = Boolean.valueOf(job.getProperties().mustGet("EvenlySpaced"));
+    exponent = Double.parseDouble(job.getProperties().mustGet("Exponent"));
+    sd = Integer.parseInt(job.getProperties().mustGet("StdDev"));
+    rankRange = Double.parseDouble(job.getProperties().mustGet("RankRange"));
+    //Target sketch config
     K = Integer.parseInt(job.getProperties().mustGet("K"));
-    hra = Boolean.parseBoolean(job.getProperties().mustGet("hra"));
-    criterion = Criteria.valueOf(job.getProperties().mustGet("criterion"));
+    hra = Boolean.parseBoolean(job.getProperties().mustGet("HRA"));
+    criterion = Criteria.valueOf(job.getProperties().mustGet("Criterion"));
+    String reqDebugLevel = job.getProperties().get("ReqDebugLevel");
+    String reqDebugFmt = job.getProperties().get("ReqDebugFmt");
+    if (reqDebugLevel != null) {
+      int level = Integer.parseInt(reqDebugLevel);
+      reqDebugImpl = new ReqDebugImpl(level, reqDebugFmt);
+    }
   }
 
   void configureCommon() {
@@ -122,14 +144,17 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     for (int i = 0; i < numPlotPoints; i++) {
       errQSkArr[i] = builder.build();
     }
-    gRanks = new double[GAUSSIANS_2SD.length - 2]; //omit 0.0 and 1.0
-    for (int i = 1; i < GAUSSIANS_2SD.length - 1; i++) {
-      gRanks[i - 1] = GAUSSIANS_2SD[i];
+    gRanks = new double[GAUSSIANS_3SD.length - 2]; //omit 0.0 and 1.0
+    for (int i = 1; i < GAUSSIANS_3SD.length - 1; i++) {
+      gRanks[i - 1] = GAUSSIANS_3SD[i];
     }
   }
 
   void configureSketch() {
-    sk = ReqSketch.builder().setK(K).setHighRankAccuracy(hra).build();
+    final ReqSketchBuilder bldr = ReqSketch.builder();
+    bldr.setK(K).setHighRankAccuracy(hra);
+    if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
+    sk = bldr.build();
     sk.setCriterion(criterion);
   }
 
@@ -162,18 +187,20 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   }
 
   void doStreamLength(final int streamLength) {
-    //print at the top of each stream length
     job.println(LS + "Stream Length: " + streamLength );
-    job.printf(sFmt, (Object[])columnLabels);
+    job.printfData(sFmt, (Object[])columnLabels);
 
     //build the stream
     //the values themselves reflect their integer ranks starting with 1.
     stream = new float[streamLength];
     for (int sl = 1; sl <= streamLength; sl++) { stream[sl - 1] = sl; } //1 to SL
 
-    //compute the true values used at the plot points, the number of true values is constant
+    //compute the true values used at the plot points
+    final int subStreamLen = (int)Math.round(rankRange * streamLength);
+    final float start = hra ? streamLength - subStreamLen : 1.0f;
+    final float end = hra ? streamLength : subStreamLen;
     final float[] fltValues = evenlySpaced
-        ? evenlySpacedFloats(1.0f, streamLength, numPlotPoints)
+        ? evenlySpacedFloats(start, end, numPlotPoints)
         : expSpacedFloats(1.0f, streamLength, numPlotPoints, exponent, hra);
 
     for (int pp = 0; pp < numPlotPoints; pp++) {
@@ -182,36 +209,29 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     }
 
     //Do numTrials for all plotpoints
-    doTrials(sk, stream, trueValues, corrTrueValues, errQSkArr, numTrials);
+    for (int t = 0; t < numTrials; t++) {
+      doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
+    }
 
     //at this point each of the errQSkArr sketches has a distribution of error from numTrials
     for (int pp = 0 ; pp < numPlotPoints; pp++) {
       final double v = trueValues[pp];
       final double tr = v / streamLength; //the true rank
+      final double rlb = sk.getRankLowerBound(tr, sd) - tr;
+      final double rub = sk.getRankUpperBound(tr, sd) - tr;
 
       //for each of the numErrDistRanks distributions extract the sd quantiles
       final double[] errQ = errQSkArr[pp].getQuantiles(gRanks); //get error values at the Gaussian ranks
 
       //Plot the row. We ignore quantiles collected at 0 and 1.0.
       final double relPP = (double)(pp + 1) / numPlotPoints;
-      job.printf(fFmt, relPP, v, tr, errQ[0], errQ[1], errQ[2], errQ[3], errQ[4]);
+      job.printfData(fFmt, relPP, v, tr,
+          errQ[0], errQ[1], errQ[2], errQ[3], errQ[4], errQ[5], errQ[6],
+          rlb, rub);
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
     }
     job.println(LS + "Serialization Bytes: " + sk.getSerializationBytes());
-    job.println(sk.viewCompactorDetail("%5d", false));
-  }
-
-  /**
-   * A set of trials for all plot points.
-   * @param stream the set of value to feed the sketch
-   * @param trueValues the true integer values at the plot points
-   * @param errQSkArr the quantile error sketches for each plot point
-   */
-  static void doTrials(final ReqSketch sk, final float[] stream, final float[] trueValues,
-      final float[] corrTrueValues, final UpdateDoublesSketch[] errQSkArr, final int numTrials) {
-    for (int t = 0; t < numTrials; t++) {
-      doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
-    }
+    job.println(sk.viewCompactorDetail("%5.0f", false));
   }
 
   /**

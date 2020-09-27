@@ -110,18 +110,13 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
   @Override
   public void shutdown() {
     //At the very end
-    println("");
-    println(prop.extractKvPairs(LS));
+    job.println("");
+    job.println(prop.extractKvPairs(LS));
     job.flush();
   }
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
 
   public void configureSketch() {
     //Configure Sketch
@@ -186,19 +181,19 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
       //printed at the end of a trials set
       final long currentTime_mS = System.currentTimeMillis();
       final long cumTime_mS = currentTime_mS - job.getStartTime();
-      println("Cum Time               : " + milliSecToString(cumTime_mS));
+      job.println("Cum Time               : " + milliSecToString(cumTime_mS));
       final double timePerTrial_mS = cumTime_mS * 1.0 / lastT;
       final String tpt_ms = String.format("%.3f", timePerTrial_mS);
-      println("Time Per Trial, mSec   : " + tpt_ms);
+      job.println("Time Per Trial, mSec   : " + tpt_ms);
 
-      println("Date Time              : "
+      job.println("Date Time              : "
           + job.getReadableDateString(currentTime_mS));
 
       final long timeToComplete_mS = (long)(timePerTrial_mS * (maxT - lastT));
-      println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
-      println("Est Time at Completion : "
+      job.println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
+      job.println("Est Time at Completion : "
           + job.getReadableDateString(timeToComplete_mS + currentTime_mS));
-      println("");
+      job.println("");
       job.flush();
     }
   }

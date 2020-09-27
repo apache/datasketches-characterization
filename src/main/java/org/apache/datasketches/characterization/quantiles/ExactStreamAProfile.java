@@ -104,7 +104,7 @@ public class ExactStreamAProfile implements JobProfile {
     long startTime_nS;
 
     //Read
-    println("Input Lines Processed: ");
+    job.println("Input Lines Processed: ");
     final LineReader lineReader = new LineReader(srcFileName);
     startTime_nS = System.nanoTime();
     lineReader.read(0, proc);
@@ -112,11 +112,11 @@ public class ExactStreamAProfile implements JobProfile {
     assert proc.n == numItems;
 
     //Sort
-    println("Sort input data");
+    job.println("Sort input data");
     startTime_nS = System.nanoTime();
     Arrays.sort(dataArr);
     final long sortTime_nS = System.nanoTime() - startTime_nS;
-    println("Sort done");
+    job.println("Sort done");
 
     //Compute CDF & PMF
     minV = dataArr[0];
@@ -130,36 +130,36 @@ public class ExactStreamAProfile implements JobProfile {
     numSP = spArr.length;
     spCounts = new long[numSP];
 
-    println("");
+    job.println("");
     printExactPercentiles(dataArr);
-    println("End Percentiles");
-    println("");
+    job.println("End Percentiles");
+    job.println("");
 
-    println("Process PMF");
+    job.println("Process PMF");
     startTime_nS = System.nanoTime();
     processExactPmf(dataArr, spArr, spCounts);//, ranksArr, quantilesArr, cdfIdxArr);
     final long processTime_nS = System.nanoTime() - startTime_nS;
-    println("End Process PMF");
-    println("");
+    job.println("End Process PMF");
+    job.println("");
     printPMF();
-    println("");
+    job.println("");
     printTimes(readTime_nS, sortTime_nS, processTime_nS);
   }
 
   private void printExactPercentiles(final int[] sortedArr) {
     final int len = sortedArr.length;
-    println("Percentiles");
-    println(String.format(cdfHdr, "Num", "Rank", "Index", "Value"));
+    job.println("Percentiles");
+    job.println(String.format(cdfHdr, "Num", "Rank", "Index", "Value"));
     int index, v;
     for (int i = 0; i < 100; i++) {
       final double fracRank = i * .01;
       index = (int) (fracRank * len);
       v = sortedArr[index];
-      println(String.format(cdfFmt, i, fracRank, index, v));
+      job.println(String.format(cdfFmt, i, fracRank, index, v));
     }
     index = numItems - 1; //max value
     v = sortedArr[index];
-    println(String.format(cdfFmt, 101, 1.0, index, v));
+    job.println(String.format(cdfFmt, 101, 1.0, index, v));
   }
 
   private static void processExactPmf(final int[] sortedArr, final double[] spArr,
@@ -172,7 +172,7 @@ public class ExactStreamAProfile implements JobProfile {
       if (v < spArr[spIdx]) {
         spCounts[spIdx]++;
       } else {
-        while (((spIdx + 1) < spLen) && (v >= spArr[spIdx])) {
+        while (spIdx + 1 < spLen && v >= spArr[spIdx]) {
           spIdx++;
         }
         spCounts[spIdx]++;
@@ -191,21 +191,21 @@ public class ExactStreamAProfile implements JobProfile {
   }
 
   private void printPMF() {
-    println("PMF");
-    println(String.format(pmfHdr, "Index", "Quantile", "Mass"));
+    job.println("PMF");
+    job.println(String.format(pmfHdr, "Index", "Quantile", "Mass"));
     final int numSP = spArr.length;
     for (int i = 0; i < numSP; i++) {
-      println(String.format(pmfFmt, i, spArr[i], spCounts[i]));
+      job.println(String.format(pmfFmt, i, spArr[i], spCounts[i]));
     }
   }
 
   private void printTimes(final long readTime_nS, final long sortTime_nS, final long processTime_nS) {
     final double readTime_S = readTime_nS / 1E9;
-    println(String.format("ReadTime_Sec  :\t%10.3f", readTime_S));
-    println(String.format("ReadRate/Sec  :\t%,10.0f", proc.n / readTime_S));
-    println(String.format("SortTime_nS   :\t%,10d", sortTime_nS));
-    println(String.format("ProcessTime_mSec  :\t%10.3f", processTime_nS / 1E6));
-    println(String.format("PT/Point_nSec:\t%10.3f", (double)processTime_nS / numRanks));
+    job.println(String.format("ReadTime_Sec  :\t%10.3f", readTime_S));
+    job.println(String.format("ReadRate/Sec  :\t%,10.0f", proc.n / readTime_S));
+    job.println(String.format("SortTime_nS   :\t%,10d", sortTime_nS));
+    job.println(String.format("ProcessTime_mSec  :\t%10.3f", processTime_nS / 1E6));
+    job.println(String.format("PT/Point_nSec:\t%10.3f", (double)processTime_nS / numRanks));
   }
 
   private void checkIfZipped(final String srcFileName) {
@@ -217,12 +217,12 @@ public class ExactStreamAProfile implements JobProfile {
         throw new IllegalArgumentException("Neither file nor zipFile exists.");
       }
       final String parent = zipFile.getParent();
-      println("Unzipping data file: " + srcZipFile + "...");
+      job.println("Unzipping data file: " + srcZipFile + "...");
       UnzipFiles.unzip(srcZipFile, parent);
       if (!zipFile.exists()) {
         throw new IllegalArgumentException("Unsuccessful Unzip.");
       }
-      println(srcZipFile + " unzipped!");
+      job.println(srcZipFile + " unzipped!");
       dataWasZipped = true;
     }
   }
@@ -234,19 +234,14 @@ public class ExactStreamAProfile implements JobProfile {
   @Override
   public void cleanup() {}
 
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
-
   // Callback
   class Process implements ProcessLine {
     int n = 0;
 
     @Override
     public void process(final String strArr0, final int lineNo) {
-      if ((lineNo % reportInterval) == 0) {
-        println("" + lineNo);
+      if (lineNo % reportInterval == 0) {
+        job.println("" + lineNo);
       }
       dataArr[n++] = Integer.parseInt(strArr0);
     }
