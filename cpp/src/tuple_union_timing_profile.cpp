@@ -24,6 +24,7 @@
 #include <sstream>
 
 #include <tuple_union.hpp>
+#include <array_of_doubles_union.hpp>
 
 #include "tuple_union_timing_profile.hpp"
 
@@ -46,11 +47,15 @@ void tuple_union_timing_profile::run() {
 
   std::cout << "Stream\tTrials\tBuild\tUpdate\tCompact\tSerialize\tDeserialize\tUnion\tResult" << std::endl;
 
-  std::unique_ptr<update_tuple_sketch<double>> update_sketches[num_sketches_to_union];
-  std::unique_ptr<compact_tuple_sketch<double>> compact_sketches[num_sketches_to_union];
+//  std::unique_ptr<update_tuple_sketch<double>> update_sketches[num_sketches_to_union];
+//  std::unique_ptr<compact_tuple_sketch<double>> compact_sketches[num_sketches_to_union];
+  std::unique_ptr<update_array_of_doubles_sketch> update_sketches[num_sketches_to_union];
+  std::unique_ptr<compact_array_of_doubles_sketch> compact_sketches[num_sketches_to_union];
 
-  auto sketch_builder = update_tuple_sketch<double>::builder().set_lg_k(lg_k);
-  auto union_builder = tuple_union<double>::builder().set_lg_k(lg_k);
+//  auto sketch_builder = update_tuple_sketch<double>::builder().set_lg_k(lg_k);
+//  auto union_builder = tuple_union<double>::builder().set_lg_k(lg_k);
+  auto sketch_builder = update_array_of_doubles_sketch::builder().set_lg_k(lg_k);
+  auto union_builder = array_of_doubles_union::builder().set_lg_k(lg_k);
 
   size_t stream_length = 1 << lg_min_stream_len;
   while (stream_length <= (1 << lg_max_stream_len)) {
@@ -68,16 +73,18 @@ void tuple_union_timing_profile::run() {
     for (size_t t = 0; t < num_trials; t++) {
       const auto start_build(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches_to_union; i++) {
-        update_sketches[i] = std::unique_ptr<update_tuple_sketch<double>>(new update_tuple_sketch<double>(sketch_builder.build()));
+        //update_sketches[i] = std::unique_ptr<update_tuple_sketch<double>>(new update_tuple_sketch<double>(sketch_builder.build()));
+        update_sketches[i] = std::unique_ptr<update_array_of_doubles_sketch>(new update_array_of_doubles_sketch(sketch_builder.build()));
       }
-      tuple_union<double> u = union_builder.build();
+      auto u = union_builder.build();
       const auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
+      double v[1] = {1};
       const auto start_update(std::chrono::high_resolution_clock::now());
       size_t i = 0;
       for (size_t j = 0; j < stream_length; j++) {
-        update_sketches[i]->update(counter, counter);
+        update_sketches[i]->update(counter, v);
         counter += golden64;
         i++;
         if (i == num_sketches_to_union) i = 0;
@@ -88,7 +95,8 @@ void tuple_union_timing_profile::run() {
       const auto start_compacting(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches_to_union; i++) {
         update_sketches[i]->trim();
-        compact_sketches[i] = std::unique_ptr<compact_tuple_sketch<double>>(new compact_tuple_sketch<double>(update_sketches[i]->compact()));
+        //compact_sketches[i] = std::unique_ptr<compact_tuple_sketch<double>>(new compact_tuple_sketch<double>(update_sketches[i]->compact()));
+        compact_sketches[i] = std::unique_ptr<compact_array_of_doubles_sketch>(new compact_array_of_doubles_sketch(update_sketches[i]->compact()));
       }
       const auto finish_compacting(std::chrono::high_resolution_clock::now());
       compact_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_compacting - start_compacting);
@@ -103,7 +111,8 @@ void tuple_union_timing_profile::run() {
 
       const auto start_deserialize(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches_to_union; i++) {
-        compact_sketches[i] = std::unique_ptr<compact_tuple_sketch<double>>(new compact_tuple_sketch<double>(compact_tuple_sketch<double>::deserialize(s)));
+        //compact_sketches[i] = std::unique_ptr<compact_tuple_sketch<double>>(new compact_tuple_sketch<double>(compact_tuple_sketch<double>::deserialize(s)));
+        compact_sketches[i] = std::unique_ptr<compact_array_of_doubles_sketch>(new compact_array_of_doubles_sketch(compact_array_of_doubles_sketch::deserialize(s)));
       }
       const auto finish_deserialize(std::chrono::high_resolution_clock::now());
       deserialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_deserialize - start_deserialize);

@@ -24,6 +24,7 @@
 #include <sstream>
 
 #include <tuple_sketch.hpp>
+#include <array_of_doubles_sketch.hpp>
 
 #include "tuple_sketch_timing_profile.hpp"
 
@@ -37,7 +38,8 @@ void tuple_sketch_timing_profile::run() {
   const size_t lg_max_trials(16);
   const size_t lg_min_trials(8);
 
-  update_tuple_sketch<double>::builder builder;
+  //update_tuple_sketch<double>::builder builder;
+  update_array_of_doubles_sketch::builder builder;
 
   // some arbitrary starting value
   uint64_t counter(35538947);
@@ -60,13 +62,14 @@ void tuple_sketch_timing_profile::run() {
 
     for (size_t i = 0; i < num_trials; i++) {
       const auto start_build(std::chrono::high_resolution_clock::now());
-      update_tuple_sketch<double> sketch = builder.build();
+      auto sketch = builder.build();
       const auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
+      double v[1] = {1};
       const auto start_update(std::chrono::high_resolution_clock::now());
       for (size_t j = 0; j < stream_length; j++) {
-        sketch.update(counter, 1);
+        sketch.update(counter, v);
         counter += golden64;
       }
       const auto finish_update(std::chrono::high_resolution_clock::now());
@@ -83,7 +86,8 @@ void tuple_sketch_timing_profile::run() {
       serialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_serialize - start_serialize);
 
       const auto start_deserialize(std::chrono::high_resolution_clock::now());
-      auto deserialized_sketch = compact_tuple_sketch<double>::deserialize(bytes.data(), bytes.size());
+      //auto deserialized_sketch = compact_tuple_sketch<double>::deserialize(bytes.data(), bytes.size());
+      auto deserialized_sketch = compact_array_of_doubles_sketch::deserialize(bytes.data(), bytes.size());
       const auto finish_deserialize(std::chrono::high_resolution_clock::now());
       deserialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_deserialize - start_deserialize);
 
