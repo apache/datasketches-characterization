@@ -19,6 +19,8 @@
 
 package org.apache.datasketches;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
 
 /**
@@ -31,6 +33,18 @@ public class MonotonicPointsTest {
   public void checkMonotonicPoints() {
     double[] arr = MonotonicPoints.evenlySpaced(0.0, 100.0, 21, false);
     for (int i = 0; i < arr.length; i++) { println(arr[i] + ""); }
+  }
+
+  @Test
+  public void checkMonotonicPoints2() {
+    double[] arr = MonotonicPoints.evenlySpaced(0, 1, 3, false);
+    assertEquals(arr[0], 0.0);
+    assertEquals(arr[1], 0.5);
+    assertEquals(arr[2], 1.0);
+    arr = MonotonicPoints.evenlySpaced(3, 7, 3, false);
+    assertEquals(arr[0], 3.0);
+    assertEquals(arr[1], 5.0);
+    assertEquals(arr[2], 7.0);
   }
 
   @Test void checkEvenlySpacedPoints() {

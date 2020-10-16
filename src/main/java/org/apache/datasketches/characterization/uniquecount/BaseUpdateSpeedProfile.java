@@ -102,7 +102,9 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
         sumUpdateTimePerU_nS += doTrial(nextU);
       }
       final double meanUpdateTimePerU_nS = sumUpdateTimePerU_nS / trials;
+
       process(meanUpdateTimePerU_nS, trials, nextU, dataStr);
+
       job.println(dataStr.toString());
     }
   }
