@@ -163,7 +163,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
   void configureSketch() {
     final ReqSketchBuilder bldr = ReqSketch.builder();
-    bldr.setK(K).setHighRankAccuracy(hra);
+    bldr.setK(K).setHighRankAccuracy(hra).setCompatible(compatible);
     if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
     sk = bldr.build();
     sk.setCriterion(criterion);
