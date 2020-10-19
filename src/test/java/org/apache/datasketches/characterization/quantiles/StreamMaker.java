@@ -34,6 +34,8 @@ import org.testng.annotations.Test;
  * @author Lee Rhodes
  */
 public class StreamMaker {
+  static final String LS = System.getProperty("line.separator");
+  static String TAB = "\t";
   public enum Pattern { Sorted, Reversed, Zoomin, Zoomout, Random, Sqrt, FlipFlop,
     Clustered, ClusteredZoomin }
   public float min = 0;
@@ -116,28 +118,26 @@ public class StreamMaker {
     float[] stream = makeStream(n, order, offset);
     println(order + " n:" + n + " offset: " + offset);
     for (int i = 0; i < stream.length; i++) {
-      if (i != 0 && i % 21 == 0) { println(""); }
-      print(stream[i] + " ");
+      //if (i != 0 && i % 21 == 0) { println(""); }
+      println(i + TAB + (int)stream[i]);
     }
     println("");
   }
 
   @Test
   public void checkStreamMaker() {
-    printStream(20, Sorted, 0);
-    printStream(20, Reversed, 0);
-    printStream(20, Zoomin, 0);
-    printStream(21, Zoomin, 1);
-    printStream(20, Zoomout, 0);
-    printStream(21, Zoomout, 1);
-    printStream(21, Random, 0);
-    printStream(21, Random, 1);
-    printStream(20, Sqrt, 0);
-    printStream(20, Sqrt, 1);
-    printStream(21, Sqrt, 0);
-    printStream(21, Sqrt, 1);
-    printStream(71, FlipFlop, 0);
-    printStream(71, FlipFlop, 1);
+    printStream(100, Sorted, 1);
+    printStream(100, Reversed, 1);
+    //printStream(100, Zoomin, 0);
+    printStream(100, Zoomin, 1);
+    //printStream(100, Zoomout, 0);
+    printStream(100, Zoomout, 1);
+    //printStream(100, Random, 0);
+    printStream(100, Random, 1);
+    //printStream(100, Sqrt, 0);
+    printStream(100, Sqrt, 1);
+    //printStream(100, FlipFlop, 0);
+    printStream(100, FlipFlop, 1);
   }
 
   static void print(Object o) { System.out.print(o.toString()); }
