@@ -20,8 +20,6 @@
 package org.apache.datasketches.characterization.quantiles;
 
 import static java.lang.Math.round;
-import static org.apache.datasketches.Criteria.GE;
-import static org.apache.datasketches.Criteria.LT;
 import static org.apache.datasketches.ExponentiallySpacedPoints.expSpacedFloats;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.evenlySpacedFloats;
@@ -33,6 +31,7 @@ import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.characterization.Shuffle;
+import org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
@@ -49,6 +48,11 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private Properties prop;
 
   //FROM PROPERTIES
+  //Stream pattern config
+  StreamMaker streamMaker = new StreamMaker();
+  private Pattern pattern;
+  private int offset;
+
   //For computing the different stream lengths
   private int lgMin;
   private int lgMax;
@@ -58,6 +62,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private int numTrials; //num of Trials per plotPoint
   private int errQSkLgK; //size of the error quantiles sketches
   private int errHllSkLgK; //size of the error HLL sketch
+  private boolean shuffle; //if true, shuffle for each trial
 
   //plotting & x-axis configuration
   private int numPlotPoints;
@@ -82,19 +87,29 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private HllSketch[] errHllSkArr;
 
   //Specific to a streamLength
+  private TrueRanks trueRanks;
+  //The entire stream
   private float[] stream; //a shuffled array of values from 1...N
-  private float[] trueValues; //
-  private int trueValueCorrection;
-  private float[] corrTrueValues;
+  private float[] sortedStream;
+  private int[] sortedAbsRanks;
+  //private int[] streamAbsRanks ?? do we need?
+  //The PP points
+  private float[] sortedPPValues;
+  private int[] sortedPPIndices;
+  private int[] sortedPPAbsRanks;
 
   private final String[] columnLabels =
-    {"nPP", "Value", "Rank", "-3SD","-2SD", "-1SD", "Med", "+1SD", "+2SD", "+3SD", "1LB", "1UB", "U"};
+    {"nPP", "Value", "Rank",
+     "-3SD","-2SD", "-1SD", "Med", "+1SD", "+2SD", "+3SD",
+     "1LB", "1UB", "UErrCnt"};
   private final String sFmt =
-    "%3s\t%5s\t%4s\t%4s\t%4s\t%4s\t%5s\t%4s\t%4s\t%4s\t%3s\t%3s\t%3s\n";
+      "%3s\t%5s\t%4s\t"
+    + "%4s\t%4s\t%4s\t%5s\t%4s\t%4s\t%4s\t"
+    + "%3s\t%3s\t%7s\n";
   private final String fFmt =
     "%14.10f\t%14.0f\t%14.10f\t" //rPP, Value, Rank
   + "%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t%14.10f\t" //-3sd to +3sd
-  + "%14.10f\t%14.10f\t%6d\n"; //1lb, 1ub, U
+  + "%14.10f\t%14.10f\t%6d\n"; //1lb, 1ub, UErrCnt
 
   //JobProfile interface
   @Override
@@ -103,7 +118,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     prop = job.getProperties();
     extractProperties();
     configureCommon();
-    doJob();
+    doStreamLengths();
   }
 
   @Override
@@ -114,16 +129,20 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   //end JobProfile
 
   private void extractProperties() {
-    //stream length
+    //Stream Pattern
+    pattern = Pattern.valueOf(prop.mustGet("Pattern"));
+    offset = Integer.parseInt(prop.mustGet("Offset"));
+    //Stream lengths
     lgMin = Integer.parseInt(prop.mustGet("LgMin"));
     lgMax = Integer.parseInt(prop.mustGet("LgMax"));
     lgDelta = Integer.parseInt(prop.mustGet("LgDelta"));
     ppo = Integer.parseInt(prop.mustGet("PPO"));
-    //numTrials & error quantiles & HLL sketch config
+    // Trials config (indep of sketch)
     numTrials = 1 << Integer.parseInt(prop.mustGet("LgTrials"));
     errQSkLgK = Integer.parseInt(prop.mustGet("ErrQSkLgK"));
     errHllSkLgK = Integer.parseInt(prop.mustGet("ErrHllSkLgK"));
-    //plotting & x-axis config
+    shuffle = Boolean.valueOf(prop.mustGet("Shuffle"));
+    //plotting
     numPlotPoints = Integer.parseInt(prop.mustGet("NumPlotPoints"));
     evenlySpaced = Boolean.valueOf(prop.mustGet("EvenlySpaced"));
     exponent = Double.parseDouble(prop.mustGet("Exponent"));
@@ -144,9 +163,6 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
   void configureCommon() {
     configureSketch();
-    trueValues = new float[numPlotPoints];
-    corrTrueValues = new float[numPlotPoints];
-    trueValueCorrection = criterion == GE || criterion == LT ? 1 : 0;
     errQSkArr = new UpdateDoublesSketch[numPlotPoints];
     errHllSkArr = new HllSketch[numPlotPoints];
     //configure the error quantiles array & HLL sketch arr
@@ -169,7 +185,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     sk.setCriterion(criterion);
   }
 
-  private void doJob() {
+  private void doStreamLengths() {
     //compute the number of stream lengths for the whole job
     final int numSteps;
     final boolean useppo;
@@ -186,7 +202,9 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
     // Step through the different stream lengths
     for (int step = 0; step < numSteps; step++) {
+
       doStreamLength(streamLength);
+
       //go to next stream length
       if (useppo) {
         streamLength = pwr2LawNext(ppo, streamLength);
@@ -200,47 +218,63 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   void doStreamLength(final int streamLength) {
     job.println(LS + "Stream Length: " + streamLength );
     job.printfData(sFmt, (Object[])columnLabels);
-
     //build the stream
-    //the values themselves reflect their integer ranks starting with 1.
-    stream = new float[streamLength];
-    for (int sl = 1; sl <= streamLength; sl++) { stream[sl - 1] = sl; } //1 to SL
+    stream = streamMaker.makeStream(streamLength, pattern, offset);
+    //compute true ranks
+    if (criterion == Criteria.LE) {
+      trueRanks = new TrueRanks(stream, true);
+    } else {
+      trueRanks = new TrueRanks(stream, false);
+    }
+    sortedStream = trueRanks.getSortedStream();
+    sortedAbsRanks = trueRanks.getSortedAbsRanks();
 
     //compute the true values used at the plot points
-    final int subStreamLen = (int)Math.round(rankRange * streamLength);
-    final float start = hra ? streamLength - subStreamLen : 1.0f;
-    final float end = hra ? streamLength : subStreamLen;
-    final float[] fltValues = evenlySpaced
-        ? evenlySpacedFloats(start, end, numPlotPoints)
-        : expSpacedFloats(1.0f, streamLength, numPlotPoints, exponent, hra);
+    int startIdx = 0;
+    int endIdx = streamLength - 1;
+    if (rankRange < 1.0) { //A substream of points focuses on a sub-range at one end.
+      final int subStreamLen = (int)Math.round(rankRange * streamLength);
+      startIdx = hra ? streamLength - subStreamLen : 0;
+      endIdx = hra ? streamLength - 1 : subStreamLen - 1;
+    }
+
+    //generates PP indices in [startIdx, endIdx] inclusive, inclusive
+    final float[] temp = evenlySpaced
+        ? evenlySpacedFloats(startIdx, endIdx, numPlotPoints)
+        : expSpacedFloats(startIdx, endIdx, numPlotPoints, exponent, hra);
+
+    sortedPPIndices = new int[numPlotPoints];
+    sortedPPAbsRanks = new int[numPlotPoints];
+    sortedPPValues = new float[numPlotPoints];
 
     for (int pp = 0; pp < numPlotPoints; pp++) {
-      trueValues[pp] = round(fltValues[pp]);
-      corrTrueValues[pp] = trueValues[pp] - trueValueCorrection;
+      final int idx = Math.round(temp[pp]);
+      sortedPPIndices[pp] = idx;
+      sortedPPAbsRanks[pp] = sortedAbsRanks[idx];
+      sortedPPValues[pp] = sortedStream[idx];
     }
 
     //Do numTrials for all plotpoints
     for (int t = 0; t < numTrials; t++) {
-      doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr, errHllSkArr);
+      doTrial();
     }
 
     //at this point each of the errQSkArr sketches has a distribution of error from numTrials
     for (int pp = 0 ; pp < numPlotPoints; pp++) {
-      final double v = trueValues[pp];
+      final double v = sortedPPValues[pp];
       final double tr = v / streamLength; //the true rank
       final double rlb = sk.getRankLowerBound(tr, sd) - tr;
       final double rub = sk.getRankUpperBound(tr, sd) - tr;
 
-
-      //for each of the numErrDistRanks distributions extract the sd quantiles
-      final double[] errQ = errQSkArr[pp].getQuantiles(gRanks); //get error values at the Gaussian ranks
-      final int errCnt = (int)round(errHllSkArr[pp].getEstimate());
+      //for each of the numErrDistRanks distributions extract the sd Gaussian quantiles
+      final double[] errQ = errQSkArr[pp].getQuantiles(gRanks);
+      final int uErrCnt = (int)round(errHllSkArr[pp].getEstimate());
 
       //Plot the row.
       final double relPP = (double)(pp + 1) / numPlotPoints;
       job.printfData(fFmt, relPP, v, tr,
           errQ[0], errQ[1], errQ[2], errQ[3], errQ[4], errQ[5], errQ[6],
-          rlb, rub, errCnt);
+          rlb, rub, uErrCnt);
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
       errHllSkArr[pp].reset(); //reset the errHllSkArr for next streamLength
     }
@@ -249,29 +283,22 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   }
 
   /**
-   * A trial consists of updating a virgin sketch with a shuffled stream of streamLength values.
-   * We capture the estimated ranks for all plotPoints and then update the errQSkArr with those
+   * A trial consists of updating a virgin sketch with a stream of values.
+   * Capture the estimated ranks for all plotPoints and then update the errQSkArr with those
    * error values.
-   * @param stream the source stream
-   * @param trueValues the true integer ranks at each of the plot points
-   * @param errQSkArr the quantile error sketches for each plot point to be updated
    */
-  static void doTrial(final ReqSketch sk, final float[] stream, final float[] trueValues,
-      final float[] corrTrueValues, final UpdateDoublesSketch[] errQSkArr, HllSketch[] errHllSkArr) {
+  void doTrial() {
     sk.reset();
-    Shuffle.shuffle(stream);
+    if (shuffle) { Shuffle.shuffle(stream); }
     final int sl = stream.length;
-    for (int i = 0; i < sl; i++) {
-      sk.update(stream[i]);
-    }
-    //get estimated ranks from sketch for all plotpoints, this is a bulk operation
-    final double[] estRanks = sk.getRanks(trueValues);
-    final int numPP = trueValues.length;
+    for (int i = 0; i < sl; i++) { sk.update(stream[i]); }
+    //get estimated ranks from sketch for all plotpoints
+    final double[] estRanks = sk.getRanks(sortedPPValues);
     //compute errors and update HLL for each plotPoint
-    for (int pp = 0; pp < numPP; pp++) {
-      final double errorAtPlotPoint = estRanks[pp] - (double)corrTrueValues[pp] / sl;
+    for (int pp = 0; pp < numPlotPoints; pp++) {
+      final double errorAtPlotPoint = estRanks[pp] - (double)sortedPPAbsRanks[pp] / sl;
       errQSkArr[pp].update(errorAtPlotPoint); //update each of the errQArr sketches
-      errHllSkArr[pp].update(errorAtPlotPoint);
+      errHllSkArr[pp].update(errorAtPlotPoint); //unique count of error values
     }
   }
 

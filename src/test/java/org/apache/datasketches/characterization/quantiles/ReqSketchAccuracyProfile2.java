@@ -72,6 +72,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
   private UpdateDoublesSketch[] errQSkArr;
 
   //Specific to the stream
+  private StreamMaker streamMaker;
   private TrueRanks trueRanks;
   private float[] sortedPPValues;
   private int[] sortedPPIndices;
@@ -152,12 +153,12 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
 
   private void configureStream() {
     N = 1 << lgSL;
-    StreamMaker sm = new StreamMaker();
-    float[] stream = sm.makeStream(N, pattern, offset);
-    if (criterion == Criteria.LT) {
-      trueRanks = new TrueRanks(stream, false);
-    } else {
+    streamMaker = new StreamMaker();
+    float[] stream = streamMaker.makeStream(N, pattern, offset);
+    if (criterion == Criteria.LE) {
       trueRanks = new TrueRanks(stream, true);
+    } else {
+      trueRanks = new TrueRanks(stream, false);
     }
   }
 
@@ -168,7 +169,8 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     final int[] sortedAbsRanks = trueRanks.getSortedAbsRanks();
     final float[] sortedStream = trueRanks.getSortedStream();
     int minIdx = (int)Math.round((double)(N - 1) / numPlotPoints);
-    final float[] temp = evenlySpacedFloats(minIdx, N - 1, numPlotPoints);
+    final float[] temp = evenlySpacedFloats(minIdx, N - 1, numPlotPoints); //indices
+
     for (int pp = 0; pp < numPlotPoints; pp++) {
       final int idx = Math.round(temp[pp]);
       sortedPPIndices[pp] = idx;

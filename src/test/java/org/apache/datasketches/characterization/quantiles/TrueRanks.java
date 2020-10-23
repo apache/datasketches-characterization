@@ -40,7 +40,7 @@ public class TrueRanks {
   private float[] stream;
   private float[] sortedStream;
   private int[] sortedAbsRanks;
-  private int[] streamAbsRanks; //??
+  private int[] streamAbsRanks; //TODO do we need this?
 
   TrueRanks() { } //for TestNG
 
@@ -80,7 +80,7 @@ public class TrueRanks {
   }
 
   /**
-   * Compute Absolute Rank.
+   * Sorts the stream, then computes the sortedAbsRanks based on the comparison criterion.
    */
   private void compute() {
     length = stream.length;
@@ -90,7 +90,7 @@ public class TrueRanks {
     if (ltEq) { //LE
       sortedAbsRanks[length - 1] = length;
       int i = length - 2;
-      while (i >= 0) {
+      while (i >= 0) { //goes backwards
         if (sortedStream[i] == sortedStream[i + 1]) { sortedAbsRanks[i] = sortedAbsRanks[i + 1]; }
         else { sortedAbsRanks[i] = i + 1; }
         i--;
@@ -98,13 +98,13 @@ public class TrueRanks {
     } else { // LT
       sortedAbsRanks[0] = 0;
       int i = 1;
-      while (i < length) {
+      while (i < length) { //forwards
         if (sortedStream[i - 1] == sortedStream[i]) { sortedAbsRanks[i] = sortedAbsRanks[i - 1]; }
         else { sortedAbsRanks[i] = i; }
         i++;
       }
     }
-    streamAbsRanks = new int[length]; //put the ranks in values order
+    streamAbsRanks = new int[length]; //put the ranks in original stream order
     for (int j = 0; j < length; j++) {
       final int idx = BinarySearch.find(sortedStream, 0, length - 1, stream[j]);
       streamAbsRanks[j] = sortedAbsRanks[idx];
