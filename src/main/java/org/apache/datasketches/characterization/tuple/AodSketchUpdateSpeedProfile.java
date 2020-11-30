@@ -63,7 +63,7 @@ public class AodSketchUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   @Override
   public double doTrial(final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
-    double[] values = new double[sketch.getNumValues()];
+    final double[] values = new double[sketch.getNumValues()];
     final long startUpdateTime_nS = System.nanoTime();
 
     for (int u = uPerTrial; u-- > 0;) {

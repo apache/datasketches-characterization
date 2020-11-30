@@ -42,10 +42,14 @@ public class AodUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     lgK = Integer.parseInt(prop.mustGet("LgK"));
     numSketches = Integer.parseInt(prop.mustGet("NumSketches"));
     numValues = Integer.parseInt(prop.mustGet("NumValues"));
-    updateSketches = (ArrayOfDoublesUpdatableSketch[]) Array.newInstance(ArrayOfDoublesUpdatableSketch.class, numSketches);
-    compactSketches = (ArrayOfDoublesCompactSketch[]) Array.newInstance(ArrayOfDoublesCompactSketch.class, numSketches);
-    sketchBuilder = new ArrayOfDoublesUpdatableSketchBuilder().setNominalEntries(1 << lgK).setNumberOfValues(numValues);
-    setOpBuilder = new ArrayOfDoublesSetOperationBuilder().setNominalEntries(1 << lgK).setNumberOfValues(numValues);
+    updateSketches = (ArrayOfDoublesUpdatableSketch[])
+        Array.newInstance(ArrayOfDoublesUpdatableSketch.class, numSketches);
+    compactSketches = (ArrayOfDoublesCompactSketch[])
+        Array.newInstance(ArrayOfDoublesCompactSketch.class, numSketches);
+    sketchBuilder = new ArrayOfDoublesUpdatableSketchBuilder().setNominalEntries(1 << lgK)
+        .setNumberOfValues(numValues);
+    setOpBuilder = new ArrayOfDoublesSetOperationBuilder().setNominalEntries(1 << lgK)
+        .setNumberOfValues(numValues);
   }
 
   @Override
@@ -54,7 +58,7 @@ public class AodUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
       updateSketches[i] = sketchBuilder.build();
     }
 
-    double[] values = new double[numValues];
+   final double[] values = new double[numValues];
     { // spray keys across all sketches
       int i = 0;
       for (int u = uPerTrial; u-- > 0;) {
