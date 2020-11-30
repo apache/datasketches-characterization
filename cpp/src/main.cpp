@@ -30,6 +30,9 @@
 #include "theta_sketch_timing_profile.hpp"
 #include "theta_union_timing_profile.hpp"
 
+#include "tuple_sketch_timing_profile.hpp"
+#include "tuple_union_timing_profile.hpp"
+
 #include "kll_sketch_timing_profile.hpp"
 #include "kll_merge_timing_profile.hpp"
 
@@ -67,6 +70,8 @@ int main(int argc, char **argv) {
   job_profile::add("hll-union-timing", job_profile_ptr(new hll_union_timing_profile()));
   job_profile::add("theta-sketch-timing", job_profile_ptr(new theta_sketch_timing_profile()));
   job_profile::add("theta-union-timing", job_profile_ptr(new theta_union_timing_profile()));
+  job_profile::add("tuple-sketch-timing", job_profile_ptr(new tuple_sketch_timing_profile()));
+  job_profile::add("tuple-union-timing", job_profile_ptr(new tuple_union_timing_profile()));
   job_profile::add("kll-sketch-timing-float", job_profile_ptr(new kll_sketch_timing_profile<float>()));
   job_profile::add("kll-sketch-timing-string", job_profile_ptr(new kll_sketch_timing_profile<std::string>()));
   job_profile::add("kll-merge-timing-float", job_profile_ptr(new kll_merge_timing_profile<float>()));
