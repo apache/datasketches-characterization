@@ -22,7 +22,6 @@ package org.apache.datasketches.characterization.quantiles;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.evenlySpacedFloats;
 
-import org.apache.datasketches.Criteria;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
@@ -59,8 +58,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
   //TargetSketch config & error analysis
   private int K;
   private boolean hra;
-  private boolean compatible;
-  private Criteria criterion;
+  private boolean ltEq;
   private org.apache.datasketches.req.ReqDebugImpl reqDebugImpl = null;
 
   //DERIVED INTERNAL globals
@@ -132,8 +130,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     //Target sketch config
     K = Integer.parseInt(prop.mustGet("K"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
-    criterion = Criteria.valueOf(prop.mustGet("Criterion"));
-    compatible = Boolean.parseBoolean(prop.mustGet("Compatible"));
+    ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
     String reqDebugLevel = prop.get("ReqDebugLevel");
     String reqDebugFmt = prop.get("ReqDebugFmt");
     if (reqDebugLevel != null) {
@@ -145,17 +142,16 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
   private void configureSketch() {
     final ReqSketchBuilder bldr = ReqSketch.builder();
     bldr.setK(K).setHighRankAccuracy(hra);
-    bldr.setCompatible(compatible);
     if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
     sk = bldr.build();
-    sk.setCriterion(criterion);
+    sk.setLessThanOrEqual(ltEq);
   }
 
   private void configureStream() {
     N = 1 << lgSL;
     streamMaker = new StreamMaker();
     float[] stream = streamMaker.makeStream(N, pattern, offset);
-    if (criterion == Criteria.LE) {
+    if (ltEq) {
       trueRanks = new TrueRanks(stream, true);
     } else {
       trueRanks = new TrueRanks(stream, false);

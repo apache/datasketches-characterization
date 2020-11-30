@@ -23,7 +23,6 @@ import static java.lang.Math.log;
 import static java.lang.Math.pow;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
-import org.apache.datasketches.Criteria;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
@@ -52,7 +51,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
   //Target sketch configuration & error analysis
   private int reqK;
   private boolean hra; //high rank accuracy
-  private Criteria criterion;
+  private boolean ltEq;
 
   //DERIVED & GLOBALS
   private ReqSketch reqSk;
@@ -76,7 +75,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     //Target sketch config
     reqK = Integer.parseInt(prop.mustGet("ReqK"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
-    criterion = Criteria.valueOf(prop.mustGet("Criterion"));
+    ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
   }
 
   void configureCommon() {
@@ -87,7 +86,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     final ReqSketchBuilder bldr = ReqSketch.builder();
     bldr.setK(reqK).setHighRankAccuracy(hra);
     reqSk = bldr.build();
-    reqSk.setCriterion(criterion);
+    reqSk.setLessThanOrEqual(ltEq);
   }
 
 //JobProfile interface
