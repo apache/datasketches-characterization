@@ -61,6 +61,7 @@
 #include "hll_cross_language_profile.hpp"
 
 #include "req_sketch_timing_profile.hpp"
+#include "req_merge_timing_profile.hpp"
 
 using namespace datasketches;
 typedef std::unique_ptr<job_profile> job_profile_ptr;
@@ -81,6 +82,7 @@ int main(int argc, char **argv) {
   job_profile::add("fi-sketch-timing", job_profile_ptr(new frequent_items_sketch_timing_profile()));
   job_profile::add("fi-merge-timing", job_profile_ptr(new frequent_items_merge_timing_profile()));
   job_profile::add("req-sketch-timing-float", job_profile_ptr(new req_sketch_timing_profile<float>()));
+  job_profile::add("req-merge-timing-float", job_profile_ptr(new req_merge_timing_profile<float>()));
 
   job_profile::add("cpc-sketch-accuracy", job_profile_ptr(new cpc_sketch_accuracy_profile()));
   job_profile::add("cpc-union-accuracy", job_profile_ptr(new cpc_union_accuracy_profile()));
