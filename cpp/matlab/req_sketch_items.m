@@ -24,18 +24,18 @@ req_hra_float_clang=load('../results/req_sketch_timing_float_hra_k12_clang.tsv')
 req_hra_float_gcc=load('../results/req_sketch_timing_float_hra_k12_gcc10.tsv');
 req_lra_float_clang=load('../results/req_sketch_timing_float_lra_k12_clang.tsv');
 req_lra_float_gcc=load('../results/req_sketch_timing_float_lra_k12_gcc10.tsv');
-req_hra_float_clang_test=load('../results/req_sketch_timing_float_hra_k12_clang_test.tsv');
+#req_hra_float_clang_test=load('../results/req_sketch_timing_float_hra_k12_clang_test.tsv');
 
 hold on;
 
 semilogx(kll_java(:,1), kll_java(:,11), 'linewidth', 2);
 #semilogx(kll_float(:,1), kll_float(:,4), 'linewidth', 2);
 #semilogx(kll_str(:,1), kll_str(:,4), 'linewidth', 2);
-semilogx(req_hra_float_clang(:,1), req_hra_float_clang(:,9), 'linewidth', 2);
-semilogx(req_hra_float_gcc(:,1), req_hra_float_gcc(:,9), 'linewidth', 2);
-semilogx(req_lra_float_clang(:,1), req_lra_float_clang(:,9), 'linewidth', 2);
-semilogx(req_lra_float_gcc(:,1), req_lra_float_gcc(:,9), 'linewidth', 2);
-semilogx(req_hra_float_clang_test(:,1), req_hra_float_clang_test(:,9), 'linewidth', 2);
+semilogx(req_hra_float_clang(:,1), req_hra_float_clang(:,11), 'linewidth', 2);
+semilogx(req_hra_float_gcc(:,1), req_hra_float_gcc(:,11), 'linewidth', 2);
+semilogx(req_lra_float_clang(:,1), req_lra_float_clang(:,11), 'linewidth', 2);
+semilogx(req_lra_float_gcc(:,1), req_lra_float_gcc(:,11), 'linewidth', 2);
+#semilogx(req_hra_float_clang_test(:,1), req_hra_float_clang_test(:,11), 'linewidth', 2);
 
 set(gca, 'fontsize', 16);
 title 'Number of retained items in KLL and REQ sketches'
