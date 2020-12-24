@@ -95,10 +95,10 @@ void req_sketch_timing_profile<T>::run() {
       auto finish_get_quantile(std::chrono::high_resolution_clock::now());
       get_quantile_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_quantile - start_get_quantile);
 
-//      auto start_get_quantiles(std::chrono::high_resolution_clock::now());
-//      sketch.get_quantiles(quantile_query_values, num_queries);
-//      auto finish_get_quantiles(std::chrono::high_resolution_clock::now());
-//      get_quantiles_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_quantiles - start_get_quantiles);
+      auto start_get_quantiles(std::chrono::high_resolution_clock::now());
+      sketch.get_quantiles(quantile_query_values, num_queries);
+      auto finish_get_quantiles(std::chrono::high_resolution_clock::now());
+      get_quantiles_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_quantiles - start_get_quantiles);
 
       auto start_get_rank(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_queries; i++) {
@@ -107,10 +107,10 @@ void req_sketch_timing_profile<T>::run() {
       auto finish_get_rank(std::chrono::high_resolution_clock::now());
       get_rank_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_rank - start_get_rank);
 
-//      auto start_get_cdf(std::chrono::high_resolution_clock::now());
-//      sketch.get_CDF(rank_query_values.data(), num_queries);
-//      auto finish_get_cdf(std::chrono::high_resolution_clock::now());
-//      get_cdf_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_cdf - start_get_cdf);
+      auto start_get_cdf(std::chrono::high_resolution_clock::now());
+      sketch.get_CDF(rank_query_values.data(), num_queries);
+      auto finish_get_cdf(std::chrono::high_resolution_clock::now());
+      get_cdf_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_cdf - start_get_cdf);
 
       auto start_serialize(std::chrono::high_resolution_clock::now());
       auto bytes = sketch.serialize();
@@ -130,9 +130,9 @@ void req_sketch_timing_profile<T>::run() {
         << (double) build_time_ns.count() / num_trials << "\t"
         << (double) update_time_ns.count() / num_trials / stream_length << "\t"
         << (double) get_quantile_time_ns.count() / num_trials / num_queries << "\t"
-//        << (double) get_quantiles_time_ns.count() / num_trials / num_queries << "\t"
+        << (double) get_quantiles_time_ns.count() / num_trials / num_queries << "\t"
         << (double) get_rank_time_ns.count() / num_trials / num_queries << "\t"
-//        << (double) get_cdf_time_ns.count() / num_trials / num_queries << "\t"
+        << (double) get_cdf_time_ns.count() / num_trials / num_queries << "\t"
         << (double) serialize_time_ns.count() / num_trials << "\t"
         << (double) deserialize_time_ns.count() / num_trials << "\t"
         << num_retained / num_trials << "\t"
