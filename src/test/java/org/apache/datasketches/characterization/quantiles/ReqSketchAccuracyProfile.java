@@ -76,6 +76,13 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private boolean ltEq;
   private org.apache.datasketches.req.ReqDebugImpl reqDebugImpl = null;
 
+  
+  // TEMPORARY
+  int INIT_NUMBER_OF_SECTIONS;
+  float NOM_CAPACITY_MULTIPLIER;
+  int MIN_K;
+  boolean LAZY_COMPRESSION;
+
   //DERIVED globals
   private ReqSketch sk;
 
@@ -151,6 +158,12 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     K = Integer.parseInt(prop.mustGet("K"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
     ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
+    
+    
+    INIT_NUMBER_OF_SECTIONS = Integer.parseInt(prop.mustGet("INIT_NUMBER_OF_SECTIONS"));
+    NOM_CAPACITY_MULTIPLIER = Float.parseFloat(prop.mustGet("NOM_CAPACITY_MULTIPLIER"));
+    MIN_K = Integer.parseInt(prop.mustGet("MIN_K"));
+    LAZY_COMPRESSION = Boolean.parseBoolean(prop.mustGet("LAZY_COMPRESSION"));
     //criterion = InequalitySearch.valueOf(prop.mustGet("Criterion"));
     String reqDebugLevel = prop.get("ReqDebugLevel");
     String reqDebugFmt = prop.get("ReqDebugFmt");
@@ -177,10 +190,11 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   }
 
   void configureSketch() {
-    final ReqSketchBuilder bldr = ReqSketch.builder();
+    /*final ReqSketchBuilder bldr = ReqSketch.builder();
     bldr.setK(K).setHighRankAccuracy(hra);
-    if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
-    sk = bldr.build();
+    if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }*/
+    sk = new ReqSketch(K, hra, null, (byte)INIT_NUMBER_OF_SECTIONS, MIN_K, NOM_CAPACITY_MULTIPLIER, LAZY_COMPRESSION);
+    //sk = bldr.build();
     sk.setLessThanOrEqual(ltEq);
   }
 
@@ -216,6 +230,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
   void doStreamLength(final int streamLength) {
     job.println(LS + "Stream Length: " + streamLength );
+    job.println(LS + "param k: " + K );
     job.printfData(sFmt, (Object[])columnLabels);
     //build the stream
     stream = streamMaker.makeStream(streamLength, pattern, offset);
