@@ -20,9 +20,9 @@
 package org.apache.datasketches.characterization.quantiles;
 
 import static java.lang.Math.round;
-import static org.apache.datasketches.ExponentiallySpacedPoints.expSpacedFloats;
+import static org.apache.datasketches.ExponentiallySpacedPoints.expSpaced;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
-import static org.apache.datasketches.Util.evenlySpacedFloats;
+import static org.apache.datasketches.Util.evenlySpaced;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
 import org.apache.datasketches.Job;
@@ -252,17 +252,17 @@ public class ReqSketchAccuracyProfile implements JobProfile {
       endIdx = hra ? streamLength - 1 : subStreamLen - 1;
     }
 
-    //generates PP indices in [startIdx, endIdx] inclusive, inclusive
-    final float[] temp = evenlySpaced
-        ? evenlySpacedFloats(startIdx, endIdx, numPlotPoints)
-        : expSpacedFloats(startIdx, endIdx, numPlotPoints, exponent, hra);
+    //generates PP indices in [startIdx, endIdx] inclusive, inclusive // PV 2020-01-07: using double so that there's enough precision even for large stream lengths
+    final double[] temp = evenlySpaced 
+        ? evenlySpaced(startIdx, endIdx, numPlotPoints)
+        : expSpaced(startIdx, endIdx, numPlotPoints, exponent, hra);
 
     sortedPPIndices = new int[numPlotPoints];
     sortedPPAbsRanks = new int[numPlotPoints];
     sortedPPValues = new float[numPlotPoints];
 
     for (int pp = 0; pp < numPlotPoints; pp++) {
-      final int idx = Math.round(temp[pp]);
+      final int idx = (int)Math.round(temp[pp]);
       sortedPPIndices[pp] = idx;
       sortedPPAbsRanks[pp] = sortedAbsRanks[idx];
       sortedPPValues[pp] = sortedStream[idx];
