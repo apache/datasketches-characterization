@@ -20,7 +20,7 @@
 package org.apache.datasketches.characterization.quantiles;
 
 import static java.lang.Math.round;
-import static org.apache.datasketches.ExponentiallySpacedPoints.expSpaced;
+import static org.apache.datasketches.SpacedPoints.expSpaced;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.evenlySpaced;
 import static org.apache.datasketches.Util.pwr2LawNext;
