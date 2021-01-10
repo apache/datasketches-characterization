@@ -21,4 +21,4 @@
  * @author Lee Rhodes
  */
 
-package org.apache.datasketches.characterization.req;
+package org.apache.datasketches.req;

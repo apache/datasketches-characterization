@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.req;
 
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.evenlySpacedFloats;
@@ -25,13 +25,12 @@ import static org.apache.datasketches.Util.evenlySpacedFloats;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.characterization.quantiles.StreamMaker;
 import org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern;
+import org.apache.datasketches.characterization.quantiles.TrueRanks;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
-import org.apache.datasketches.req.ReqDebugImpl;
-import org.apache.datasketches.req.ReqSketch;
-import org.apache.datasketches.req.ReqSketchBuilder;
 
 /**
  * @author Lee Rhodes
