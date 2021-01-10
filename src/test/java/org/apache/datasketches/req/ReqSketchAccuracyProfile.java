@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.req;
 
 import static java.lang.Math.round;
-import static org.apache.datasketches.SpacedPoints.expSpaced;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
+import static org.apache.datasketches.SpacedPoints.expSpaced;
 import static org.apache.datasketches.Util.evenlySpaced;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
@@ -30,14 +30,13 @@ import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.characterization.Shuffle;
+import org.apache.datasketches.characterization.quantiles.StreamMaker;
 import org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern;
+import org.apache.datasketches.characterization.quantiles.TrueRanks;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
-import org.apache.datasketches.req.ReqDebugImpl;
-import org.apache.datasketches.req.ReqSketch;
-import org.apache.datasketches.req.ReqSketchBuilder;
 
 /**
  * @author Lee Rhodes
@@ -238,7 +237,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     }
 
     //generates PP indices in [startIdx, endIdx] inclusive, inclusive // PV 2020-01-07: using double so that there's enough precision even for large stream lengths
-    final double[] temp = evenlySpaced 
+    final double[] temp = evenlySpaced
         ? evenlySpaced(startIdx, endIdx, numPlotPoints)
         : expSpaced(startIdx, endIdx, numPlotPoints, exponent, hra);
 

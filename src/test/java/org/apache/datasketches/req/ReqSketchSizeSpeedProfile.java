@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.req;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
@@ -26,8 +26,6 @@ import static org.apache.datasketches.Util.pwr2LawNext;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
-import org.apache.datasketches.req.ReqSketch;
-import org.apache.datasketches.req.ReqSketchBuilder;
 
 /**
  * @author Lee Rhodes
