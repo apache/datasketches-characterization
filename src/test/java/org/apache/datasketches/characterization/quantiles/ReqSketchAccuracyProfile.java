@@ -20,12 +20,11 @@
 package org.apache.datasketches.characterization.quantiles;
 
 import static java.lang.Math.round;
-import static org.apache.datasketches.ExponentiallySpacedPoints.expSpacedFloats;
+import static org.apache.datasketches.SpacedPoints.expSpaced;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
-import static org.apache.datasketches.Util.evenlySpacedFloats;
+import static org.apache.datasketches.Util.evenlySpaced;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
-import org.apache.datasketches.Criteria;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
@@ -74,8 +73,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   //Target sketch configuration & error analysis
   private int K;
   private boolean hra; //high rank accuracy
-  private boolean compatible;
-  private Criteria criterion;
+  private boolean ltEq;
   private org.apache.datasketches.req.ReqDebugImpl reqDebugImpl = null;
 
   //DERIVED globals
@@ -97,6 +95,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private float[] sortedPPValues;
   private int[] sortedPPIndices;
   private int[] sortedPPAbsRanks;
+  int sumAllocCounts = 0;
 
   private final String[] columnLabels =
     {"nPP", "Value", "Rank",
@@ -151,8 +150,8 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     //Target sketch config
     K = Integer.parseInt(prop.mustGet("K"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
-    compatible = Boolean.parseBoolean(prop.mustGet("Compatible"));
-    criterion = Criteria.valueOf(prop.mustGet("Criterion"));
+    ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
+    //criterion = InequalitySearch.valueOf(prop.mustGet("Criterion"));
     String reqDebugLevel = prop.get("ReqDebugLevel");
     String reqDebugFmt = prop.get("ReqDebugFmt");
     if (reqDebugLevel != null) {
@@ -179,10 +178,10 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
   void configureSketch() {
     final ReqSketchBuilder bldr = ReqSketch.builder();
-    bldr.setK(K).setHighRankAccuracy(hra).setCompatible(compatible);
+    bldr.setK(K).setHighRankAccuracy(hra);
     if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
     sk = bldr.build();
-    sk.setCriterion(criterion);
+    sk.setLessThanOrEqual(ltEq);
   }
 
   private void doStreamLengths() {
@@ -221,7 +220,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     //build the stream
     stream = streamMaker.makeStream(streamLength, pattern, offset);
     //compute true ranks
-    if (criterion == Criteria.LE) {
+    if (ltEq) {
       trueRanks = new TrueRanks(stream, true);
     } else {
       trueRanks = new TrueRanks(stream, false);
@@ -238,17 +237,17 @@ public class ReqSketchAccuracyProfile implements JobProfile {
       endIdx = hra ? streamLength - 1 : subStreamLen - 1;
     }
 
-    //generates PP indices in [startIdx, endIdx] inclusive, inclusive
-    final float[] temp = evenlySpaced
-        ? evenlySpacedFloats(startIdx, endIdx, numPlotPoints)
-        : expSpacedFloats(startIdx, endIdx, numPlotPoints, exponent, hra);
+    //generates PP indices in [startIdx, endIdx] inclusive, inclusive // PV 2020-01-07: using double so that there's enough precision even for large stream lengths
+    final double[] temp = evenlySpaced 
+        ? evenlySpaced(startIdx, endIdx, numPlotPoints)
+        : expSpaced(startIdx, endIdx, numPlotPoints, exponent, hra);
 
     sortedPPIndices = new int[numPlotPoints];
     sortedPPAbsRanks = new int[numPlotPoints];
     sortedPPValues = new float[numPlotPoints];
 
     for (int pp = 0; pp < numPlotPoints; pp++) {
-      final int idx = Math.round(temp[pp]);
+      final int idx = (int)Math.round(temp[pp]);
       sortedPPIndices[pp] = idx;
       sortedPPAbsRanks[pp] = sortedAbsRanks[idx];
       sortedPPValues[pp] = sortedStream[idx];
@@ -257,6 +256,8 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     //Do numTrials for all plotpoints
     for (int t = 0; t < numTrials; t++) {
       doTrial();
+
+      //sumAllocCounts = sk.
     }
 
     //at this point each of the errQSkArr sketches has a distribution of error from numTrials
