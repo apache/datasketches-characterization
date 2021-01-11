@@ -69,6 +69,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private double exponent;
   private int sd;
   private double rankRange;
+  private double metricsRankRange;
 
   //Target sketch configuration & error analysis
   private int K;
@@ -159,6 +160,8 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
     ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
     
+
+    metricsRankRange = Double.parseDouble(prop.mustGet("MetricsRankRange"));
     
     INIT_NUMBER_OF_SECTIONS = Integer.parseInt(prop.mustGet("INIT_NUMBER_OF_SECTIONS"));
     NOM_CAPACITY_MULTIPLIER = Float.parseFloat(prop.mustGet("NOM_CAPACITY_MULTIPLIER"));
@@ -274,7 +277,13 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
       //sumAllocCounts = sk.
     }
-
+    
+    // for special metrics for capturing accuracy per byte
+    double sumRelStdDev = 0;
+    int numRelStdDev = 0;
+    double sumAddStdDev = 0;
+    int numAddStdDev = 0;
+    
     //at this point each of the errQSkArr sketches has a distribution of error from numTrials
     for (int pp = 0 ; pp < numPlotPoints; pp++) {
       final double v = sortedPPValues[pp];
@@ -291,10 +300,29 @@ public class ReqSketchAccuracyProfile implements JobProfile {
       job.printfData(fFmt, relPP, v, tr,
           errQ[0], errQ[1], errQ[2], errQ[3], errQ[4], errQ[5], errQ[6],
           rlb, rub, uErrCnt);
+
+      if (relPP > 0 && relPP < 1
+    	      && ((hra && relPP < metricsRankRange) || (!hra && relPP >= 1 - metricsRankRange))) {
+    	  sumAddStdDev += errQ[4];
+    	  numAddStdDev++;
+      }
+      if (relPP > 0 && relPP < 1
+    		  && ((!hra && relPP < metricsRankRange) || (hra && relPP >= 1 - metricsRankRange))) {
+        sumRelStdDev += errQ[4] / (hra ? 1 - relPP : relPP);
+    	  numRelStdDev++;
+      }
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
       errHllSkArr[pp].reset(); //reset the errHllSkArr for next streamLength
     }
-    job.println(LS + "Serialization Bytes: " + sk.getSerializationBytes());
+    int serBytes = sk.getSerializationBytes();
+
+    // special metrics for capturing accuracy per byte
+    double avgRelStdDevTimesSize = serBytes * sumRelStdDev / numRelStdDev;
+    double avgAddStdDevTimesSize = serBytes * sumAddStdDev / numAddStdDev;
+    job.println(LS + "Avg. relative std. dev. times size: " + avgRelStdDevTimesSize);
+    job.println(     "Avg. additive std. dev. times size: " + avgAddStdDevTimesSize);
+
+    job.println(LS + "Serialization Bytes: " + serBytes);
     job.println(sk.viewCompactorDetail("%5.0f", false));
   }
 
