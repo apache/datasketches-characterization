@@ -53,7 +53,7 @@ void req_merge_timing_profile<T>::run() {
   size_t max_len = 1 << lg_max_stream_len;
 
   std::vector<T> values(max_len);
-  std::unique_ptr<req_sketch<T, hra>> sketches[num_sketches];
+  std::unique_ptr<req_sketch<T>> sketches[num_sketches];
 
   size_t stream_length(1 << lg_min_stream_len);
   while (stream_length <= (1 << lg_max_stream_len)) {
@@ -68,9 +68,9 @@ void req_merge_timing_profile<T>::run() {
 
       auto start_build(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches; i++) {
-        sketches[i] = std::unique_ptr<req_sketch<T, hra>>(new req_sketch<T, hra>(k));
+        sketches[i] = std::unique_ptr<req_sketch<T>>(new req_sketch<T>(k, hra));
       }
-      req_sketch<T, hra> merge_sketch(k);
+      req_sketch<T> merge_sketch(k, hra);
       auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 

@@ -81,7 +81,7 @@ void req_sketch_timing_profile<T>::run() {
       for (size_t i = 0; i < stream_length; i++) values[i] = sample();
 
       auto start_build(std::chrono::high_resolution_clock::now());
-      req_sketch<T, hra> sketch(k);
+      req_sketch<T> sketch(k, hra);
       auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
@@ -118,7 +118,7 @@ void req_sketch_timing_profile<T>::run() {
       serialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_serialize - start_serialize);
 
       auto start_deserialize(std::chrono::high_resolution_clock::now());
-      auto deserialized_sketch = req_sketch<T, hra>::deserialize(bytes.data(), bytes.size());
+      auto deserialized_sketch = req_sketch<T>::deserialize(bytes.data(), bytes.size());
       auto finish_deserialize(std::chrono::high_resolution_clock::now());
       deserialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_deserialize - start_deserialize);
 
