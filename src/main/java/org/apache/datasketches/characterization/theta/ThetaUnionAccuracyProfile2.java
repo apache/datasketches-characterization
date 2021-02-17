@@ -91,7 +91,7 @@ public class ThetaUnionAccuracyProfile2 extends BaseAccuracyProfile {
         sketch.update(++vIn);
       }
       if (rebuild) { sketch.rebuild(); } //Resizes down to k. Only useful with QSSketch
-      union.update(sketch);
+      union.union(sketch);
       lastUniques += delta;
       q.update(union.getResult().getEstimate());
     }

@@ -34,17 +34,9 @@ The code here is shared "as-is" and does not pretend to have the same level of q
 primary repositories (java, pig, hive and vector).  This code is not archived to Maven Central 
 and will change from time-to-time as we grow these characterization suites.
 
-## Documentation
-
-### [DataSketches Library Website](https://datasketches.apache.org/)
-
-### [Java Core Overview](https://datasketches.apache.org/docs/TheChallenge.html)
-
-### [Java Core Javadocs](https://datasketches.apache.org/api/java/snapshot/apidocs/index.html)
-
 ## Build / Run Instructions (Java)
 
-### JDK8 is required to compile
+### JDK8 with HotSpot is required to compile
 This Java classes of this DataSketches component must be compiled using JDK 8.
 
 ### Recommended Build Tool

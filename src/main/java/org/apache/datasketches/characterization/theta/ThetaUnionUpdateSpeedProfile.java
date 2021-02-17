@@ -71,7 +71,7 @@ public class ThetaUnionUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     final long startUpdateTime_nS = System.nanoTime();
 
     for (int i = numSketches; i-- > 0;) {
-      union.update(compactSketches[i]);
+      union.union(compactSketches[i]);
     }
 
     final long updateTime_nS = System.nanoTime() - startUpdateTime_nS;
