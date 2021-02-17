@@ -37,7 +37,7 @@ public class StreamMaker {
   static final String LS = System.getProperty("line.separator");
   static String TAB = "\t";
   public enum Pattern { Sorted, Reversed, Zoomin, Zoomout, Random, Sqrt, FlipFlop,
-    Clustered, ClusteredZoomin }
+    Clustered, ClusteredZoomin, ZoominSqrt }
   public float min = 0;
   public float max = 0;
 
@@ -92,6 +92,18 @@ public class StreamMaker {
           initialSkip += 1;
           initialItem += initialSkip;
         }
+        break;
+      }
+      case ZoominSqrt: {
+        int t = (int)Math.floor(Math.sqrt(n));
+        int i = 0;
+        for (int j = 0; j < t - 1; j++) {
+          arr[i] = j + offset; i++;
+          for (int k = 0; k < t; k++) {
+            arr[i] = (t - j) * t - k - 1 + offset; i++;
+          }
+        }
+        arr[i] = t - 1 + offset;
         break;
       }
       case FlipFlop: {
