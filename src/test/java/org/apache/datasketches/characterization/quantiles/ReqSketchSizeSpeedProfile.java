@@ -53,7 +53,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
   private boolean hra; //high rank accuracy
   private boolean ltEq;
 
-  
+
   // TEMPORARY
   int INIT_NUMBER_OF_SECTIONS;
   float NOM_CAPACITY_MULTIPLIER;
@@ -83,12 +83,6 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     reqK = Integer.parseInt(prop.mustGet("ReqK"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
     ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
-    
-    
-    INIT_NUMBER_OF_SECTIONS = Integer.parseInt(prop.mustGet("INIT_NUMBER_OF_SECTIONS"));
-    NOM_CAPACITY_MULTIPLIER = Float.parseFloat(prop.mustGet("NOM_CAPACITY_MULTIPLIER"));
-    MIN_K = Integer.parseInt(prop.mustGet("MIN_K"));
-    LAZY_COMPRESSION = Boolean.parseBoolean(prop.mustGet("LAZY_COMPRESSION"));
   }
 
   void configureCommon() {
@@ -96,12 +90,12 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
   }
 
   void configureSketch() {
-    /*final ReqSketchBuilder bldr = ReqSketch.builder();
-    bldr.setK(reqK).setHighRankAccuracy(hra);*/
-    //reqSk = bldr.build();
-    reqSk = new ReqSketch(reqK, hra, null, (byte)INIT_NUMBER_OF_SECTIONS, MIN_K, NOM_CAPACITY_MULTIPLIER, LAZY_COMPRESSION);
+    final ReqSketchBuilder bldr = ReqSketch.builder();
+    bldr.setK(reqK).setHighRankAccuracy(hra);
+    reqSk = bldr.build();
+    //reqSk = new ReqSketch(reqK, hra, null, (byte)INIT_NUMBER_OF_SECTIONS, MIN_K, NOM_CAPACITY_MULTIPLIER, LAZY_COMPRESSION);
     reqSk.setLessThanOrEqual(ltEq);
-    
+
   }
 
 //JobProfile interface

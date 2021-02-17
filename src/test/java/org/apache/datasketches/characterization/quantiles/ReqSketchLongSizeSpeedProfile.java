@@ -21,9 +21,8 @@ package org.apache.datasketches.characterization.quantiles;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2LawNext;
+//import static org.apache.datasketches.Util.pwr2LawNext;
 
-import org.apache.datasketches.Criteria;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
@@ -46,19 +45,13 @@ public class ReqSketchLongSizeSpeedProfile implements JobProfile {
   //For computing the different stream lengths
   private int lgMinSL;
   private int lgMaxSL;
-  
-  private double slope;
 
-  // TEMPORARY
-  int INIT_NUMBER_OF_SECTIONS;
-  float NOM_CAPACITY_MULTIPLIER;
-  int MIN_K;
-  boolean LAZY_COMPRESSION;
+  private double slope;
 
   //Target sketch configuration & error analysis
   private int reqK;
   private boolean hra; //high rank accuracy
-  private Criteria criterion;
+  private boolean ltEq;
 
   //DERIVED & GLOBALS
   private ReqSketch reqSk;
@@ -81,12 +74,8 @@ public class ReqSketchLongSizeSpeedProfile implements JobProfile {
     //Target sketch config
     reqK = Integer.parseInt(prop.mustGet("ReqK"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
-    criterion = Criteria.valueOf(prop.mustGet("Criterion"));
-    
-    INIT_NUMBER_OF_SECTIONS = Integer.parseInt(prop.mustGet("INIT_NUMBER_OF_SECTIONS"));
-    NOM_CAPACITY_MULTIPLIER = Float.parseFloat(prop.mustGet("NOM_CAPACITY_MULTIPLIER"));
-    MIN_K = Integer.parseInt(prop.mustGet("MIN_K"));
-    LAZY_COMPRESSION = Boolean.parseBoolean(prop.mustGet("LAZY_COMPRESSION"));
+    ltEq = prop.mustGet("Criterion").equals("LE") ? true : false;
+
   }
 
   void configureCommon() {
@@ -94,11 +83,10 @@ public class ReqSketchLongSizeSpeedProfile implements JobProfile {
   }
 
   void configureSketch() {
-    //final ReqSketchBuilder bldr = ReqSketch.builder();
-    //bldr.setK(reqK).setHighRankAccuracy(hra);
-    //reqSk = bldr.build();
-    reqSk = new ReqSketch(reqK, hra, null, (byte)INIT_NUMBER_OF_SECTIONS, MIN_K, NOM_CAPACITY_MULTIPLIER, LAZY_COMPRESSION);
-    //reqSk.setCriterion(criterion);
+    final ReqSketchBuilder bldr = ReqSketch.builder();
+    bldr.setK(reqK).setHighRankAccuracy(hra);
+    reqSk = bldr.build();
+    reqSk.setLessThanOrEqual(ltEq);
   }
 
 //JobProfile interface

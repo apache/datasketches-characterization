@@ -20,8 +20,8 @@
 package org.apache.datasketches.characterization.quantiles;
 
 import static java.lang.Math.round;
-import static org.apache.datasketches.ExponentiallySpacedPoints.expSpaced;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
+import static org.apache.datasketches.SpacedPoints.expSpaced;
 import static org.apache.datasketches.Util.evenlySpaced;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
@@ -77,7 +77,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private boolean ltEq;
   private org.apache.datasketches.req.ReqDebugImpl reqDebugImpl = null;
 
-  
+
   // TEMPORARY
   int INIT_NUMBER_OF_SECTIONS;
   float NOM_CAPACITY_MULTIPLIER;
@@ -159,10 +159,10 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     K = Integer.parseInt(prop.mustGet("K"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
     ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
-    
+
 
     metricsRankRange = Double.parseDouble(prop.mustGet("MetricsRankRange"));
-    
+
     INIT_NUMBER_OF_SECTIONS = Integer.parseInt(prop.mustGet("INIT_NUMBER_OF_SECTIONS"));
     NOM_CAPACITY_MULTIPLIER = Float.parseFloat(prop.mustGet("NOM_CAPACITY_MULTIPLIER"));
     MIN_K = Integer.parseInt(prop.mustGet("MIN_K"));
@@ -193,11 +193,10 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   }
 
   void configureSketch() {
-    /*final ReqSketchBuilder bldr = ReqSketch.builder();
+    final ReqSketchBuilder bldr = ReqSketch.builder();
     bldr.setK(K).setHighRankAccuracy(hra);
-    if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }*/
-    sk = new ReqSketch(K, hra, null, (byte)INIT_NUMBER_OF_SECTIONS, MIN_K, NOM_CAPACITY_MULTIPLIER, LAZY_COMPRESSION);
-    //sk = bldr.build();
+    if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
+    sk = bldr.build();
     sk.setLessThanOrEqual(ltEq);
   }
 
@@ -256,7 +255,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     }
 
     //generates PP indices in [startIdx, endIdx] inclusive, inclusive // PV 2020-01-07: using double so that there's enough precision even for large stream lengths
-    final double[] temp = evenlySpaced 
+    final double[] temp = evenlySpaced
         ? evenlySpaced(startIdx, endIdx, numPlotPoints)
         : expSpaced(startIdx, endIdx, numPlotPoints, exponent, hra);
 
@@ -277,13 +276,13 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
       //sumAllocCounts = sk.
     }
-    
+
     // for special metrics for capturing accuracy per byte
     double sumRelStdDev = 0;
     int numRelStdDev = 0;
     double sumAddStdDev = 0;
     int numAddStdDev = 0;
-    
+
     //at this point each of the errQSkArr sketches has a distribution of error from numTrials
     for (int pp = 0 ; pp < numPlotPoints; pp++) {
       final double v = sortedPPValues[pp];
@@ -302,12 +301,12 @@ public class ReqSketchAccuracyProfile implements JobProfile {
           rlb, rub, uErrCnt);
 
       if (relPP > 0 && relPP < 1
-    	      && ((hra && relPP < metricsRankRange) || (!hra && relPP >= 1 - metricsRankRange))) {
+    	      && (hra && relPP < metricsRankRange || !hra && relPP >= 1 - metricsRankRange)) {
     	  sumAddStdDev += errQ[4];
     	  numAddStdDev++;
       }
       if (relPP > 0 && relPP < 1
-    		  && ((!hra && relPP < metricsRankRange) || (hra && relPP >= 1 - metricsRankRange))) {
+    		  && (!hra && relPP < metricsRankRange || hra && relPP >= 1 - metricsRankRange)) {
         sumRelStdDev += errQ[4] / (hra ? 1 - relPP : relPP);
     	  numRelStdDev++;
       }
