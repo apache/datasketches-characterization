@@ -40,11 +40,6 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
     doTrials();
   }
 
-  @Override
-  public void println(final Object o) {
-    job.println(o.toString());
-  }
-
   private void doTrials() {
     final int lgMin = Integer.parseInt(job.getProperties().mustGet("lgMin"));
     final int lgMax = Integer.parseInt(job.getProperties().mustGet("lgMax"));
@@ -69,7 +64,7 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
         final double maxRankErrorInTrial = doTrial();
         rankErrorSketch.update(maxRankErrorInTrial);
       }
-      println(streamLength + "\t"
+      job.println(streamLength + "\t"
           + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
       streamLength = pwr2LawNext(ppo, streamLength);
     }

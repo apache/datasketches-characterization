@@ -40,11 +40,6 @@ public class HllMergeAccuracyProfile implements JobProfile {
   }
 
   @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
-
-  @Override
   public void shutdown() { }
 
   @Override
@@ -76,13 +71,13 @@ public class HllMergeAccuracyProfile implements JobProfile {
       sumOfSquaredDeviationsFromTrueCount += (estimatedCount - trueCount) * (estimatedCount - trueCount);
     }
     final double meanEstimate = sumEstimates / numTrials;
-    final double meanRelativeError = (meanEstimate / trueCount) - 1;
+    final double meanRelativeError = meanEstimate / trueCount - 1;
     final double relativeStandardError
       = Math.sqrt(sumOfSquaredDeviationsFromTrueCount / numTrials) / trueCount;
-    println("True count: " + trueCount);
-    println("Mean estimate: " + meanEstimate);
-    println("Mean Relative Error: " + meanRelativeError);
-    println("Relative Standard Error: " + relativeStandardError);
+    job.println("True count: " + trueCount);
+    job.println("Mean estimate: " + meanEstimate);
+    job.println("Mean Relative Error: " + meanRelativeError);
+    job.println("Relative Standard Error: " + relativeStandardError);
   }
 
 }

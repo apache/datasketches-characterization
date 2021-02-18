@@ -102,7 +102,7 @@ public class QuantilesStreamAProfile implements JobProfile {
     checkIfZipped(srcFileName);
 
     //Read
-    println("Input Lines Processed: ");
+    job.println("Input Lines Processed: ");
     final LineReader lineReader = new LineReader(srcFileName);
 
     final long startReadTime_nS = System.nanoTime();
@@ -110,7 +110,7 @@ public class QuantilesStreamAProfile implements JobProfile {
     final long readTime_nS = System.nanoTime() - startReadTime_nS;
 
     //print sketch stats
-    println(sketch.toString());
+    job.println(sketch.toString());
 
     //CDF
     final double[] fracRanks = buildRanksArr(numRanks);
@@ -118,13 +118,13 @@ public class QuantilesStreamAProfile implements JobProfile {
     final double[] quantiles = sketch.getQuantiles(fracRanks);
     final long cdfTime_nS = System.nanoTime() - startCdfTime_nS;
 
-    println("CDF");
-    println(String.format(cdfHdr, "Index", "Rank", "Quantile"));
+    job.println("CDF");
+    job.println(String.format(cdfHdr, "Index", "Rank", "Quantile"));
     for (int i = 0; i < numRanks; i++) {
       final String s = String.format(cdfFmt, i, fracRanks[i], (int)quantiles[i]);
-      println(s);
+      job.println(s);
     }
-    println("");
+    job.println("");
 
     //PMF
     minV = sketch.getMinValue();
@@ -142,22 +142,22 @@ public class QuantilesStreamAProfile implements JobProfile {
   }
 
   private void printPMF() {
-    println("PMF");
-    println(String.format(pmfHdr, "Index", "Quantile", "Mass"));
+    job.println("PMF");
+    job.println(String.format(pmfHdr, "Index", "Quantile", "Mass"));
     for (int i = 0; i < numSP; i++) {
-      println(String.format(pmfFmt, i, spArr[i], spProbArr[i] * numItems));
+      job.println(String.format(pmfFmt, i, spArr[i], spProbArr[i] * numItems));
     }
   }
 
   private void printTimes(final long readTime_nS, final long cdfTime_nS, final long pmfTime_nS) {
     final double readTime_S = readTime_nS / 1E9;
-    println("");
-    println(String.format("ReadTime_Sec  :\t%10.3f", readTime_S));
-    println(String.format("ReadRate/Sec  :\t%,10.0f", numItems / readTime_S));
-    println(String.format("CdfTime_mSec  :\t%10.3f", cdfTime_nS / 1E6));
-    println(String.format("Cdf/Point_nSec:\t%10.3f", (double)cdfTime_nS / numRanks));
-    println(String.format("PmfTime_mSec  :\t%10.3f", pmfTime_nS / 1E6));
-    println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / numSP));
+    job.println("");
+    job.println(String.format("ReadTime_Sec  :\t%10.3f", readTime_S));
+    job.println(String.format("ReadRate/Sec  :\t%,10.0f", numItems / readTime_S));
+    job.println(String.format("CdfTime_mSec  :\t%10.3f", cdfTime_nS / 1E6));
+    job.println(String.format("Cdf/Point_nSec:\t%10.3f", (double)cdfTime_nS / numRanks));
+    job.println(String.format("PmfTime_mSec  :\t%10.3f", pmfTime_nS / 1E6));
+    job.println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / numSP));
   }
 
   /**
@@ -168,7 +168,7 @@ public class QuantilesStreamAProfile implements JobProfile {
   private static double[] buildRanksArr(final int numRanks) {
     final int numRM1 = numRanks - 1;
     final double[] fractions = new double[numRanks];
-    final double delta = 1.0 / (numRM1);
+    final double delta = 1.0 / numRM1;
     double d = 0.0;
     for (int i = 0; i < numRanks; i++) {
       fractions[i] = d;
@@ -187,12 +187,12 @@ public class QuantilesStreamAProfile implements JobProfile {
         throw new IllegalArgumentException("Neither file nor zipFile exists.");
       }
       final String parent = zipFile.getParent();
-      println("Unzipping data file: " + srcZipFile + "...");
+      job.println("Unzipping data file: " + srcZipFile + "...");
       UnzipFiles.unzip(srcZipFile, parent);
       if (!zipFile.exists()) {
         throw new IllegalArgumentException("Unsuccessful Unzip.");
       }
-      println(srcZipFile + " unzipped!");
+      job.println(srcZipFile + " unzipped!");
       dataWasZipped = true;
     }
   }
@@ -204,19 +204,14 @@ public class QuantilesStreamAProfile implements JobProfile {
   @Override
   public void cleanup() {}
 
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
-
   // Callback
   class Process implements ProcessLine {
     int n = 0;
 
     @Override
     public void process(final String strArr0, final int lineNo) {
-      if ((lineNo % reportInterval) == 0) {
-        println("" + lineNo);
+      if (lineNo % reportInterval == 0) {
+        job.println("" + lineNo);
       }
       final long v = Long.parseLong(strArr0);
       sketch.update(v);

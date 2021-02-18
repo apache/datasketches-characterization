@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.uniquecount;
 
-import static org.apache.datasketches.GaussianRanks.FRACTIONS_3SD;
+import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.milliSecToString;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
@@ -81,10 +81,6 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
   @Override
   public void cleanup() {}
 
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
   //end JobProfile
 
   public abstract void configure();
@@ -138,27 +134,27 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
         job.println(sb.toString());
       }
 
-      println(prop.extractKvPairs());
-      println("Cum Trials             : " + lastT);
-      println("Cum Updates            : " + vIn);
+      job.println(prop.extractKvPairs());
+      job.println("Cum Trials             : " + lastT);
+      job.println("Cum Updates            : " + vIn);
       final long currentTime_mS = System.currentTimeMillis();
       final long cumTime_mS = currentTime_mS - job.getStartTime();
-      println("Cum Time               : " + milliSecToString(cumTime_mS));
+      job.println("Cum Time               : " + milliSecToString(cumTime_mS));
       final double timePerTrial_mS = cumTime_mS * 1.0 / lastT;
       final double avgUpdateTime_ns = timePerTrial_mS * 1e6 / maxU;
-      println("Time Per Trial, mSec   : " + timePerTrial_mS);
-      println("Avg Update Time, nSec  : " + avgUpdateTime_ns);
-      println("Date Time              : "
+      job.println("Time Per Trial, mSec   : " + timePerTrial_mS);
+      job.println("Avg Update Time, nSec  : " + avgUpdateTime_ns);
+      job.println("Date Time              : "
           + job.getReadableDateString(currentTime_mS));
 
       final long timeToComplete_mS = (long)(timePerTrial_mS * (maxT - lastT));
-      println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
-      println("Est Time at Completion : "
+      job.println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
+      job.println("Est Time at Completion : "
           + job.getReadableDateString(timeToComplete_mS + currentTime_mS));
-      println("");
+      job.println("");
       if (postPMFs) {
         for (int i = 0; i < qArr.length; i++) {
-          println(outputPMF(qArr[i]));
+          job.println(outputPMF(qArr[i]));
         }
       }
       job.flush();
@@ -186,7 +182,7 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
       sb.append(cumTrials).append(TAB);
 
       //Quantiles
-      final double[] quants = q.qskEst.getQuantiles(FRACTIONS_3SD);
+      final double[] quants = q.qskEst.getQuantiles(GAUSSIANS_3SD);
       final int len = quants.length;
       for (int i = 0; i < len; i++) {
         sb.append(quants[i] / uniques - 1.0).append(TAB);
@@ -232,7 +228,7 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
    */
   private static String outputPMF(final BoundsAccuracyStats q) {
     final DoublesSketch qSk = q.qskEst;
-    final double[] splitPoints = qSk.getQuantiles(FRACTIONS_3SD); //1:1
+    final double[] splitPoints = qSk.getQuantiles(GAUSSIANS_3SD); //1:1
     final double[] reducedSp = reduceSplitPoints(splitPoints);
     final double[] pmfArr = qSk.getPMF(reducedSp); //pmfArr is one larger
     final long trials = qSk.getN();

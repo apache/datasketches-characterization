@@ -41,11 +41,6 @@ public abstract class BaseFrequenciesSpeedProfile implements JobProfile {
   @Override
   public void cleanup() {}
 
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
-
   private void doTrials() {
     final int lgMinStreamLen = Integer.parseInt(job.getProperties().mustGet("lgMin"));
     final int lgMaxStreamLen = Integer.parseInt(job.getProperties().mustGet("lgMax"));
@@ -58,7 +53,7 @@ public abstract class BaseFrequenciesSpeedProfile implements JobProfile {
 
     configure(job.getProperties());
 
-    println(getHeader());
+    job.println(getHeader());
 
     int streamLength = minStreamLen;
     while (streamLength <= maxStreamLen) {
@@ -69,7 +64,7 @@ public abstract class BaseFrequenciesSpeedProfile implements JobProfile {
         prepareTrial(streamLength);
         doTrial();
       }
-      println(getStats(streamLength, numTrials));
+      job.println(getStats(streamLength, numTrials));
       streamLength = pwr2LawNext(pointsPerOctave, streamLength);
     }
   }
@@ -90,7 +85,7 @@ public abstract class BaseFrequenciesSpeedProfile implements JobProfile {
       final int lgMinTrials, final int lgMaxTrials) {
     final double slope = (double) (lgMaxTrials - lgMinTrials) / (lgMinX - lgMaxX);
     final double lgX = Math.log(x) / JobProfile.LN2;
-    final double lgTrials = (slope * lgX) + lgMaxTrials;
+    final double lgTrials = slope * lgX + lgMaxTrials;
     return (int) Math.pow(2, lgTrials);
   }
 

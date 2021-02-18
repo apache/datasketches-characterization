@@ -78,11 +78,6 @@ public abstract class BaseSerDeProfile implements JobProfile {
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
   //end JobProfile
 
   /**
@@ -105,10 +100,10 @@ public abstract class BaseSerDeProfile implements JobProfile {
     final long[] rawStats = new long[numStats];
     final long[] sumStats = new long[numStats];
     final double[] meanStats = new double[numStats];
-    println(getHeader());
+    job.println(getHeader());
 
     while (lastU < maxU) { //for each U point on X-axis, OR one row on output
-      final int nextU = (lastU == 0) ? minU : pwr2LawNext(uPPO, lastU);
+      final int nextU = lastU == 0 ? minU : pwr2LawNext(uPPO, lastU);
       lastU = nextU;
       final int trials = getNumTrials(nextU);
 
@@ -125,7 +120,7 @@ public abstract class BaseSerDeProfile implements JobProfile {
         meanStats[i] = (double)sumStats[i] / trials;
       }
       process(meanStats, trials, nextU, dataStr);
-      println(dataStr.toString());
+      job.println(dataStr.toString());
     }
   }
 
@@ -143,14 +138,14 @@ public abstract class BaseSerDeProfile implements JobProfile {
     final int maxBpU = 1 << lgMaxBpU;
     final int maxT = 1 << lgMaxT;
     final int minT = 1 << lgMinT;
-    if ((lgMinT == lgMaxT) || (curU <= (minBpU))) {
+    if (lgMinT == lgMaxT || curU <= minBpU) {
       return maxT;
     }
     if (curU >= maxBpU) {
       return minT;
     }
     final double lgCurU = log(curU) / LN2;
-    final double lgTrials = (slope * (lgCurU - lgMinBpU)) + lgMaxT;
+    final double lgTrials = slope * (lgCurU - lgMinBpU) + lgMaxT;
     return (int) pow(2.0, lgTrials);
   }
 

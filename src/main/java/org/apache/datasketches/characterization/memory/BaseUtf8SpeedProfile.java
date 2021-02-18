@@ -140,11 +140,6 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
   //end JobProfile
 
   abstract void configure();
@@ -154,12 +149,12 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
   abstract void close();
 
   private void doTrials() {
-    println(Point.getHeader()); //GG
+    job.println(Point.getHeader()); //GG
     final int maxX = 1 << lgMaxX;
     final int minX = 1 << lgMinX;
     int lastX = 0;
     while (lastX < maxX) { //do each plot point on the X-axis
-      final int nextX = (lastX == 0) ? minX : pwr2LawNext(xPPO, lastX);
+      final int nextX = lastX == 0 ? minX : pwr2LawNext(xPPO, lastX);
       lastX = nextX;
       final int trials = getNumTrials(nextX);
       //configure();
@@ -173,7 +168,7 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
         doTrial(stats); // a single trial encode
         point.update(stats);
       }
-      println(point.getRow()); //output summary of trail set at this X point //GG
+      job.println(point.getRow()); //output summary of trail set at this X point //GG
     }
   }
 
@@ -191,14 +186,14 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
     final int maxBpX = 1 << lgMaxBpX;
     final int maxT = 1 << lgMaxT;
     final int minT = 1 << lgMinT;
-    if ((lgMinT == lgMaxT) || (curX <= (minBpX))) {
+    if (lgMinT == lgMaxT || curX <= minBpX) {
       return maxT;
     }
     if (curX >= maxBpX) {
       return minT;
     }
     final double lgCurX = log(curX) / LN2;
-    final double lgTrials = (slope * (lgCurX - lgMinBpX)) + lgMaxT;
+    final double lgTrials = slope * (lgCurX - lgMinBpX) + lgMaxT;
     return (int) pow(2.0, lgTrials);
   }
 

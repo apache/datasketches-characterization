@@ -36,14 +36,15 @@ import java.util.SimpleTimeZone;
  * @author Lee Rhodes
  */
 public class Job {
-  private static final String LS = System.getProperty("line.separator");
+  static final String LS = System.getProperty("line.separator");
   private Properties prop;
-  //Output to File
+  //Output to Files
   private PrintWriter pw = null;
+  private PrintWriter pwData = null;
   //Date-Time
   private SimpleDateFormat fileSimpleDateFmt;  //used in the filename
   private SimpleDateFormat readableSimpleDateFmt; //for human readability
-  private GregorianCalendar gc;
+  private GregorianCalendar gCal;
   private long startTime_mS;
   private JobProfile profile;
   private final String profileName;
@@ -68,13 +69,12 @@ public class Job {
     profileName = profile.getClass().getSimpleName();
 
     setDateFormats();
-    pw = configurePrintWriter();
-    if (pw == null) {
-      throw new IllegalStateException("Could not configure PrintWriter.");
+    configurePrintWriters();
+    if (pw == null || pwData == null) {
+      throw new IllegalStateException("Could not configure PrintWriters.");
     }
 
     println("START JOB " + profileName );
-    println(prop.extractKvPairs(LS));
     flush(); //flush print buffer
 
     /***RUN THE PROFILE ****************/
@@ -83,13 +83,14 @@ public class Job {
     profile.start(this);
 
     final long testTime_mS = System.currentTimeMillis() - startTime_mS;
-    /*******************/
-
+    /***********************************/
+    println("PROPERTIES:");
+    println(prop.extractKvPairs(LS));
     println("Total Job Time        : " + milliSecToString(testTime_mS));
     println("END JOB " + profileName +  LS + LS);
     flush();
     pw.close();
-
+    pwData.close();
   }
 
   /**
@@ -98,8 +99,8 @@ public class Job {
    * @return the date string
    */
   public String getReadableDateString(final long timeMillisec) {
-    gc.setTimeInMillis(timeMillisec);
-    return readableSimpleDateFmt.format(gc.getTime());
+    gCal.setTimeInMillis(timeMillisec);
+    return readableSimpleDateFmt.format(gCal.getTime());
   }
 
   /**
@@ -119,6 +120,24 @@ public class Job {
   }
 
   /**
+   * Outputs a string to the configured PrintWriter and stdOut.
+   * @param obj The obj.toString() to print
+   */
+  public final void print(final Object obj) {
+    System.out.print(obj.toString());
+    pw.print(obj.toString());
+  }
+
+  /**
+   * Outputs a string to the configured PrintWriter for data and stdOut.
+   * @param obj The obj.toString() to print
+   */
+  public final void printData(final Object obj) {
+    System.out.print(obj.toString());
+    pwData.print(obj.toString());
+  }
+
+  /**
    * Outputs a line to the configured PrintWriter and stdOut.
    * @param obj The obj.toString() to print
    */
@@ -128,14 +147,48 @@ public class Job {
   }
 
   /**
-   * Flush any buffered output to the configured PrintWriter.
+   * Outputs a line to the configured PrintWriter for data and stdOut.
+   * @param obj The obj.toString() to print
+   */
+  public final void printlnData(final Object obj) {
+    System.out.println(obj.toString());
+    pwData.println(obj.toString());
+  }
+
+  /**
+   * Outputs a formatted set of arguments to PrintWriter and stdOut.
+   * @param format the format specificaton
+   * @param args the list of objects
+   */
+  public final void printf(final String format, final Object ...args) {
+    System.out.printf(format, args);
+    pw.printf(format, args);
+  }
+
+  /**
+   * Outputs a formatted set of arguments to PrintWriter for data and stdOut.
+   * @param format the format specificaton
+   * @param args the list of objects
+   */
+  public final void printfData(final String format, final Object ...args) {
+    System.out.printf(format, args);
+    pwData.printf(format, args);
+  }
+
+  /**
+   * Flush any buffered output to the configured PrintWriters.
    */
   public final void flush() {
     pw.flush();
+    pwData.flush();
   }
 
   public final PrintWriter getPrintWriter() {
     return pw;
+  }
+
+  public final PrintWriter getDataPrintWriter() {
+    return pwData;
   }
 
   /**
@@ -208,8 +261,8 @@ public class Job {
     final SimpleTimeZone stz = new SimpleTimeZone(timeZoneOffset, timeZoneStr);
     fileSimpleDateFmt.setTimeZone(stz);
     readableSimpleDateFmt.setTimeZone(stz);
-    gc = new GregorianCalendar(stz);
-    gc.setFirstDayOfWeek(java.util.Calendar.SUNDAY); //Sun = 1, Sat = 7
+    gCal = new GregorianCalendar(stz);
+    gCal.setFirstDayOfWeek(java.util.Calendar.SUNDAY); //Sun = 1, Sat = 7
   }
 
   private final JobProfile createJobProfile() {
@@ -227,24 +280,30 @@ public class Job {
   /**
    * Called from constructor to configure the Print Writer
    */
-  private final PrintWriter configurePrintWriter() {
+  private final void configurePrintWriters() {
     //create file name
-    gc.setTimeInMillis(System.currentTimeMillis());
-    final String nowStr = fileSimpleDateFmt.format(gc.getTime());
+    gCal.setTimeInMillis(System.currentTimeMillis());
+    final String nowStr = fileSimpleDateFmt.format(gCal.getTime());
 
     final String outputFileName = profileName + nowStr + ".txt";
+    final String outputFileNameData = profileName + nowStr + ".tsv";
     prop.put("OutputFileName", outputFileName);
-    return openPrintWriter(outputFileName);
+    prop.put("OutputFileNameData", outputFileNameData);
+    pw = openPrintWriter(outputFileName);
+    pwData = openPrintWriter(outputFileNameData);
   }
 
   /**
-   * The JVM may call this method to close the PrintWriter resource.
+   * The JVM may call this method to close the PrintWriter resources.
    */
   @Override
   protected void finalize() throws Throwable {
     try {
       if (pw != null) {
-        pw.close(); // close open files
+        pw.close();
+      }
+      if (pwData != null) {
+        pwData.close();
       }
     } finally {
       super.finalize();

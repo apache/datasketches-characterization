@@ -46,11 +46,6 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
   //end JobProfile
 
   private void doTrials() {
@@ -58,7 +53,6 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
     final int lgMax = Integer.parseInt(job.getProperties().mustGet("lgMax"));
     final int ppo = Integer.parseInt(job.getProperties().mustGet("PPO"));
     final int numTrials = Integer.parseInt(job.getProperties().mustGet("trials"));
-
     final int errorSketchLgK = Integer.parseInt(job.getProperties().mustGet("errLgK"));
     final int errorPct = Integer.parseInt(job.getProperties().mustGet("errPct"));
 
@@ -77,7 +71,7 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
         final double maxRankErrorInTrial = doTrial();
         rankErrorSketch.update(maxRankErrorInTrial);
       }
-      println(streamLength + "\t"
+      job.println(streamLength + "\t"
           + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
       streamLength = pwr2LawNext(ppo, streamLength);
     }

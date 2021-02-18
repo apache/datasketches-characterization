@@ -48,6 +48,7 @@ bin/
 **/.pmd
 **/tmp/
 **/*.txt
+**/*.tsv
 **/streamA.txt
 
 # Build artifacts
@@ -61,7 +62,6 @@ cpp/Default/
 **/*.releaseBackup
 **/*.next
 **/*.tag
-**/results/
 
 # Jekyll
 **/Gemfile

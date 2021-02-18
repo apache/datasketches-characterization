@@ -24,7 +24,7 @@ import static org.apache.datasketches.memory.UnsafeUtil.unsafe;
 /**
  * @author Lee Rhodes
  */
-//@SuppressWarnings("restriction")
+@SuppressWarnings("restriction")
 public class UnsafeDirectSpeedProfile extends BaseSpeedProfile {
   int arrLongs;
   long address;
@@ -42,7 +42,7 @@ public class UnsafeDirectSpeedProfile extends BaseSpeedProfile {
 
   @Override
   long doTrial(final boolean read) {
-    final long checkSum = (arrLongs * (arrLongs - 1L)) / 2L;
+    final long checkSum = arrLongs * (arrLongs - 1L) / 2L;
     final long startTime_nS, stopTime_nS;
     if (read) {
       long trialSum = 0;

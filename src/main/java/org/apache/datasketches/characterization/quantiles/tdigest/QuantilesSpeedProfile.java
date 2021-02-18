@@ -35,11 +35,6 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
     doTrials();
   }
 
-  @Override
-  public void println(final Object o) {
-    job.println(o.toString());
-  }
-
   private void doTrials() {
     final int lgMinStreamLen = Integer.parseInt(job.getProperties().mustGet("lgMin"));
     final int lgMaxStreamLen = Integer.parseInt(job.getProperties().mustGet("lgMax"));
@@ -55,7 +50,7 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
 
     configure(k, numQueryValues, job.getProperties());
 
-    println(getHeader());
+    job.println(getHeader());
 
     int streamLength = minStreamLen;
     while (streamLength <= maxStreamLen) {
@@ -65,7 +60,7 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
       for (int i = 0; i < numTrials; i++) {
         doTrial();
       }
-      println(getStats(streamLength, numTrials, numQueryValues));
+      job.println(getStats(streamLength, numTrials, numQueryValues));
       streamLength = pwr2LawNext(pointsPerOctave, streamLength);
     }
   }
@@ -84,7 +79,7 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
       final int lgMinTrials, final int lgMaxTrials) {
     final double slope = (double) (lgMaxTrials - lgMinTrials) / (lgMinX - lgMaxX);
     final double lgX = Math.log(x) / JobProfile.LN2;
-    final double lgTrials = (slope * lgX) + lgMaxTrials;
+    final double lgTrials = slope * lgX + lgMaxTrials;
     return (int) Math.pow(2, lgTrials);
   }
 

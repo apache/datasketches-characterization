@@ -31,7 +31,7 @@ public class MonotonicPoints {
   public static Random rand = new Random();
 
   /**
-   * Generates an double[] of monotonic points that are uniformly spaced.
+   * Generates a double[] of monotonic points that are uniformly spaced.
    * @param x1 one endpoint
    * @param x2 the other endpoint
    * @param points to be returned
@@ -73,7 +73,7 @@ public class MonotonicPoints {
   }
 
   /**
-   * Generates an double[] of monotonic points that are uniform random spaced.
+   * Generates a double[] of monotonic points that are uniform random spaced.
    * @param x1 one endpoint
    * @param x2 the other endpoint
    * @param points to be returned

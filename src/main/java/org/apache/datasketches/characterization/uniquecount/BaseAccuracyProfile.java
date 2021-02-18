@@ -19,12 +19,9 @@
 
 package org.apache.datasketches.characterization.uniquecount;
 
-import static org.apache.datasketches.GaussianRanks.FRACTIONS;
-import static org.apache.datasketches.GaussianRanks.FRACT_LEN;
+import static org.apache.datasketches.GaussianRanks.GAUSSIANS_4SD;
 import static org.apache.datasketches.Util.milliSecToString;
 import static org.apache.datasketches.Util.pwr2LawNext;
-
-import java.io.PrintWriter;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -37,7 +34,6 @@ import org.apache.datasketches.quantiles.DoublesSketch;
  */
 public abstract class BaseAccuracyProfile implements JobProfile {
   Job job;
-  PrintWriter pw;
   public Properties prop;
   public long vIn = 0;
   int lgMinT;
@@ -57,7 +53,6 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   @Override
   public void start(final Job job) {
     this.job = job;
-    pw = job.getPrintWriter();
     prop = job.getProperties();
     lgMinT = Integer.parseInt(prop.mustGet("Trials_lgMinT"));
     lgMaxT = Integer.parseInt(prop.mustGet("Trials_lgMaxT"));
@@ -84,10 +79,6 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   @Override
   public void cleanup() {}
 
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
   //end JobProfile
 
   public abstract void configure();
@@ -141,27 +132,27 @@ public abstract class BaseAccuracyProfile implements JobProfile {
         job.println(sb.toString());
       }
 
-      println(prop.extractKvPairs());
-      println("Cum Trials             : " + lastT);
-      println("Cum Updates            : " + vIn);
+      job.println(prop.extractKvPairs());
+      job.println("Cum Trials             : " + lastT);
+      job.println("Cum Updates            : " + vIn);
       final long currentTime_mS = System.currentTimeMillis();
       final long cumTime_mS = currentTime_mS - job.getStartTime();
-      println("Cum Time               : " + milliSecToString(cumTime_mS));
+      job.println("Cum Time               : " + milliSecToString(cumTime_mS));
       final double timePerTrial_mS = cumTime_mS * 1.0 / lastT;
       final double avgUpdateTime_ns = timePerTrial_mS * 1e6 / maxU;
-      println("Time Per Trial, mSec   : " + timePerTrial_mS);
-      println("Avg Update Time, nSec  : " + avgUpdateTime_ns);
-      println("Date Time              : "
+      job.println("Time Per Trial, mSec   : " + timePerTrial_mS);
+      job.println("Avg Update Time, nSec  : " + avgUpdateTime_ns);
+      job.println("Date Time              : "
           + job.getReadableDateString(currentTime_mS));
 
       final long timeToComplete_mS = (long)(timePerTrial_mS * (maxT - lastT));
-      println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
-      println("Est Time at Completion : "
+      job.println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
+      job.println("Est Time at Completion : "
           + job.getReadableDateString(timeToComplete_mS + currentTime_mS));
-      println("");
+      job.println("");
       if (postPMFs) {
         for (int i = 0; i < qArr.length; i++) {
-          println(outputPMF(qArr[i]));
+          job.println(outputPMF(qArr[i]));
         }
       }
       job.flush();
@@ -197,8 +188,9 @@ public abstract class BaseAccuracyProfile implements JobProfile {
       sb.append(cumTrials).append(TAB);
 
       //Quantiles
-      final double[] quants = qArr[pt].qsk.getQuantiles(FRACTIONS);
-      for (int i = 0; i < FRACT_LEN; i++) {
+      final double[] quants = qArr[pt].qsk.getQuantiles(GAUSSIANS_4SD);
+      final int quantsLen = quants.length;
+      for (int i = 0; i < quantsLen; i++) {
         sb.append(quants[i] / uniques - 1.0).append(TAB);
       }
       if (getSize) {
@@ -246,7 +238,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
    */
   private static String outputPMF(final AccuracyStats q) {
     final DoublesSketch qSk = q.qsk;
-    final double[] splitPoints = qSk.getQuantiles(FRACTIONS); //1:1
+    final double[] splitPoints = qSk.getQuantiles(GAUSSIANS_4SD); //1:1
     final double[] reducedSp = reduceSplitPoints(splitPoints);
     final double[] pmfArr = qSk.getPMF(reducedSp); //pmfArr is one larger
     final long trials = qSk.getN();

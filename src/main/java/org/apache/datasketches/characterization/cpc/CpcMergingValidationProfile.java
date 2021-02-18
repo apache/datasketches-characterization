@@ -67,9 +67,4 @@ public class CpcMergingValidationProfile implements JobProfile {
   @Override
   public void cleanup() {}
 
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
-
 }

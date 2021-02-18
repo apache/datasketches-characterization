@@ -65,11 +65,6 @@ public abstract class BaseMergeSpeedProfile implements JobProfile  {
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
   //end JobProfile
 
   /**
@@ -89,12 +84,12 @@ public abstract class BaseMergeSpeedProfile implements JobProfile  {
 
   private void doTrials() {
     final StringBuilder dataStr = new StringBuilder();
-    println(getHeader());
+    job.println(getHeader());
     final Stats stats = new Stats();
     int lgK;
 
     for (lgK = minLgK; lgK <= maxLgK; lgK++) {
-      final int lgT = (maxLgK - lgK) + minLgT;
+      final int lgT = maxLgK - lgK + minLgT;
       final int trials = 1 << lgT;
       double sumSerializeTime_nS = 0;
       double sumDeserialzeTime_nS = 0;
@@ -114,7 +109,7 @@ public abstract class BaseMergeSpeedProfile implements JobProfile  {
       stats.mergeTime_nS = sumMergeTime_nS / trials;
       stats.totalTime_nS = sumTotalTime_nS / trials;
       process(stats, lgK, lgT, dataStr);
-      println(dataStr.toString());
+      job.println(dataStr.toString());
     }
   }
 

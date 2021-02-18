@@ -39,6 +39,8 @@ import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
@@ -54,6 +56,19 @@ public final class Files {
   public static final int DEFAULT_BUFSIZE = 8192;
 
   // Common IO & NIO file methods
+
+  /**
+   * Copy a file from one location to another
+   * @param from complete path as a string
+   * @param to complete path as a string
+   */
+  public static void copyFile(final String from, final String to) {
+    try {
+      final Path src = Paths.get(from);
+      final Path dest = Paths.get(to);
+      java.nio.file.Files.copy(src, dest);
+    } catch (final IOException e) { throw new RuntimeException(e); }
+  }
 
   /**
    * If the fileName string is null or empty, this method throws a

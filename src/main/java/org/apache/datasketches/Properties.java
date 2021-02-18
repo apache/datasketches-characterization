@@ -20,7 +20,6 @@
 package org.apache.datasketches;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -52,7 +51,7 @@ public class Properties {
    */
   public String mustGet(final String key) {
     final String v = map.get(key);
-    if ((v == null) || (v.isEmpty())) {
+    if (v == null || v.isEmpty()) {
       throw new IllegalArgumentException("Key: " + key + " not found or empty.");
     }
     return v;
@@ -126,7 +125,7 @@ public class Properties {
       final String s = key + "=" + value + pairSeparator;
       list.add(s);
     });
-    list.sort(Comparator.naturalOrder());
+    list.sort(compare);   //Comparator.naturalOrder());
     final Iterator<String> itr = list.iterator();
     final StringBuilder sb = new StringBuilder();
     itr.forEachRemaining((s) -> {
@@ -150,4 +149,11 @@ public class Properties {
     }
     return sb.toString();
   }
+
+  static Compare compare = new Compare();
+
+  static class Compare implements java.util.Comparator<String> {
+    @Override public int compare(final String a, final String b) { return a.compareToIgnoreCase(b); }
+  }
+
 }

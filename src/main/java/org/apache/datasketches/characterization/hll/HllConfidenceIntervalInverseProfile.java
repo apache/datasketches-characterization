@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.hll;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.apache.datasketches.GaussianRanks.FRACTIONS_3SD;
+import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.milliSecToString;
 import static org.apache.datasketches.Util.pwr2LawNext;
 
@@ -43,7 +43,7 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
  * @author Lee Rhodes
  */
 public class HllConfidenceIntervalInverseProfile implements JobProfile {
-  static final int FRACTIONS_3SD_LEN = FRACTIONS_3SD.length;
+  static final int FRACTIONS_3SD_LEN = GAUSSIANS_3SD.length;
   Job job;
   PrintWriter pw;
   public Properties prop;
@@ -110,18 +110,13 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
   @Override
   public void shutdown() {
     //At the very end
-    println("");
-    println(prop.extractKvPairs(LS));
+    job.println("");
+    job.println(prop.extractKvPairs(LS));
     job.flush();
   }
 
   @Override
   public void cleanup() {}
-
-  @Override
-  public void println(final Object obj) {
-    job.println(obj);
-  }
 
   public void configureSketch() {
     //Configure Sketch
@@ -186,19 +181,19 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
       //printed at the end of a trials set
       final long currentTime_mS = System.currentTimeMillis();
       final long cumTime_mS = currentTime_mS - job.getStartTime();
-      println("Cum Time               : " + milliSecToString(cumTime_mS));
+      job.println("Cum Time               : " + milliSecToString(cumTime_mS));
       final double timePerTrial_mS = cumTime_mS * 1.0 / lastT;
       final String tpt_ms = String.format("%.3f", timePerTrial_mS);
-      println("Time Per Trial, mSec   : " + tpt_ms);
+      job.println("Time Per Trial, mSec   : " + tpt_ms);
 
-      println("Date Time              : "
+      job.println("Date Time              : "
           + job.getReadableDateString(currentTime_mS));
 
       final long timeToComplete_mS = (long)(timePerTrial_mS * (maxT - lastT));
-      println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
-      println("Est Time at Completion : "
+      job.println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
+      job.println("Est Time at Completion : "
           + job.getReadableDateString(timeToComplete_mS + currentTime_mS));
-      println("");
+      job.println("");
       job.flush();
     }
   }
@@ -228,7 +223,7 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
       sb.append(hits).append(TAB);
 
       //output quantiles for each target est bin on the row
-      final double[] quants = qsk.getQuantiles(FRACTIONS_3SD);
+      final double[] quants = qsk.getQuantiles(GAUSSIANS_3SD);
       if (hits > 0) {
         for (int i = 0; i < FRACTIONS_3SD_LEN; i++) {
           final double relV = quants[i] / est - 1.0;
@@ -245,7 +240,7 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
     sb.append("Summary quantiles of N over all target estimates").append(LS);
     sb.append(centerTgtEst).append(TAB);
     sb.append(totalTgtHits).append(TAB);
-    final double[] qNarr = qNinTgtEstRange.getQuantiles(FRACTIONS_3SD);
+    final double[] qNarr = qNinTgtEstRange.getQuantiles(GAUSSIANS_3SD);
     for (int i = 0; i < FRACTIONS_3SD_LEN; i++) {
       final String relV = totalTgtHits > 0 ? Double.toString(qNarr[i] / centerTgtEst - 1.0) : "-";
       sb.append(relV).append(TAB);
