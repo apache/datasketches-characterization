@@ -34,12 +34,12 @@ void theta_sketch_timing_profile::run() {
   const size_t lg_max_stream_len(23);
   const size_t ppo(16);
 
-  const size_t lg_max_trials(16);
-  const size_t lg_min_trials(8);
+  const size_t lg_max_trials(18);
+  const size_t lg_min_trials(10);
 
+  const uint8_t lg_k = 12;
   update_theta_sketch::builder builder;
-  //builder.set_lg_k(10);
-  //builder.set_resize_factor(update_theta_sketch::resize_factor::X1);
+  builder.set_lg_k(lg_k);
 
   // some arbitrary starting value
   uint64_t counter(35538947);
@@ -53,6 +53,7 @@ void theta_sketch_timing_profile::run() {
 
     std::chrono::nanoseconds build_time_ns(0);
     std::chrono::nanoseconds update_time_ns(0);
+    std::chrono::nanoseconds compact_time_ns(0);
     std::chrono::nanoseconds serialize_time_ns(0);
     std::chrono::nanoseconds deserialize_time_ns(0);
     size_t size_bytes(0);
@@ -61,7 +62,7 @@ void theta_sketch_timing_profile::run() {
 
     for (size_t i = 0; i < num_trials; i++) {
       const auto start_build(std::chrono::high_resolution_clock::now());
-      update_theta_sketch sketch = builder.build();
+      auto sketch = builder.build();
       const auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
@@ -73,24 +74,29 @@ void theta_sketch_timing_profile::run() {
       const auto finish_update(std::chrono::high_resolution_clock::now());
       update_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_update - start_update);
 
-      std::stringstream s(std::ios::in | std::ios::out | std::ios::binary);
+      auto start_compacting(std::chrono::high_resolution_clock::now());
+      auto compact_sketch = sketch.compact();
+      const auto finish_compacting(std::chrono::high_resolution_clock::now());
+      compact_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_compacting - start_compacting);
+
       auto start_serialize(std::chrono::high_resolution_clock::now());
-      sketch.serialize(s);
+      auto bytes = compact_sketch.serialize();
       const auto finish_serialize(std::chrono::high_resolution_clock::now());
       serialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_serialize - start_serialize);
 
       const auto start_deserialize(std::chrono::high_resolution_clock::now());
-      auto deserialized_sketch = theta_sketch::deserialize(s);
+      auto deserialized_sketch = compact_theta_sketch::deserialize(bytes.data(), bytes.size());
       const auto finish_deserialize(std::chrono::high_resolution_clock::now());
       deserialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_deserialize - start_deserialize);
 
-      size_bytes += s.tellp();
+      size_bytes += bytes.size();
     }
 
     std::cout << stream_length << "\t"
         << num_trials << "\t"
         << (double) build_time_ns.count() / num_trials << "\t"
         << (double) update_time_ns.count() / num_trials / stream_length << "\t"
+        << (double) compact_time_ns.count() / num_trials << "\t"
         << (double) serialize_time_ns.count() / num_trials << "\t"
         << (double) deserialize_time_ns.count() / num_trials << "\t"
         << (double) size_bytes / num_trials << "\t"
