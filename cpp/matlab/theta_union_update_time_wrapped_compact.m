@@ -17,14 +17,16 @@
 
 clf;
 
-theta16_no_deser=load('../results/theta_union_timing_lgk16_32way_compact_trimmed_gcc10.tsv');
-theta16_with_deser=load('../results/theta_union_timing_lgk16_32way_compact_trimmed_with_deserialize_gcc10.tsv');
+theta16=load('../results/theta_union_timing_lgk16_32way_compact_trimmed_gcc10.tsv');
 theta16_wrapped=load('../results/theta_union_timing_lgk16_32way_compact_trimmed_wrapped_gcc10.tsv');
 
 hold on;
 
-semilogx(theta16_no_deser(:,1), theta16_no_deser(:,8), 'linewidth', 2);
-semilogx(theta16_with_deser(:,1), theta16_with_deser(:,8), 'linewidth', 2);
+semilogx(theta16(:,1), theta16(:,8), 'linewidth', 2);
+
+# with deserialization time added
+semilogx(theta16(:,1), theta16(:,8) + theta16(:,7), 'linewidth', 2);
+
 semilogx(theta16_wrapped(:,1), theta16_wrapped(:,8), 'linewidth', 2);
 
 set(gca, 'fontsize', 16);

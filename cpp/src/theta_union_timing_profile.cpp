@@ -48,6 +48,7 @@ void theta_union_timing_profile::run() {
 
   std::unique_ptr<update_theta_sketch> update_sketches[num_sketches_to_union];
   std::unique_ptr<compact_theta_sketch> compact_sketches[num_sketches_to_union];
+  std::vector<compact_theta_sketch::vector_bytes> bytes(num_sketches_to_union);
 
   auto sketch_builder = update_theta_sketch::builder().set_lg_k(lg_k);
   auto union_builder = theta_union::builder().set_lg_k(lg_k);
@@ -70,7 +71,7 @@ void theta_union_timing_profile::run() {
       for (size_t i = 0; i < num_sketches_to_union; i++) {
         update_sketches[i] = std::unique_ptr<update_theta_sketch>(new update_theta_sketch(sketch_builder.build()));
       }
-      theta_union u(union_builder.build());
+      auto u = union_builder.build();
       const auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
@@ -93,17 +94,16 @@ void theta_union_timing_profile::run() {
       const auto finish_compacting(std::chrono::high_resolution_clock::now());
       compact_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_compacting - start_compacting);
 
-      std::stringstream s(std::ios::in | std::ios::out | std::ios::binary);
       const auto start_serialize(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches_to_union; i++) {
-        compact_sketches[i]->serialize(s);
+        bytes[i] = compact_sketches[i]->serialize();
       }
       const auto finish_serialize(std::chrono::high_resolution_clock::now());
       serialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_serialize - start_serialize);
 
       const auto start_deserialize(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches_to_union; i++) {
-        compact_sketches[i] = std::unique_ptr<compact_theta_sketch>(new compact_theta_sketch(compact_theta_sketch::deserialize(s)));
+        compact_sketches[i] = std::unique_ptr<compact_theta_sketch>(new compact_theta_sketch(compact_theta_sketch::deserialize(bytes[i].data(), bytes[i].size())));
       }
       const auto finish_deserialize(std::chrono::high_resolution_clock::now());
       deserialize_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_deserialize - start_deserialize);
@@ -111,12 +111,14 @@ void theta_union_timing_profile::run() {
       const auto start_union(std::chrono::high_resolution_clock::now());
       for (size_t i = 0; i < num_sketches_to_union; i++) {
         u.update(*compact_sketches[i]);
+//        u.update(compact_theta_sketch::deserialize(bytes[i].data(), bytes[i].size()));
+//        u.update(wrapped_compact_theta_sketch::wrap(bytes[i].data(), bytes[i].size()));
       }
       const auto finish_union(std::chrono::high_resolution_clock::now());
       union_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_union - start_union);
 
       const auto start_result(std::chrono::high_resolution_clock::now());
-      compact_theta_sketch result = u.get_result();
+      auto result = u.get_result();
       const auto finish_result(std::chrono::high_resolution_clock::now());
       result_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_result - start_result);
 
