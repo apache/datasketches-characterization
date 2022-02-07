@@ -33,7 +33,7 @@ import org.testng.annotations.Test;
  *
  * @author Lee Rhodes
  */
-public class TrueRanks {
+public class TrueFloatRanks {
   private static final String LS = System.getProperty("line.separator");
   private boolean ltEq;
   private int length;
@@ -42,9 +42,9 @@ public class TrueRanks {
   private int[] sortedAbsRanks;
   private int[] streamAbsRanks; //TODO do we need this?
 
-  TrueRanks() { } //for TestNG
+  TrueFloatRanks() { } //for TestNG
 
-  public TrueRanks(final float[] stream, final boolean ltEq) {
+  public TrueFloatRanks(final float[] stream, final boolean ltEq) {
     this.stream = stream;
     this.ltEq = ltEq;
     compute();
@@ -136,14 +136,14 @@ public class TrueRanks {
     StringBuilder sb = new StringBuilder();
     String ffmt  = "%5.1f ";
     String dfmt    = "%5d ";
-    TrueRanks trueRanks;
+    TrueFloatRanks trueRanks;
 
     int N = vArr.length;
     sb.append("Values:").append(LS);
     for (int i = 0; i < N; i++) { sb.append(String.format(ffmt, vArr[i])); }
     sb.append(LS);
 
-    trueRanks = new TrueRanks(vArr, false);
+    trueRanks = new TrueFloatRanks(vArr, false);
     sb.append("LT Abs Ranks:").append(LS);
     int[] absArr = trueRanks.getStreamAbsRanks();
     for (int i = 0; i < N; i++) { sb.append(String.format(dfmt, absArr[i])); }
@@ -153,7 +153,7 @@ public class TrueRanks {
     for (int i = 0; i < N; i++) { sb.append(String.format(ffmt, relArr[i])); }
     sb.append(LS);
 
-    trueRanks = new TrueRanks(vArr, true);
+    trueRanks = new TrueFloatRanks(vArr, true);
     sb.append("LE Abs Ranks:").append(LS);
     absArr = trueRanks.getStreamAbsRanks();
     for (int i = 0; i < N; i++) { sb.append(String.format(dfmt, absArr[i])); }

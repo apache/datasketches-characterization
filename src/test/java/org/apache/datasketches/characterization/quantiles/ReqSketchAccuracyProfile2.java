@@ -71,7 +71,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
 
   //Specific to the stream
   private StreamMaker streamMaker;
-  private TrueRanks trueRanks;
+  private TrueFloatRanks trueRanks;
   private float[] sortedPPValues;
   private int[] sortedPPIndices;
   private int[] sortedPPAbsRanks;
@@ -152,9 +152,9 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     streamMaker = new StreamMaker();
     float[] stream = streamMaker.makeStream(N, pattern, offset);
     if (ltEq) {
-      trueRanks = new TrueRanks(stream, true);
+      trueRanks = new TrueFloatRanks(stream, true);
     } else {
-      trueRanks = new TrueRanks(stream, false);
+      trueRanks = new TrueFloatRanks(stream, false);
     }
   }
 

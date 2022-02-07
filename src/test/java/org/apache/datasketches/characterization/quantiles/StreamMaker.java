@@ -19,13 +19,13 @@
 
 package org.apache.datasketches.characterization.quantiles;
 
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.FlipFlop;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.Random;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.Reversed;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.Sorted;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.Sqrt;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.Zoomin;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.Zoomout;
+import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.FLIP_FLOP;
+import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.RANDOM;
+import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.REVERSED;
+import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.SORTED;
+import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.SQRT;
+import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.ZOOM_IN;
+import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.ZOOM_OUT;
 
 import org.apache.datasketches.characterization.Shuffle;
 import org.testng.annotations.Test;
@@ -36,8 +36,8 @@ import org.testng.annotations.Test;
 public class StreamMaker {
   static final String LS = System.getProperty("line.separator");
   static String TAB = "\t";
-  public enum Pattern { Sorted, Reversed, Zoomin, Zoomout, Random, Sqrt, FlipFlop,
-    Clustered, ClusteredZoomin, ZoominSqrt }
+  public enum Pattern { SORTED, REVERSED, ZOOM_IN, ZOOM_OUT, RANDOM, SQRT, FLIP_FLOP,
+    CLUSTERED, CLUSTERED_ZOOM_IN, ZOOM_IN_SQRT }
   public float min = 0;
   public float max = 0;
 
@@ -46,34 +46,34 @@ public class StreamMaker {
     min = offset;
     max = n - 1 + offset;
     switch(pattern) {
-      case Sorted: {
+      case SORTED: {
         for (int i = 0; i < n; i++) { arr[i] = i + offset; }
         break;
       }
-      case Reversed: {
+      case REVERSED: {
         for (int i = 0; i < n; i++) { arr[n - 1 - i] = i + offset; }
         break;
       }
-      case Zoomin: {
+      case ZOOM_IN: {
         for (int i = 0, j = 0; i < n; i++) {
           if ((i & 1) > 0) { arr[i] = n - j - 1 + offset; j++; } //odd
           else { arr[i] = j + offset; }
         }
         break;
       }
-      case Zoomout: {
+      case ZOOM_OUT: {
         for (int i = 0, j = 0; i < n; i++) {
           if ((i & 1) > 0) { arr[n - 1 - i] = n - j - 1 + offset; j++; } //odd
           else { arr[n - 1 - i] = j + offset; }
         }
         break;
       }
-      case Random: {
+      case RANDOM: {
         for (int i = 0; i < n; i++) { arr[i] = i + offset; }
         Shuffle.shuffle(arr);
         break;
       }
-      case Sqrt: {
+      case SQRT: {
         int idx = 0;
         int t = (int)Math.sqrt(2 * n);
         int item = 0;
@@ -94,7 +94,7 @@ public class StreamMaker {
         }
         break;
       }
-      case ZoominSqrt: {
+      case ZOOM_IN_SQRT: {
         int t = (int)Math.floor(Math.sqrt(n));
         int i = 0;
         for (int j = 0; j < t - 1; j++) {
@@ -106,7 +106,7 @@ public class StreamMaker {
         arr[i] = t - 1 + offset;
         break;
       }
-      case FlipFlop: {
+      case FLIP_FLOP: {
         FlipFlopStream ffs = new FlipFlopStream(n, offset);
         ffs.flipFlop(1, 1, n * 2 / 5);
         int m = n / 5;
@@ -116,10 +116,10 @@ public class StreamMaker {
         arr = ffs.getArray();
         break;
       }
-      case Clustered: {
+      case CLUSTERED: {
         break;
       }
-      case ClusteredZoomin: {
+      case CLUSTERED_ZOOM_IN: {
         break;
       }
     }
@@ -138,18 +138,18 @@ public class StreamMaker {
 
   @Test
   public void checkStreamMaker() {
-    printStream(100, Sorted, 1);
-    printStream(100, Reversed, 1);
-    //printStream(100, Zoomin, 0);
-    printStream(100, Zoomin, 1);
-    //printStream(100, Zoomout, 0);
-    printStream(100, Zoomout, 1);
-    //printStream(100, Random, 0);
-    printStream(100, Random, 1);
-    //printStream(100, Sqrt, 0);
-    printStream(100, Sqrt, 1);
-    //printStream(100, FlipFlop, 0);
-    printStream(100, FlipFlop, 1);
+    printStream(100, SORTED, 1);
+    printStream(100, REVERSED, 1);
+    //printStream(100, ZOOM_IN, 0);
+    printStream(100, ZOOM_IN, 1);
+    //printStream(100, ZOOM_OUT, 0);
+    printStream(100, ZOOM_OUT, 1);
+    //printStream(100, RANDOM, 0);
+    printStream(100, RANDOM, 1);
+    //printStream(100, SQRT, 0);
+    printStream(100, SQRT, 1);
+    //printStream(100, FLIP_FLOP, 0);
+    printStream(100, FLIP_FLOP, 1);
   }
 
   static void print(Object o) { System.out.print(o.toString()); }

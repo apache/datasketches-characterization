@@ -93,7 +93,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private HllSketch[] errHllSkArr;
 
   //Specific to a streamLength
-  private TrueRanks trueRanks;
+  private TrueFloatRanks trueRanks;
   //The entire stream
   private float[] stream; //a shuffled array of values from 1...N
   private float[] sortedStream;
@@ -238,9 +238,9 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     stream = streamMaker.makeStream(streamLength, pattern, offset);
     //compute true ranks
     if (ltEq) {
-      trueRanks = new TrueRanks(stream, true);
+      trueRanks = new TrueFloatRanks(stream, true);
     } else {
-      trueRanks = new TrueRanks(stream, false);
+      trueRanks = new TrueFloatRanks(stream, false);
     }
     sortedStream = trueRanks.getSortedStream();
     sortedAbsRanks = trueRanks.getSortedAbsRanks();

@@ -157,7 +157,7 @@ public class Job {
 
   /**
    * Outputs a formatted set of arguments to PrintWriter and stdOut.
-   * @param format the format specificaton
+   * @param format the format specification
    * @param args the list of objects
    */
   public final void printf(final String format, final Object ...args) {
@@ -167,7 +167,7 @@ public class Job {
 
   /**
    * Outputs a formatted set of arguments to PrintWriter for data and stdOut.
-   * @param format the format specificaton
+   * @param format the format specification
    * @param args the list of objects
    */
   public final void printfData(final String format, final Object ...args) {
