@@ -16,23 +16,22 @@
 # under the License.
 
 clf;
-theta_12=load('../results/theta_sketch_timing_lgk12_x8_gcc9.tsv');
-tuple_12_double=load('../results/tuple_sketch_timing_double_lgk12_x8_gcc9.tsv');
-aod_12=load('../results/aod_sketch_timing_lgk12_x8_gcc9.tsv');
-aod_12_java=load('../../results/aod_sketch_update_timing_lgk12_x8.tsv');
-#theta_x1_12=load('../results/theta_sketch_timing_lgk12_x1_gcc10.tsv');
+
+theta16=load('../results/theta_union_timing_lgk16_32way_compact_trimmed_gcc10.tsv');
+theta16_wrapped=load('../results/theta_union_timing_lgk16_32way_compact_trimmed_wrapped_gcc10.tsv');
 
 hold on;
 
-semilogx(theta_12(:,1), theta_12(:,4), 'linewidth', 2);
-semilogx(tuple_12_double(:,1), tuple_12_double(:,4), 'linewidth', 2);
-semilogx(aod_12(:,1), aod_12(:,4), 'linewidth', 2);
-semilogx(aod_12_java(:,1), aod_12_java(:,3), 'linewidth', 2);
-semilogx(theta_x1_12(:,1), theta_x1_12(:,4), 'linewidth', 2);
+semilogx(theta16(:,1), theta16(:,8), 'linewidth', 2);
+
+# with deserialization time added
+semilogx(theta16(:,1), theta16(:,8) + theta16(:,7), 'linewidth', 2);
+
+semilogx(theta16_wrapped(:,1), theta16_wrapped(:,8), 'linewidth', 2);
 
 set(gca, 'fontsize', 16);
-title 'Update time of Theta sketches'
+title 'Update time of 32-way union (Theta lgk=16 compact trimmed)'
 xlabel 'number of distinct values'
-legend('Theta lgk=12 x8 gcc9', 'Tuple double lgk=12 x8 gcc9', 'AOD lgk=12 x8 gcc9', 'AOD lgk=12 x8 Java', 'location', 'northeast');
-ylabel 'update time, ns'
+legend('compact sketches', 'with deserialize', 'wrapped compact sketches', 'location', 'northwest');
+ylabel 'update time, nanoseconds'
 grid minor on

@@ -48,7 +48,6 @@ bin/
 **/.pmd
 **/tmp/
 **/*.txt
-**/*.tsv
 **/streamA.txt
 
 # Build artifacts
