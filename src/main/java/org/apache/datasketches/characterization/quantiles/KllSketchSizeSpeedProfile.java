@@ -79,7 +79,8 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
   }
 
   void configureSketch() {
-    kllSk = new KllFloatsSketch(kllK);
+    kllSk = KllFloatsSketch.newHeapInstance(kllK);
+    // kllSk = new KllFloatsSketch(kllK);
   }
 
 //JobProfile interface
@@ -132,7 +133,8 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
    * @return the average update time per item for this trial
    */
   private double doTrial(final int streamLen) {
-    kllSk = new KllFloatsSketch(kllK);
+    kllSk = KllFloatsSketch.newHeapInstance(kllK);
+    //kllSk = new KllFloatsSketch(kllK);
     final long startUpdateTime_nS = System.nanoTime();
 
     for (int i = 0; i < streamLen; i++) {

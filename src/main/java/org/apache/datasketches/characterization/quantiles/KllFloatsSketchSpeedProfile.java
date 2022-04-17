@@ -75,7 +75,8 @@ public class KllFloatsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   @Override
   void doTrial() {
     final long startBuild = System.nanoTime();
-    final KllFloatsSketch sketch = new KllFloatsSketch(k);
+    final KllFloatsSketch sketch = KllFloatsSketch.newHeapInstance(k);
+    //final KllFloatsSketch sketch = new KllFloatsSketch(k);
     final long stopBuild = System.nanoTime();
     buildTimeNs += stopBuild - startBuild;
 

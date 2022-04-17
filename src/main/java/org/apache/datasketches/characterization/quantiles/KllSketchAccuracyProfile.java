@@ -91,7 +91,8 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
     if (useFloat) {
       shuffle(inputFloatValues);
       // build sketch
-      final KllFloatsSketch sketch = new KllFloatsSketch(k);
+      final KllFloatsSketch sketch = KllFloatsSketch.newHeapInstance(k);
+      //final KllFloatsSketch sketch = new KllFloatsSketch(k);
       for (int i = 0; i < inputFloatValues.length; i++) {
         sketch.update(inputFloatValues[i]);
       }
@@ -115,7 +116,8 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
     else if (useDouble) {
       shuffle(inputDoubleValues);
       // build sketch
-      final KllDoublesSketch sketch = new KllDoublesSketch(k);
+      final KllDoublesSketch sketch = KllDoublesSketch.newHeapInstance(k);
+      //final KllDoublesSketch sketch = new KllDoublesSketch(k);
       for (int i = 0; i < inputDoubleValues.length; i++) {
         sketch.update(inputDoubleValues[i]);
       }

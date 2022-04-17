@@ -127,7 +127,8 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
   }
 
   void configureSketch() {
-    sk = new KllFloatsSketch(K);
+    sk = KllFloatsSketch.newHeapInstance(K);
+    //sk = new KllFloatsSketch(K);
   }
 
   private void doJob() {
@@ -179,7 +180,8 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
 
     //Do numTrials for all plot points
     for (int t = 0; t < numTrials; t++) {
-      sk = new KllFloatsSketch(K);
+      sk = KllFloatsSketch.newHeapInstance(K);
+      //sk = new KllFloatsSketch(K);
       doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
     }
 
