@@ -24,6 +24,8 @@ import static org.apache.datasketches.characterization.Shuffle.shuffle;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.kll.KllDoublesSketch;
 import org.apache.datasketches.kll.KllFloatsSketch;
+import org.apache.datasketches.memory.DefaultMemoryRequestServer;
+import org.apache.datasketches.memory.WritableMemory;
 
 /**
  * This handles either floats or doubles.
@@ -31,7 +33,7 @@ import org.apache.datasketches.kll.KllFloatsSketch;
  *
  */
 public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
-
+  private static final DefaultMemoryRequestServer memReqSvr = new DefaultMemoryRequestServer();
   private int k;
   private float[] inputFloatValues;
   private float[] floatQueryValues;
@@ -91,8 +93,11 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
     if (useFloat) {
       shuffle(inputFloatValues);
       // build sketch
-      final KllFloatsSketch sketch = KllFloatsSketch.newHeapInstance(k);
-      //final KllFloatsSketch sketch = new KllFloatsSketch(k);
+      final WritableMemory wmem = WritableMemory.allocate(10000);
+      final KllFloatsSketch sketch;
+      sketch = KllFloatsSketch.newDirectInstance(k, wmem, memReqSvr);
+      //sketch = KllFloatsSketch.newHeapInstance(k);
+      //sketch = new KllFloatsSketch(k);
       for (int i = 0; i < inputFloatValues.length; i++) {
         sketch.update(inputFloatValues[i]);
       }
@@ -116,8 +121,11 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
     else if (useDouble) {
       shuffle(inputDoubleValues);
       // build sketch
-      final KllDoublesSketch sketch = KllDoublesSketch.newHeapInstance(k);
-      //final KllDoublesSketch sketch = new KllDoublesSketch(k);
+      final WritableMemory wmem = WritableMemory.allocate(10000);
+      final KllDoublesSketch sketch;
+      sketch = KllDoublesSketch.newDirectInstance(k, wmem, memReqSvr);
+      //sketch = KllDoublesSketch.newHeapInstance(k);
+      //sketch = new KllDoublesSketch(k);
       for (int i = 0; i < inputDoubleValues.length; i++) {
         sketch.update(inputDoubleValues[i]);
       }

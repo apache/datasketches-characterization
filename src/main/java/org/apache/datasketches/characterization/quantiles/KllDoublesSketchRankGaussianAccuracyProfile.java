@@ -29,6 +29,8 @@ import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.characterization.Shuffle;
 import org.apache.datasketches.kll.KllDoublesSketch;
+import org.apache.datasketches.memory.DefaultMemoryRequestServer;
+import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
@@ -37,6 +39,7 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
  * @author Lee Rhodes
  */
 public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
+  private static final DefaultMemoryRequestServer memReqSvr = new DefaultMemoryRequestServer();
   private Job job;
 
   //FROM PROPERTIES
@@ -53,7 +56,7 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
   private int numPlotPoints;
 
   //Target sketch configuration & error analysis
-  private int K;
+  private int k;
 
   //DERIVED globals
   private KllDoublesSketch sk;
@@ -104,7 +107,7 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
     //plotting & x-axis config
     numPlotPoints = Integer.parseInt(job.getProperties().mustGet("NumPlotPoints"));
     //Target sketch config
-    K = Integer.parseInt(job.getProperties().mustGet("K"));
+    k = Integer.parseInt(job.getProperties().mustGet("K"));
 
   }
 
@@ -126,8 +129,10 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
   }
 
   void configureSketch() {
-    sk = KllDoublesSketch.newHeapInstance(K);
-    //sk = new KllDoublesSketch(K);
+    final WritableMemory wmem = WritableMemory.allocate(10000);
+    sk = KllDoublesSketch.newDirectInstance(k, wmem, memReqSvr);
+    //sk = KllDoublesSketch.newHeapInstance(k);
+    //sk = new KllDoublesSketch(k);
   }
 
   private void doJob() {
@@ -179,7 +184,9 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
 
     //Do numTrials for all plot points
     for (int t = 0; t < numTrials; t++) {
-      sk = KllDoublesSketch.newHeapInstance(K);
+      final WritableMemory wmem = WritableMemory.allocate(10000);
+      sk = KllDoublesSketch.newDirectInstance(k, wmem, memReqSvr);
+      // sk = KllDoublesSketch.newHeapInstance(k);
       // sk = new KllDoublesSketch(K);
       doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
     }
