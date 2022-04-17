@@ -28,7 +28,10 @@ import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.characterization.Shuffle;
+import org.apache.datasketches.kll.KllDoublesSketch;
 import org.apache.datasketches.kll.KllFloatsSketch;
+import org.apache.datasketches.memory.DefaultMemoryRequestServer;
+import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
@@ -38,6 +41,7 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
  * @author Lee Rhodes
  */
 public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
+  private static final DefaultMemoryRequestServer memReqSvr = new DefaultMemoryRequestServer();
   private Job job;
 
   //FROM PROPERTIES
@@ -54,7 +58,7 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
   private int numPlotPoints;
 
   //Target sketch configuration & error analysis
-  private int K;
+  private int k;
 
   //DERIVED globals
   private KllFloatsSketch sk;
@@ -105,7 +109,7 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
     //plotting & x-axis config
     numPlotPoints = Integer.parseInt(job.getProperties().mustGet("NumPlotPoints"));
     //Target sketch config
-    K = Integer.parseInt(job.getProperties().mustGet("K"));
+    k = Integer.parseInt(job.getProperties().mustGet("K"));
 
   }
 
@@ -127,7 +131,9 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
   }
 
   void configureSketch() {
-    sk = KllFloatsSketch.newHeapInstance(K);
+    final WritableMemory wmem = WritableMemory.allocate(10000);
+    sk = KllFloatsSketch.newDirectInstance(k, wmem, memReqSvr);
+    //sk = KllFloatsSketch.newHeapInstance(K);
     //sk = new KllFloatsSketch(K);
   }
 
@@ -180,7 +186,9 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
 
     //Do numTrials for all plot points
     for (int t = 0; t < numTrials; t++) {
-      sk = KllFloatsSketch.newHeapInstance(K);
+      final WritableMemory wmem = WritableMemory.allocate(10000);
+      sk = KllFloatsSketch.newDirectInstance(k, wmem, memReqSvr);
+      //sk = KllFloatsSketch.newHeapInstance(k);
       //sk = new KllFloatsSketch(K);
       doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
     }
