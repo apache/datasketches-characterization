@@ -41,25 +41,58 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   private double[] doubleQueryValues;
   private boolean useBulk;
   private String type;
-  private boolean useFloat;
-  private boolean useDouble;
+  private boolean direct = false;
+  private boolean useDouble = false; //useFloat is default
   //add other types
+
+  KllDoublesSketch dsk = null;
+  KllFloatsSketch fsk = null;
 
   @Override
   void configure(final Properties props) {
-    useFloat = useDouble = false;
     k = Integer.parseInt(props.mustGet("K"));
     useBulk = Boolean.parseBoolean(props.mustGet("useBulk"));
+    direct = Boolean.parseBoolean(props.mustGet("direct"));
     type = props.mustGet("type");
-    if (type.equalsIgnoreCase("float")) { useFloat = true; }
-    else if (type.equalsIgnoreCase("double")) { useDouble = true; }
-    else { throw new IllegalArgumentException("Unknown primitive type: " + type); }
+    if (type.equalsIgnoreCase("double")) { useDouble = true; }
+
+    configureSketch();
+  }
+
+  void configureSketch() {
+    if (useDouble) {
+      if (direct) {
+        final WritableMemory dstMem = WritableMemory.allocate(10000);
+        dsk = KllDoublesSketch.newDirectInstance(k, dstMem, memReqSvr);
+      } else { //heap
+        dsk = KllDoublesSketch.newHeapInstance(k);
+      }
+    } else { //useFloat
+      if (direct) {
+        final WritableMemory dstMem = WritableMemory.allocate(10000);
+        fsk = KllFloatsSketch.newDirectInstance(k, dstMem, memReqSvr);
+      } else { //heap
+        fsk = KllFloatsSketch.newHeapInstance(k);
+      }
+    }
   }
 
   @Override
   void prepareTrial(final int streamLength) {
     // prepare input data that will be permuted
-    if (useFloat) {
+    if (useDouble) {
+      inputDoubleValues = new double[streamLength];
+      for (int i = 0; i < streamLength; i++) {
+        inputDoubleValues[i] = i;
+      }
+      if (useBulk) {
+        // prepare query data that must remain ordered
+        doubleQueryValues = new double[streamLength];
+        for (int i = 0; i < streamLength; i++) {
+          doubleQueryValues[i] = i;
+        }
+      }
+    } else { //use Float
       inputFloatValues = new float[streamLength];
       for (int i = 0; i < streamLength; i++) {
         inputFloatValues[i] = i;
@@ -72,76 +105,54 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
         }
       }
     }
-    else if (useDouble) {
-      inputDoubleValues = new double[streamLength];
-      for (int i = 0; i < streamLength; i++) {
-        inputDoubleValues[i] = i;
-      }
-      if (useBulk) {
-        // prepare query data that must remain ordered
-        doubleQueryValues = new double[streamLength];
-        for (int i = 0; i < streamLength; i++) {
-          doubleQueryValues[i] = i;
-        }
-      }
-    }
   }
 
   @Override
   double doTrial() {
     double maxRankError = 0;
-    if (useFloat) {
-      shuffle(inputFloatValues);
-      // build sketch
-      final WritableMemory wmem = WritableMemory.allocate(10000);
-      final KllFloatsSketch sketch;
-      sketch = KllFloatsSketch.newDirectInstance(k, wmem, memReqSvr);
-      //sketch = KllFloatsSketch.newHeapInstance(k);
-      //sketch = new KllFloatsSketch(k);
-      for (int i = 0; i < inputFloatValues.length; i++) {
-        sketch.update(inputFloatValues[i]);
+    if (useDouble) {
+      shuffle(inputDoubleValues);
+      // reset sketch
+      dsk.reset();
+      for (int i = 0; i < inputDoubleValues.length; i++) {
+        dsk.update(inputDoubleValues[i]);
       }
 
       // query sketch and gather results
       maxRankError = 0;
       if (useBulk) {
-        final double[] estRanks = sketch.getCDF(floatQueryValues);
-        for (int i = 0; i < inputFloatValues.length; i++) {
-          final double trueRank = (double) i / inputFloatValues.length;
+        final double[] estRanks = dsk.getCDF(doubleQueryValues);
+        for (int i = 0; i < inputDoubleValues.length; i++) {
+          final double trueRank = (double) i / inputDoubleValues.length;
           maxRankError = Math.max(maxRankError, Math.abs(trueRank - estRanks[i]));
         }
       } else {
-        for (int i = 0; i < inputFloatValues.length; i++) {
-          final double trueRank = (double) i / inputFloatValues.length;
-          final double estRank = sketch.getRank(i);
+        for (int i = 0; i < inputDoubleValues.length; i++) {
+          final double trueRank = (double) i / inputDoubleValues.length;
+          final double estRank = dsk.getRank(i);
           maxRankError = Math.max(maxRankError, Math.abs(trueRank - estRank));
         }
       }
-    }
-    else if (useDouble) {
-      shuffle(inputDoubleValues);
+    } else { //use Float
+      shuffle(inputFloatValues);
       // build sketch
-      final WritableMemory wmem = WritableMemory.allocate(10000);
-      final KllDoublesSketch sketch;
-      sketch = KllDoublesSketch.newDirectInstance(k, wmem, memReqSvr);
-      //sketch = KllDoublesSketch.newHeapInstance(k);
-      //sketch = new KllDoublesSketch(k);
-      for (int i = 0; i < inputDoubleValues.length; i++) {
-        sketch.update(inputDoubleValues[i]);
+      fsk.reset();
+      for (int i = 0; i < inputFloatValues.length; i++) {
+        fsk.update(inputFloatValues[i]);
       }
 
       // query sketch and gather results
       maxRankError = 0;
       if (useBulk) {
-        final double[] estRanks = sketch.getCDF(doubleQueryValues);
-        for (int i = 0; i < inputDoubleValues.length; i++) {
-          final double trueRank = (double) i / inputDoubleValues.length;
+        final double[] estRanks = fsk.getCDF(floatQueryValues);
+        for (int i = 0; i < inputFloatValues.length; i++) {
+          final double trueRank = (double) i / inputFloatValues.length;
           maxRankError = Math.max(maxRankError, Math.abs(trueRank - estRanks[i]));
         }
       } else {
-        for (int i = 0; i < inputDoubleValues.length; i++) {
-          final double trueRank = (double) i / inputDoubleValues.length;
-          final double estRank = sketch.getRank(i);
+        for (int i = 0; i < inputFloatValues.length; i++) {
+          final double trueRank = (double) i / inputFloatValues.length;
+          final double estRank = fsk.getRank(i);
           maxRankError = Math.max(maxRankError, Math.abs(trueRank - estRank));
         }
       }

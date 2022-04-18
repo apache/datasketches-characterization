@@ -184,10 +184,7 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
 
     //Do numTrials for all plot points
     for (int t = 0; t < numTrials; t++) {
-      final WritableMemory wmem = WritableMemory.allocate(10000);
-      sk = KllDoublesSketch.newDirectInstance(k, wmem, memReqSvr);
-      // sk = KllDoublesSketch.newHeapInstance(k);
-      // sk = new KllDoublesSketch(K);
+      sk.reset();
       doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
     }
 

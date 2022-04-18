@@ -28,7 +28,6 @@ import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.characterization.Shuffle;
-import org.apache.datasketches.kll.KllDoublesSketch;
 import org.apache.datasketches.kll.KllFloatsSketch;
 import org.apache.datasketches.memory.DefaultMemoryRequestServer;
 import org.apache.datasketches.memory.WritableMemory;
@@ -186,10 +185,7 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
 
     //Do numTrials for all plot points
     for (int t = 0; t < numTrials; t++) {
-      final WritableMemory wmem = WritableMemory.allocate(10000);
-      sk = KllFloatsSketch.newDirectInstance(k, wmem, memReqSvr);
-      //sk = KllFloatsSketch.newHeapInstance(k);
-      //sk = new KllFloatsSketch(K);
+      sk.reset();
       doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
     }
 
