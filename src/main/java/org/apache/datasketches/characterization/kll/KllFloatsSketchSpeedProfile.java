@@ -17,12 +17,13 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.kll;
 
 import java.util.Arrays;
 import java.util.Random;
 
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.characterization.quantiles.BaseQuantilesSpeedProfile;
 import org.apache.datasketches.kll.KllFloatsSketch;
 import org.apache.datasketches.memory.Memory;
 
@@ -47,13 +48,13 @@ public class KllFloatsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   long serializedSizeBytes;
 
   @Override
-  void configure(final int k, final int numQueryValues, final Properties properties) {
+  public void configure(final int k, final int numQueryValues, final Properties properties) {
     this.k = k;
     this.numQueryValues = numQueryValues;
   }
 
   @Override
-  void prepareTrial(final int streamLength) {
+  public void prepareTrial(final int streamLength) {
     // prepare input data
     inputValues = new float[streamLength];
     for (int i = 0; i < streamLength; i++) {
@@ -73,7 +74,7 @@ public class KllFloatsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   }
 
   @Override
-  void doTrial() {
+  public void doTrial() {
     final long startBuild = System.nanoTime();
     final KllFloatsSketch sketch = KllFloatsSketch.newHeapInstance(k);
     //final KllFloatsSketch sketch = new KllFloatsSketch(k);
@@ -129,12 +130,12 @@ public class KllFloatsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   }
 
   @Override
-  String getHeader() {
+  public String getHeader() {
     return "Stream\tTrials\tBuild\tUpdate\tQuant\tQuants\tRank\tCDF\tSer\tDeser\tItems\tstatsSize";
   }
 
   @Override
-  String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
+  public String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
     return String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d",
       streamLength,
       numTrials,

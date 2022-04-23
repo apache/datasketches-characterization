@@ -77,10 +77,10 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
     }
   }
 
-  abstract void configure(Properties props);
+  public abstract void configure(Properties props);
 
-  abstract void prepareTrial(int streamLength);
+  public abstract void prepareTrial(int streamLength);
 
-  abstract double doTrial();
+  public abstract double doTrial();
 
 }

@@ -92,7 +92,4 @@ public class HeapUtf8SpeedProfile extends BaseUtf8SpeedProfile {
   void close() {
   }
 
-
-
-
 }

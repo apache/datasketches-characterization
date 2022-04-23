@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.req;
 
 import static java.lang.Math.round;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
@@ -30,7 +30,7 @@ import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.characterization.Shuffle;
-import org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern;
+import org.apache.datasketches.characterization.req.StreamMaker.Pattern;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
@@ -144,7 +144,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     lgMax = Integer.parseInt(prop.mustGet("LgMax"));
     lgDelta = Integer.parseInt(prop.mustGet("LgDelta"));
     ppo = Integer.parseInt(prop.mustGet("PPO"));
-    // Trials config (indep of sketch)
+    // Trials config (independent of sketch)
     numTrials = 1 << Integer.parseInt(prop.mustGet("LgTrials"));
     errQSkLgK = Integer.parseInt(prop.mustGet("ErrQSkLgK"));
     errHllSkLgK = Integer.parseInt(prop.mustGet("ErrHllSkLgK"));
@@ -168,10 +168,10 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     MIN_K = Integer.parseInt(prop.mustGet("MIN_K"));
     LAZY_COMPRESSION = Boolean.parseBoolean(prop.mustGet("LAZY_COMPRESSION"));
     //criterion = InequalitySearch.valueOf(prop.mustGet("Criterion"));
-    String reqDebugLevel = prop.get("ReqDebugLevel");
-    String reqDebugFmt = prop.get("ReqDebugFmt");
+    final String reqDebugLevel = prop.get("ReqDebugLevel");
+    final String reqDebugFmt = prop.get("ReqDebugFmt");
     if (reqDebugLevel != null) {
-      int level = Integer.parseInt(reqDebugLevel);
+      final int level = Integer.parseInt(reqDebugLevel);
       reqDebugImpl = new ReqDebugImpl(level, reqDebugFmt);
     }
   }
@@ -254,7 +254,8 @@ public class ReqSketchAccuracyProfile implements JobProfile {
       endIdx = hra ? streamLength - 1 : subStreamLen - 1;
     }
 
-    //generates PP indices in [startIdx, endIdx] inclusive, inclusive // PV 2020-01-07: using double so that there's enough precision even for large stream lengths
+    //generates PP indices in [startIdx, endIdx] inclusive, inclusive
+    // PV 2020-01-07: using double so that there's enough precision even for large stream lengths
     final double[] temp = evenlySpaced
         ? evenlySpaced(startIdx, endIdx, numPlotPoints)
         : expSpaced(startIdx, endIdx, numPlotPoints, exponent, hra);
@@ -301,23 +302,23 @@ public class ReqSketchAccuracyProfile implements JobProfile {
           rlb, rub, uErrCnt);
 
       if (relPP > 0 && relPP < 1
-    	      && (hra && relPP < metricsRankRange || !hra && relPP >= 1 - metricsRankRange)) {
-    	  sumAddStdDev += errQ[4];
-    	  numAddStdDev++;
+          && (hra && relPP < metricsRankRange || !hra && relPP >= 1 - metricsRankRange)) {
+        sumAddStdDev += errQ[4];
+        numAddStdDev++;
       }
       if (relPP > 0 && relPP < 1
-    		  && (!hra && relPP < metricsRankRange || hra && relPP >= 1 - metricsRankRange)) {
+          && (!hra && relPP < metricsRankRange || hra && relPP >= 1 - metricsRankRange)) {
         sumRelStdDev += errQ[4] / (hra ? 1 - relPP : relPP);
-    	  numRelStdDev++;
+        numRelStdDev++;
       }
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
       errHllSkArr[pp].reset(); //reset the errHllSkArr for next streamLength
     }
-    int serBytes = sk.getSerializationBytes();
+    final int serBytes = sk.getSerializationBytes();
 
     // special metrics for capturing accuracy per byte
-    double avgRelStdDevTimesSize = serBytes * sumRelStdDev / numRelStdDev;
-    double avgAddStdDevTimesSize = serBytes * sumAddStdDev / numAddStdDev;
+    final double avgRelStdDevTimesSize = serBytes * sumRelStdDev / numRelStdDev;
+    final  double avgAddStdDevTimesSize = serBytes * sumAddStdDev / numAddStdDev;
     job.println(LS + "Avg. relative std. dev. times size: " + avgRelStdDevTimesSize);
     job.println(     "Avg. additive std. dev. times size: " + avgAddStdDevTimesSize);
 

@@ -45,7 +45,6 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
   private WritableDirectHandle wdh;
   private WritableMemory wmem;
 
-
   @Override
   public void configure() {
     //Configure Sketches

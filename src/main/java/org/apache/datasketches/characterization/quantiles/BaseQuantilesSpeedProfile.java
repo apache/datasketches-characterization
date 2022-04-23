@@ -73,15 +73,15 @@ public abstract class BaseQuantilesSpeedProfile implements JobProfile {
     }
   }
 
-  abstract void configure(int k, int numQueryValues, Properties properties);
+  public abstract void configure(int k, int numQueryValues, Properties properties);
 
-  abstract void prepareTrial(int streamLength);
+  public abstract void prepareTrial(int streamLength);
 
-  abstract void doTrial();
+  public abstract void doTrial();
 
-  abstract String getHeader();
+  public abstract String getHeader();
 
-  abstract String getStats(int streamLength, int numTrials, int numQueryValues);
+  public abstract String getStats(int streamLength, int numTrials, int numQueryValues);
 
   private static int getNumTrials(final int x, final int lgMinX, final int lgMaxX,
       final int lgMinTrials, final int lgMaxTrials) {

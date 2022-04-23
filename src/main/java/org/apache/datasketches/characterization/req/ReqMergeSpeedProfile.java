@@ -17,12 +17,13 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.req;
 
 import java.lang.reflect.Array;
 import java.util.Random;
 
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.characterization.quantiles.BaseQuantilesSpeedProfile;
 import org.apache.datasketches.req.ReqSketch;
 import org.apache.datasketches.req.ReqSketchBuilder;
 
@@ -40,7 +41,7 @@ public class ReqMergeSpeedProfile extends BaseQuantilesSpeedProfile {
   long numRetainedItems;
 
   @Override
-  void configure(final int k, final int numQueryValues, final Properties properties) {
+  public void configure(final int k, final int numQueryValues, final Properties properties) {
     this.numSketches = Integer.parseInt(properties.mustGet("numSketches"));
     final boolean HRA = Boolean.parseBoolean(properties.mustGet("HRA"));
     sketches = (ReqSketch[]) Array.newInstance(ReqSketch.class, numSketches);
@@ -48,7 +49,7 @@ public class ReqMergeSpeedProfile extends BaseQuantilesSpeedProfile {
   }
 
   @Override
-  void prepareTrial(final int streamLength) {
+  public void prepareTrial(final int streamLength) {
     // prepare input data
     inputValues = new float[streamLength];
     for (int i = 0; i < streamLength; i++) {
@@ -58,7 +59,7 @@ public class ReqMergeSpeedProfile extends BaseQuantilesSpeedProfile {
   }
 
   @Override
-  void doTrial() {
+  public void doTrial() {
     final long startBuild = System.nanoTime();
     for (int i = 0; i < numSketches; i++) {
       sketches[i] = sketchBuilder.build();
@@ -91,12 +92,12 @@ public class ReqMergeSpeedProfile extends BaseQuantilesSpeedProfile {
   }
 
   @Override
-  String getHeader() {
+  public String getHeader() {
     return "Stream\tTrials\tBuild\tUpdate\tMerge\tItems";
   }
 
   @Override
-  String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
+  public String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
     return String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%d",
       streamLength,
       numTrials,

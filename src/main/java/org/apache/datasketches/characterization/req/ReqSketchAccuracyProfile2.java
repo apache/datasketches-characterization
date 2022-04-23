@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.req;
 
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.evenlySpacedFloats;
@@ -25,7 +25,7 @@ import static org.apache.datasketches.Util.evenlySpacedFloats;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
-import org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern;
+import org.apache.datasketches.characterization.req.StreamMaker.Pattern;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
@@ -91,7 +91,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
 
   //JobProfile interface
   @Override
-  public void start(Job job) {
+  public void start(final Job job) {
     this.job = job;
     prop = job.getProperties();
     extractProperties();
@@ -131,10 +131,10 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     K = Integer.parseInt(prop.mustGet("K"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
     ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
-    String reqDebugLevel = prop.get("ReqDebugLevel");
-    String reqDebugFmt = prop.get("ReqDebugFmt");
+    final String reqDebugLevel = prop.get("ReqDebugLevel");
+    final String reqDebugFmt = prop.get("ReqDebugFmt");
     if (reqDebugLevel != null) {
-      int level = Integer.parseInt(reqDebugLevel);
+      final int level = Integer.parseInt(reqDebugLevel);
       reqDebugImpl = new ReqDebugImpl(level, reqDebugFmt);
     }
   }
@@ -150,7 +150,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
   private void configureStream() {
     N = 1 << lgSL;
     streamMaker = new StreamMaker();
-    float[] stream = streamMaker.makeStream(N, pattern, offset);
+    final float[] stream = streamMaker.makeStream(N, pattern, offset);
     if (ltEq) {
       trueRanks = new TrueFloatRanks(stream, true);
     } else {
@@ -164,7 +164,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     sortedPPValues = new float[numPlotPoints];
     final int[] sortedAbsRanks = trueRanks.getSortedAbsRanks();
     final float[] sortedStream = trueRanks.getSortedStream();
-    int minIdx = (int)Math.round((double)(N - 1) / numPlotPoints);
+    final int minIdx = (int)Math.round((double)(N - 1) / numPlotPoints);
     final float[] temp = evenlySpacedFloats(minIdx, N - 1, numPlotPoints); //indices
 
     for (int pp = 0; pp < numPlotPoints; pp++) {
@@ -186,7 +186,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     }
   }
 
-  private void doStreamLength(int streamLength) {
+  private void doStreamLength(final int streamLength) {
     job.println(LS + "Stream Length: " + streamLength );
     job.printfData(sFmt, (Object[])columnLabels);
 
@@ -226,7 +226,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     UpdateDoublesSketch qSk = errQSkArr[pp];
     for (int idx = 0; idx < N; idx++) {
       final double skRank = sk.getRank(sortedStream[idx]);
-      double trueRank = (double)sortedAbsRanks[idx] / N;
+      final double trueRank = (double)sortedAbsRanks[idx] / N;
       if (idx <= ppAbsIdx) {
         final double rErr = skRank - trueRank;
         qSk.update(rErr);

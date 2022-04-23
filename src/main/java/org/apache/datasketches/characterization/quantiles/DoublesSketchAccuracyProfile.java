@@ -35,7 +35,7 @@ public class DoublesSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   private boolean useBulk;
 
   @Override
-  void configure(final Properties props) {
+  public void configure(final Properties props) {
     final int lgK = Integer.parseInt(props.mustGet("lgK"));
     builder = DoublesSketch.builder().setK(1 << lgK);
     useCompact = Boolean.parseBoolean(props.mustGet("useCompact"));
@@ -43,7 +43,7 @@ public class DoublesSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   @Override
-  void prepareTrial(final int streamLength) {
+  public void prepareTrial(final int streamLength) {
     // prepare input data that will be permuted
     inputValues = new double[streamLength];
     for (int i = 0; i < streamLength; i++) {
@@ -59,7 +59,7 @@ public class DoublesSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   @Override
-  double doTrial() {
+  public double doTrial() {
     shuffle(inputValues);
 
     // build sketch

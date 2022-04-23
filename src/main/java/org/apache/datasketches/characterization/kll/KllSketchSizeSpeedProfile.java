@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.kll;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
@@ -26,13 +26,16 @@ import static org.apache.datasketches.Util.pwr2LawNext;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.kll.KllDoublesSketch;
 import org.apache.datasketches.kll.KllFloatsSketch;
-
+import org.apache.datasketches.memory.DefaultMemoryRequestServer;
+import org.apache.datasketches.memory.WritableMemory;
 
 /**
  * @author Lee Rhodes
  */
 public class KllSketchSizeSpeedProfile implements JobProfile {
+  private static final DefaultMemoryRequestServer memReqSvr = new DefaultMemoryRequestServer();
   private Job job;
   private Properties prop;
 
@@ -41,6 +44,7 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
   private int lgMaxT;
   private int lgMinBpSL;
   private int lgMaxBpSL;
+  private String type;
   //For computing the different stream lengths
   private int lgMinSL;
   private int lgMaxSL;
@@ -49,11 +53,13 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
   private double slope;
 
   //Target sketch configuration & error analysis
-  private int kllK;
+  private int k;
+  private boolean useDouble = false;
+  private boolean direct = false;
 
   //DERIVED & GLOBALS
-  private KllFloatsSketch kllSk;
-
+  private KllDoublesSketch dsk = null;
+  private KllFloatsSketch fsk = null;
 
   private final String[] columnLabels = {"PP", "SL", "Trials", "KllBytes", "Kll nS" };
   private final String sFmt =  "%2s\t%2s\t%6s\t%8s\t%4s\n";
@@ -71,16 +77,33 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
     ppoSL = Integer.parseInt(prop.mustGet("PpoSL"));
 
     //Target sketch config
-    kllK = Integer.parseInt(prop.mustGet("KllK"));
+    k = Integer.parseInt(prop.mustGet("KllK"));
+    type = prop.mustGet("type");
+    if (type.equalsIgnoreCase("double")) { useDouble = true; }
+    direct = Boolean.parseBoolean(prop.mustGet("direct"));
   }
 
   void configureCommon() {
     slope = (double) (lgMaxT - lgMinT) / (lgMinBpSL - lgMaxBpSL);
+
   }
 
   void configureSketch() {
-    kllSk = KllFloatsSketch.newHeapInstance(kllK);
-    // kllSk = new KllFloatsSketch(kllK);
+    if (useDouble) {
+      if (direct) {
+        final WritableMemory dstMem = WritableMemory.allocate(10000);
+        dsk = KllDoublesSketch.newDirectInstance(k, dstMem, memReqSvr);
+      } else { //heap
+        dsk = KllDoublesSketch.newHeapInstance(k);
+      }
+    } else { //useFloat
+      if (direct) {
+        final WritableMemory dstMem = WritableMemory.allocate(10000);
+        fsk = KllFloatsSketch.newDirectInstance(k, dstMem, memReqSvr);
+      } else { //heap
+        fsk = KllFloatsSketch.newHeapInstance(k);
+      }
+    }
   }
 
 //JobProfile interface
@@ -121,7 +144,7 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
         sumUpdateTimePerItem_nS += doTrial(nextSL);
       }
       final double meanUpdateTimePerItem_nS = sumUpdateTimePerItem_nS / trials;
-      final int bytes = kllSk.getSerializedSizeBytes();
+      final int bytes = useDouble ? dsk.getSerializedSizeBytes() : fsk.getSerializedSizeBytes();
       job.printf(dFmt, pp, nextSL, trials, bytes, meanUpdateTimePerItem_nS);
       pp++;
     }
@@ -133,15 +156,26 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
    * @return the average update time per item for this trial
    */
   private double doTrial(final int streamLen) {
-    kllSk = KllFloatsSketch.newHeapInstance(kllK);
-    //kllSk = new KllFloatsSketch(kllK);
-    final long startUpdateTime_nS = System.nanoTime();
+    if (useDouble) {
+      dsk.reset();
+      final long startUpdateTime_nS = System.nanoTime();
 
-    for (int i = 0; i < streamLen; i++) {
-      kllSk.update(i);
+      for (int i = 0; i < streamLen; i++) {
+        dsk.update(i);
+      }
+      final long updateTime_nS = System.nanoTime() - startUpdateTime_nS;
+      return (double) updateTime_nS / streamLen;
     }
-    final long updateTime_nS = System.nanoTime() - startUpdateTime_nS;
-    return (double) updateTime_nS / streamLen;
+    else { //use Float
+      fsk.reset();
+      final long startUpdateTime_nS = System.nanoTime();
+
+      for (int i = 0; i < streamLen; i++) {
+        fsk.update(i);
+      }
+      final long updateTime_nS = System.nanoTime() - startUpdateTime_nS;
+      return (double) updateTime_nS / streamLen;
+    }
   }
 
   /**

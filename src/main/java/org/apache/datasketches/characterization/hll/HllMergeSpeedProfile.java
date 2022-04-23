@@ -73,7 +73,6 @@ public class HllMergeSpeedProfile extends BaseMergeSpeedProfile {
     return sk;
   }
 
-
   @Override
   public void doTrial(final Stats stats, final int lgK, final int lgDeltaU) {
     //final int U = 1 << (lgK + lgDeltaU);

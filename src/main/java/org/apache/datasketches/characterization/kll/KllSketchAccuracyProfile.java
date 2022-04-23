@@ -17,11 +17,12 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.kll;
 
 import static org.apache.datasketches.characterization.Shuffle.shuffle;
 
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.characterization.quantiles.BaseQuantilesAccuracyProfile;
 import org.apache.datasketches.kll.KllDoublesSketch;
 import org.apache.datasketches.kll.KllFloatsSketch;
 import org.apache.datasketches.memory.DefaultMemoryRequestServer;
@@ -49,7 +50,7 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   KllFloatsSketch fsk = null;
 
   @Override
-  void configure(final Properties props) {
+  public void configure(final Properties props) {
     k = Integer.parseInt(props.mustGet("K"));
     useBulk = Boolean.parseBoolean(props.mustGet("useBulk"));
     direct = Boolean.parseBoolean(props.mustGet("direct"));
@@ -78,7 +79,7 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   @Override
-  void prepareTrial(final int streamLength) {
+  public void prepareTrial(final int streamLength) {
     // prepare input data that will be permuted
     if (useDouble) {
       inputDoubleValues = new double[streamLength];
@@ -108,7 +109,7 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   @Override
-  double doTrial() {
+  public double doTrial() {
     double maxRankError = 0;
     if (useDouble) {
       shuffle(inputDoubleValues);

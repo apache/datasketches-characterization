@@ -24,7 +24,7 @@ import java.util.Random;
 /**
  * @author Lee Rhodes
  */
-public class Shuffle {
+public final class Shuffle {
   private static final Random rand = new Random();
 
   /**

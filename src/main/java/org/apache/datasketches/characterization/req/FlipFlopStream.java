@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.req;
 
 import org.testng.annotations.Test;
 
@@ -35,7 +35,7 @@ public class FlipFlopStream {
   private int hi;
 
   /**
-   * Constuctor used by TestNG
+   * Constructor used by TestNG
    */
   public FlipFlopStream() {}
 
@@ -44,7 +44,7 @@ public class FlipFlopStream {
    * @param N the length of the sequence and size of the returned array.
    * @param offset The lowest value in the sequence. Usually either 0 or 1.
    */
-  public FlipFlopStream(int N, int offset) {
+  public FlipFlopStream(final int N, final int offset) {
     arr = new float[N];
     idx = 0;
     v = offset;
@@ -60,7 +60,7 @@ public class FlipFlopStream {
    * @param hiReps repetitions for the high range
    * @param steps maximum number of steps for this sequence
    */
-  public void flipFlop(int loReps, int hiReps, int steps) {
+  public void flipFlop(final int loReps, final int hiReps, int steps) {
     int n = hi - lo + 1;
     while (n > 0 && steps > 0) {
       int i = loReps;
@@ -89,8 +89,8 @@ public class FlipFlopStream {
 
   @Test
   public void checkFlipFlop() {
-    int N = 50;
-    FlipFlopStream ffs = new FlipFlopStream(N, 1);
+    final int N = 50;
+    final FlipFlopStream ffs = new FlipFlopStream(N, 1);
     ffs.flipFlop(1, 1, 20);
     ffs.flipFlop(10, 1, 10);
     ffs.flipFlop(1, 10, 10);
@@ -98,5 +98,5 @@ public class FlipFlopStream {
     for (int i = 0; i < N; i++) { println(ffs.arr[i]); }
   }
 
-  static void println(Object o) { System.out.println(o.toString()); }
+  static void println(final Object o) { System.out.println(o.toString()); }
 }

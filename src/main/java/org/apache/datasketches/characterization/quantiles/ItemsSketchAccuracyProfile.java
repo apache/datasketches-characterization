@@ -33,12 +33,12 @@ public class ItemsSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   private boolean useBulk;
 
   @Override
-  void configure(final Properties props) {
+  public void configure(final Properties props) {
     lgK = Integer.parseInt(props.mustGet("lgK"));
   }
 
   @Override
-  void prepareTrial(final int streamLength) {
+  public void prepareTrial(final int streamLength) {
     // prepare input data that will be permuted
     inputValues = new int[streamLength];
     for (int i = 0; i < streamLength; i++) {
@@ -54,7 +54,7 @@ public class ItemsSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   @Override
-  double doTrial() {
+  public double doTrial() {
     shuffle(inputValues);
 
     // build sketch

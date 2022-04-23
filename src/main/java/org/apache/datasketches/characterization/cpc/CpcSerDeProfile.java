@@ -33,7 +33,6 @@ public class CpcSerDeProfile extends BaseSerDeProfile {
     sketch = new CpcSketch(lgK);
   }
 
-
   @Override
   public void doTrial(final long[] stats, final int uPerTrial) {
     sketch.reset(); // reuse the same sketch

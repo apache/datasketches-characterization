@@ -257,8 +257,6 @@ public class FdtAccuracyProfile implements JobProfile {
     return q / u - 1.0;
   }
 
-
-
   class MyComparator implements Comparator<AccuracyStats> {
     @Override
     public int compare(final AccuracyStats o1, final AccuracyStats o2) {

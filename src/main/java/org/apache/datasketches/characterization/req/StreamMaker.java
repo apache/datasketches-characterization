@@ -17,15 +17,15 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.req;
 
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.FLIP_FLOP;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.RANDOM;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.REVERSED;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.SORTED;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.SQRT;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.ZOOM_IN;
-import static org.apache.datasketches.characterization.quantiles.StreamMaker.Pattern.ZOOM_OUT;
+import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.FLIP_FLOP;
+import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.RANDOM;
+import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.REVERSED;
+import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.SORTED;
+import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.SQRT;
+import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.ZOOM_IN;
+import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.ZOOM_OUT;
 
 import org.apache.datasketches.characterization.Shuffle;
 import org.testng.annotations.Test;
@@ -36,16 +36,18 @@ import org.testng.annotations.Test;
 public class StreamMaker {
   static final String LS = System.getProperty("line.separator");
   static String TAB = "\t";
+
   public enum Pattern { SORTED, REVERSED, ZOOM_IN, ZOOM_OUT, RANDOM, SQRT, FLIP_FLOP,
     CLUSTERED, CLUSTERED_ZOOM_IN, ZOOM_IN_SQRT }
+
   public float min = 0;
   public float max = 0;
 
-  public float[] makeStream(int n, Pattern pattern, int offset) {
+  public float[] makeStream(final int n, final Pattern pattern, final int offset) {
     float[] arr = new float[n];
     min = offset;
     max = n - 1 + offset;
-    switch(pattern) {
+    switch (pattern) {
       case SORTED: {
         for (int i = 0; i < n; i++) { arr[i] = i + offset; }
         break;
@@ -75,7 +77,7 @@ public class StreamMaker {
       }
       case SQRT: {
         int idx = 0;
-        int t = (int)Math.sqrt(2 * n);
+        final int t = (int)Math.sqrt(2 * n);
         int item = 0;
         int initialItem = 0;
         int initialSkip = 1;
@@ -95,7 +97,7 @@ public class StreamMaker {
         break;
       }
       case ZOOM_IN_SQRT: {
-        int t = (int)Math.floor(Math.sqrt(n));
+        final int t = (int)Math.floor(Math.sqrt(n));
         int i = 0;
         for (int j = 0; j < t - 1; j++) {
           arr[i] = j + offset; i++;
@@ -107,9 +109,9 @@ public class StreamMaker {
         break;
       }
       case FLIP_FLOP: {
-        FlipFlopStream ffs = new FlipFlopStream(n, offset);
+        final FlipFlopStream ffs = new FlipFlopStream(n, offset);
         ffs.flipFlop(1, 1, n * 2 / 5);
-        int m = n / 5;
+        final int m = n / 5;
         ffs.flipFlop(m, 1, m);
         ffs.flipFlop(1, m, m);
         ffs.flipFlop(1, 1, n);
@@ -126,8 +128,8 @@ public class StreamMaker {
     return arr;
   }
 
-  public void printStream(int n, Pattern order, int offset) {
-    float[] stream = makeStream(n, order, offset);
+  public void printStream(final int n, final Pattern order, final int offset) {
+    final float[] stream = makeStream(n, order, offset);
     println(order + " n:" + n + " offset: " + offset);
     for (int i = 0; i < stream.length; i++) {
       //if (i != 0 && i % 21 == 0) { println(""); }
@@ -152,7 +154,7 @@ public class StreamMaker {
     printStream(100, FLIP_FLOP, 1);
   }
 
-  static void print(Object o) { System.out.print(o.toString()); }
+  static void print(final Object o) { System.out.print(o.toString()); }
 
-  static void println(Object o) { System.out.println(o.toString()); }
+  static void println(final Object o) { System.out.println(o.toString()); }
 }

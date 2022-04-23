@@ -36,7 +36,6 @@ public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private WritableDirectHandle handle;
   private WritableMemory wmem;
 
-
   @Override
   public void configure() {
     //Configure Sketch

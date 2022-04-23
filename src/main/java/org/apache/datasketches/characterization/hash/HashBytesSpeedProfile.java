@@ -86,7 +86,6 @@ public class HashBytesSpeedProfile extends BaseHashSpeedProfile {
     @Override
     public String getRow() {
       final double trialsBytes = trials * x;
-
       final double lgBytesX = Math.log(x) / LN2;
       final double total_mS = sumTrials_nS / 1e6;
       final double avgBytesFill_nS = sumTrialsFill_nS / trialsBytes;
@@ -170,7 +169,6 @@ public class HashBytesSpeedProfile extends BaseHashSpeedProfile {
     vIn = myVin;
   }
 
-  @SuppressWarnings("restriction")
   private static final long readMem(final WritableMemory wmem) {
     long sumInput = 0;
     long rem = wmem.getCapacity();

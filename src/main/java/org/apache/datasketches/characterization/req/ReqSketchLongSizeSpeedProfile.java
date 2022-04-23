@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.req;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2LawNext;
+//import static org.apache.datasketches.Util.pwr2LawNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -31,8 +31,9 @@ import org.apache.datasketches.req.ReqSketchBuilder;
 
 /**
  * @author Lee Rhodes
+ * @author Pavel Vesely
  */
-public class ReqSketchSizeSpeedProfile implements JobProfile {
+public class ReqSketchLongSizeSpeedProfile implements JobProfile {
   private Job job;
   private Properties prop;
 
@@ -44,7 +45,6 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
   //For computing the different stream lengths
   private int lgMinSL;
   private int lgMaxSL;
-  private int ppoSL;
 
   private double slope;
 
@@ -52,13 +52,6 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
   private int reqK;
   private boolean hra; //high rank accuracy
   private boolean ltEq;
-
-
-  // TEMPORARY
-  int INIT_NUMBER_OF_SECTIONS;
-  float NOM_CAPACITY_MULTIPLIER;
-  int MIN_K;
-  boolean LAZY_COMPRESSION;
 
   //DERIVED & GLOBALS
   private ReqSketch reqSk;
@@ -77,12 +70,12 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     //stream length
     lgMinSL = Integer.parseInt(prop.mustGet("LgMinSL"));
     lgMaxSL = Integer.parseInt(prop.mustGet("LgMaxSL"));
-    ppoSL = Integer.parseInt(prop.mustGet("PpoSL"));
 
     //Target sketch config
     reqK = Integer.parseInt(prop.mustGet("ReqK"));
     hra = Boolean.parseBoolean(prop.mustGet("HRA"));
-    ltEq = Boolean.parseBoolean(prop.mustGet("LtEq"));
+    ltEq = prop.mustGet("Criterion").equals("LE") ? true : false;
+
   }
 
   void configureCommon() {
@@ -93,9 +86,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     final ReqSketchBuilder bldr = ReqSketch.builder();
     bldr.setK(reqK).setHighRankAccuracy(hra);
     reqSk = bldr.build();
-    //reqSk = new ReqSketch(reqK, hra, null, (byte)INIT_NUMBER_OF_SECTIONS, MIN_K, NOM_CAPACITY_MULTIPLIER, LAZY_COMPRESSION);
     reqSk.setLessThanOrEqual(ltEq);
-
   }
 
 //JobProfile interface
@@ -121,13 +112,13 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
    * and outputs a row per axis plot point.
    */
   private void doTrials() {
-    final int maxSL = 1 << lgMaxSL;
-    final int minSL = 1 << lgMinSL;
-    int lastSL = 0;
+    final long maxSL = 1L << lgMaxSL;
+    final long minSL = 1L << lgMinSL;
+    long lastSL = 0;
     job.printf(sFmt, (Object[]) columnLabels); //Header
     int pp = 1;
     while (lastSL < maxSL) { //Trials for each plotPoint on X-axis, and one row on output
-      final int nextSL = lastSL == 0 ? minSL : pwr2LawNext(ppoSL, lastSL);
+      final long nextSL = lastSL == 0 ? minSL : 2 * lastSL;
       lastSL = nextSL;
       final int trials = getNumTrials(nextSL);
 
@@ -147,11 +138,11 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
    * @param streamLen the streamLength for this trial
    * @return the average update time per item for this trial
    */
-  private double doTrial(final int streamLen) {
+  private double doTrial(final long streamLen) {
     reqSk.reset();
     final long startUpdateTime_nS = System.nanoTime();
 
-    for (int i = 0; i < streamLen; i++) {
+    for (long i = 0; i < streamLen; i++) {
       reqSk.update(i);
     }
     final long updateTime_nS = System.nanoTime() - startUpdateTime_nS;
@@ -167,7 +158,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
    * @return the number of trials for a given current stream length for a
    * trial set.
    */
-  private int getNumTrials(final int curSL) {
+  private int getNumTrials(final long curSL) {
     final int minBpSL = 1 << lgMinBpSL;
     final int maxBpSL = 1 << lgMaxBpSL;
     final int maxT = 1 << lgMaxT;

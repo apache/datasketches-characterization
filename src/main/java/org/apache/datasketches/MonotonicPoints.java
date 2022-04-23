@@ -142,7 +142,7 @@ public class MonotonicPoints {
    * This is not a simple linear function due to points that may be skipped in the low range.
    * @param lgStart Log2 of the starting value
    * @param lgEnd Log2 of the ending value
-   * @param ppo the number of logrithmically evenly spaced points per octave.
+   * @param ppo the number of logarithmically evenly spaced points per octave.
    * @return the actual number of plotting points between lgStart and lgEnd.
    */
   public static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.quantiles;
+package org.apache.datasketches.characterization.req;
 
 import java.util.Arrays;
 
@@ -40,7 +40,7 @@ public class TrueFloatRanks {
   private float[] stream;
   private float[] sortedStream;
   private int[] sortedAbsRanks;
-  private int[] streamAbsRanks; //TODO do we need this?
+  private int[] streamAbsRanks;
 
   TrueFloatRanks() { } //for TestNG
 
@@ -75,7 +75,7 @@ public class TrueFloatRanks {
   }
 
   public int getAbsRank(final float v) {
-    int idx = BinarySearch.find(sortedStream, 0, length - 1, v);
+    final int idx = BinarySearch.find(sortedStream, 0, length - 1, v);
     return sortedAbsRanks[idx];
   }
 
@@ -117,8 +117,8 @@ public class TrueFloatRanks {
    * @return the relative rank array.
    */
   public static double[] relativeRank(final int[] absRankArr) {
-    int length = absRankArr.length;
-    double[] relRank = new double[length];
+    final int length = absRankArr.length;
+    final double[] relRank = new double[length];
     for (int i = 0; i < length; i++) { relRank[i] = (double)absRankArr[i] / length; }
     return relRank;
   }
@@ -133,12 +133,12 @@ public class TrueFloatRanks {
   }
 
   private static void checkRanksImpl(final float[] vArr) {
-    StringBuilder sb = new StringBuilder();
-    String ffmt  = "%5.1f ";
-    String dfmt    = "%5d ";
+    final StringBuilder sb = new StringBuilder();
+    final String ffmt  = "%5.1f ";
+    final String dfmt    = "%5d ";
     TrueFloatRanks trueRanks;
 
-    int N = vArr.length;
+    final int N = vArr.length;
     sb.append("Values:").append(LS);
     for (int i = 0; i < N; i++) { sb.append(String.format(ffmt, vArr[i])); }
     sb.append(LS);
@@ -165,7 +165,7 @@ public class TrueFloatRanks {
     println(sb.toString());
   }
 
-  private static void println(Object o) {
+  private static void println(final Object o) {
     System.out.println(o.toString());
   }
 

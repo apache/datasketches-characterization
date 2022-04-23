@@ -59,7 +59,7 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   long numRetainedItems;
 
   @Override
-  void configure(final int k, final int numQueryValues, final Properties properties) {
+  public void configure(final int k, final int numQueryValues, final Properties properties) {
     this.k = k;
     this.numQueryValues = numQueryValues;
     useDirect = Boolean.parseBoolean(properties.mustGet("useDirect"));
@@ -67,7 +67,7 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   }
 
   @Override
-  void prepareTrial(final int streamLength) {
+  public void prepareTrial(final int streamLength) {
     // prepare input data
     inputValues = new double[streamLength];
     for (int i = 0; i < streamLength; i++) {
@@ -90,7 +90,7 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
   @SuppressWarnings("unused")
   @Override
-  void doTrial() {
+  public void doTrial() {
     DoublesSketchAccuracyProfile.shuffle(inputValues);
 
     final long startBuild = System.nanoTime();
@@ -166,7 +166,7 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
       final long startGetRank = System.nanoTime();
       for (final double value: queryValues) {
-        //compactSketch.getRank(value); //TODO this was not released yet
+        //compactSketch.getRank(value);
         final double estRank = compactSketch.getCDF(new double[] {value})[0];
       }
       final long stopGetRank = System.nanoTime();
@@ -195,13 +195,13 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   }
 
   @Override
-  String getHeader() {
+  public String getHeader() {
     return "Stream\tTrials\tBuild\tUpdate\tQuant\tCDF\tRank\tSer\tDeser\tstatsSize"
         + "\tCompact\tQuant\tCDF\tRank\tSer\tDeser\tstatsSize\tItems";
   }
 
   @Override
-  String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
+  public String getStats(final int streamLength, final int numTrials, final int numQueryValues) {
     return String.format("%d\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d"
       + "\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%d\t%d",
       streamLength,

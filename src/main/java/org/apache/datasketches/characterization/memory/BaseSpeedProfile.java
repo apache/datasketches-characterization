@@ -161,5 +161,4 @@ static class Point {
     return (int) pow(2.0, lgTrials);
   }
 
-
 }

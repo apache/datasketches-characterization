@@ -56,7 +56,6 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
   private boolean isThreadSafe;
   private ConcurrentTestContext ctx;
 
-
   /**
    * Configure the sketch
    */
@@ -226,7 +225,6 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
    * Thread safe reader
    */
   protected class ReaderThread extends ConcurrentTestThread {
-
 
     public ReaderThread() {
       super(ctx);

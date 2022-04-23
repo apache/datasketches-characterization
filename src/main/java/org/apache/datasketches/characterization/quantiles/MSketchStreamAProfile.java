@@ -142,7 +142,6 @@ public class MSketchStreamAProfile implements JobProfile {
     //println(String.format("Pmf/Point_nSec:\t%10.3f", (double)pmfTime_nS / lenPMF));
   }
 
-
   /**
    * Compute the ranks array.
    * @param numRanks the number of evenly-spaced rank values including 0 and 1.0.

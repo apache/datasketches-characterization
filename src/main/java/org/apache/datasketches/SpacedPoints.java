@@ -159,8 +159,5 @@ public class SpacedPoints {
     return arr;
   }
 
-
-
-
   static void println(final Object o) { System.out.println(o.toString()); }
 }

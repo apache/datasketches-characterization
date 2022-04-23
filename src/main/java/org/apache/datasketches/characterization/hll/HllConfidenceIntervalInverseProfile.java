@@ -38,7 +38,6 @@ import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
 
-
 /**
  * @author Lee Rhodes
  */

@@ -61,7 +61,6 @@ public class TDigestSpeedProfile extends QuantilesSpeedProfile {
     resetStats();
   }
 
-
   @Override
   void doTrial() {
     gen.fillArray(inputValues);
@@ -160,15 +159,9 @@ public class TDigestSpeedProfile extends QuantilesSpeedProfile {
   }
 
   @Override
-  public void shutdown() {
-    // TODO Auto-generated method stub
-
-  }
+  public void shutdown() { }
 
   @Override
-  public void cleanup() {
-    // TODO Auto-generated method stub
-
-  }
+  public void cleanup() { }
 
 }

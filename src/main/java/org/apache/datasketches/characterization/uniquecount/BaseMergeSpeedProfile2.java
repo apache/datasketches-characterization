@@ -143,5 +143,4 @@ public abstract class BaseMergeSpeedProfile2 implements JobProfile {
     public double totalTime_nS;
   }
 
-
 }

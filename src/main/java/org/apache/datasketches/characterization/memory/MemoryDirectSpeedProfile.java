@@ -42,7 +42,6 @@ public class MemoryDirectSpeedProfile extends BaseSpeedProfile {
     wh.close();
   }
 
-
   @Override
   long doTrial(final boolean read) {
     final long checkSum = (arrLongs * (arrLongs - 1L)) / 2L;
@@ -66,6 +65,5 @@ public class MemoryDirectSpeedProfile extends BaseSpeedProfile {
     }
     return stopTime_nS - startTime_nS;
   }
-
 
 }

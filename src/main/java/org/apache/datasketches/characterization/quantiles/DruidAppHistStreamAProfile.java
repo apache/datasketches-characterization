@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.quantiles;
 
-import static org.apache.datasketches.characterization.quantiles.ProfileUtil.buildSplitPointsArr;
+import static org.apache.datasketches.characterization.ProfileUtil.buildSplitPointsArr;
 
 import java.io.File;
 
