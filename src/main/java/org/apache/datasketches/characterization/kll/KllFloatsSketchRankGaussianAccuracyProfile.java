@@ -27,6 +27,7 @@ import static org.apache.datasketches.Util.pwr2LawNext;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
+import org.apache.datasketches.Properties;
 import org.apache.datasketches.characterization.Shuffle;
 import org.apache.datasketches.kll.KllFloatsSketch;
 import org.apache.datasketches.memory.DefaultMemoryRequestServer;
@@ -41,6 +42,7 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
 public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
   private static final DefaultMemoryRequestServer memReqSvr = new DefaultMemoryRequestServer();
   private Job job;
+  private Properties props;
 
   //FROM PROPERTIES
   //For computing the different stream lengths
@@ -57,6 +59,7 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
 
   //Target sketch configuration & error analysis
   private int k;
+  private boolean direct;
 
   //DERIVED globals
   private KllFloatsSketch sk;
@@ -83,6 +86,7 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
   @Override
   public void start(final Job job) {
     this.job = job;
+    props = job.getProperties();
     extractProperties();
     configureCommon();
     doJob();
@@ -97,25 +101,25 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
 
   private void extractProperties() {
     //stream length
-    lgMin = Integer.parseInt(job.getProperties().mustGet("LgMin"));
-    lgMax = Integer.parseInt(job.getProperties().mustGet("LgMax"));
-    lgDelta = Integer.parseInt(job.getProperties().mustGet("LgDelta"));
-    ppo = Integer.parseInt(job.getProperties().mustGet("PPO"));
+    lgMin = Integer.parseInt(props.mustGet("LgMin"));
+    lgMax = Integer.parseInt(props.mustGet("LgMax"));
+    lgDelta = Integer.parseInt(props.mustGet("LgDelta"));
+    ppo = Integer.parseInt(props.mustGet("PPO"));
     //numTrials & error quantiles sketch config
-    numTrials = 1 << Integer.parseInt(job.getProperties().mustGet("LgTrials"));
-    errorSkLgK = Integer.parseInt(job.getProperties().mustGet("ErrSkLgK"));
+    numTrials = 1 << Integer.parseInt(props.mustGet("LgTrials"));
+    errorSkLgK = Integer.parseInt(props.mustGet("ErrSkLgK"));
     //plotting & x-axis config
-    numPlotPoints = Integer.parseInt(job.getProperties().mustGet("NumPlotPoints"));
+    numPlotPoints = Integer.parseInt(props.mustGet("NumPlotPoints"));
     //Target sketch config
-    k = Integer.parseInt(job.getProperties().mustGet("K"));
-
+    k = Integer.parseInt(props.mustGet("K"));
+    direct = Boolean.parseBoolean(props.mustGet("direct"));
   }
 
-  void configureCommon() {
+  void configureCommon() { //change based on sketch type (KLL vs REQ, etc)
     configureSketch();
     trueValues = new float[numPlotPoints];
     corrTrueValues = new float[numPlotPoints];
-    trueValueCorrection = 1; //KLL is always LT
+    trueValueCorrection = 1; //KLL is always LT, if LE this would be 0
     errQSkArr = new UpdateDoublesSketch[numPlotPoints];
     //configure the error quantiles array
     final DoublesSketchBuilder builder = DoublesSketch.builder().setK(1 << errorSkLgK);
@@ -130,9 +134,11 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
 
   void configureSketch() {
     final WritableMemory wmem = WritableMemory.allocate(10000);
-    sk = KllFloatsSketch.newDirectInstance(k, wmem, memReqSvr);
-    //sk = KllFloatsSketch.newHeapInstance(K);
-    //sk = new KllFloatsSketch(K);
+    if (direct) {
+      sk = KllFloatsSketch.newDirectInstance(k, wmem, memReqSvr);
+    } else {
+      sk = KllFloatsSketch.newHeapInstance(k);
+    }
   }
 
   private void doJob() {
@@ -204,15 +210,16 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
     }
     job.println(LS + "Serialization Bytes: " + sk.getSerializedSizeBytes());
-
   }
 
   /**
    * A trial consists of updating a virgin sketch with a shuffled stream of streamLength values.
    * We capture the estimated ranks for all plotPoints and then update the errQSkArr with those
    * error values.
+   * @param sk the sketch under test
    * @param stream the source stream
    * @param trueValues the true integer ranks at each of the plot points
+   * @param corrTrueValues corrected true values based on the comparison inequality
    * @param errQSkArr the quantile error sketches for each plot point to be updated
    */
   static void doTrial(final KllFloatsSketch sk, final float[] stream, final float[] trueValues,
