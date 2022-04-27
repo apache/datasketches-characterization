@@ -18,6 +18,7 @@
  */
 
 #include <cmath>
+#include <algorithm>
 #include <stdexcept>
 
 #include "job_profile.hpp"
@@ -90,6 +91,16 @@ size_t job_profile::get_num_trials(size_t x, size_t lg_min_x, size_t lg_max_x, s
   const double slope = static_cast<double>(lg_max_trials - lg_min_trials) / (static_cast<double>(lg_min_x) - static_cast<double>(lg_max_x));
   const double lg_trials = slope * (log2(x) - lg_min_x) + lg_max_trials;
   return pow(2, lg_trials);
+}
+
+std::vector<std::string> job_profile::get_profile_names() {
+  std::vector<std::string> names;
+  for (auto& entry : registry) {
+    if (entry.first.empty() || entry.first.length() == 0) { continue; }
+    names.push_back(entry.first);
+  }
+  std::sort(names.begin(), names.end());
+  return names;
 }
 
 }

@@ -23,6 +23,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace datasketches {
 
@@ -38,6 +39,8 @@ public:
    static size_t pwr_2_law_next(size_t ppo, size_t cur_point);
    static size_t count_points(size_t lg_start, size_t lg_end, size_t ppo);
    static size_t get_num_trials(size_t x, size_t lg_min_x, size_t lg_max_x, size_t lg_min_trials, size_t lg_max_trials);
+
+   static std::vector<std::string> get_profile_names();
 
 private:
    static std::unordered_map<std::string, std::unique_ptr<job_profile>> registry;

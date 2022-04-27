@@ -63,6 +63,8 @@
 #include "req_sketch_timing_profile.hpp"
 #include "req_merge_timing_profile.hpp"
 
+#include "quantiles_sketch_accuracy_profile.hpp"
+
 using namespace datasketches;
 typedef std::unique_ptr<job_profile> job_profile_ptr;
 
@@ -107,6 +109,12 @@ int main(int argc, char **argv) {
     profile.run();
   } else {
     std::cerr << "One parameter expected: profile name" << std::endl;
+    std::cerr << "Known profiles:" << std::endl;
+
+    std::vector<std::string> profile_names = job_profile::get_profile_names();
+    for (std::string& name : profile_names) {
+      std::cerr << "\t" << name << std::endl;
+    }
   }
   return 0;
 }
