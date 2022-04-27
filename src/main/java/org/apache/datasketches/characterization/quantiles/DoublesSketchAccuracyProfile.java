@@ -21,7 +21,6 @@ package org.apache.datasketches.characterization.quantiles;
 
 import java.util.Random;
 
-import org.apache.datasketches.Properties;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
@@ -33,17 +32,24 @@ public class DoublesSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   private double[] queryValues;
   private boolean useCompact;
   private boolean useBulk;
+  private int k;
 
   @Override
-  public void configure(final Properties props) {
+  public void configure() {
     final int lgK = Integer.parseInt(props.mustGet("lgK"));
+    k = 1 << lgK;
     builder = DoublesSketch.builder().setK(1 << lgK);
     useCompact = Boolean.parseBoolean(props.mustGet("useCompact"));
     useBulk = Boolean.parseBoolean(props.mustGet("useBulk"));
   }
 
   @Override
-  public void prepareTrial(final int streamLength) {
+  public double getEpsilon() {
+    return DoublesSketch.getNormalizedRankError(k, false);
+  }
+
+  @Override
+  public void prepareTrialSet(final int streamLength) {
     // prepare input data that will be permuted
     inputValues = new double[streamLength];
     for (int i = 0; i < streamLength; i++) {

@@ -58,13 +58,15 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
  */
 public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
 
-  Job job;
+  protected Job job;
   private DoublesSketchBuilder builder;
+  protected Properties props;
 
   //JobProfile
   @Override
   public void start(final Job job) {
     this.job = job;
+    props = job.getProperties();
     doTrials();
   }
 
@@ -86,7 +88,8 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
 
     builder = DoublesSketch.builder().setK(1 << errorSketchLgK);
 
-    configure(job.getProperties());
+    configure();
+    job.println("Epsilon:\t" + getEpsilon());
 
     //PRINT HEADER
     job.println("StreamLength\t-3SD\t-2SD\t-1SD\tMEDIAN\t+1SD\t+2SD\t+3SD");
@@ -94,7 +97,7 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
     final int numSteps = MonotonicPoints.countPoints(lgMin, lgMax, ppo);
     int streamLength = 1 << lgMin;
     for (int i = 0; i < numSteps; i++) {
-      prepareTrial(streamLength);
+      prepareTrialSet(streamLength);
       final UpdateDoublesSketch rankErrorSketch = builder.build();
       for (int t = 0; t < numTrials; t++) {
         final double worstRankErrorInTrial = doTrial();
@@ -110,10 +113,12 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
     job.println("");
   }
 
-  public abstract void configure(Properties props);
+  public abstract void configure();
 
-  public abstract void prepareTrial(int streamLength);
+  public abstract void prepareTrialSet(int streamLength);
 
   public abstract double doTrial();
+
+  public abstract double getEpsilon();
 
 }
