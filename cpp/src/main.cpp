@@ -63,8 +63,6 @@
 #include "req_sketch_timing_profile.hpp"
 #include "req_merge_timing_profile.hpp"
 
-#include "quantiles_sketch_accuracy_profile.hpp"
-
 using namespace datasketches;
 typedef std::unique_ptr<job_profile> job_profile_ptr;
 
