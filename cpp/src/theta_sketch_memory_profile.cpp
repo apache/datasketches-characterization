@@ -30,7 +30,7 @@ extern long long int total_allocated_memory;
 void theta_sketch_memory_profile::run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo) {
   const size_t lg_k = 26;
 
-  typedef update_theta_sketch_alloc<counting_allocator<void>> update_theta_sketch_a;
+  typedef update_theta_sketch_alloc<counting_allocator<uint64_t>> update_theta_sketch_a;
   update_theta_sketch_a::builder builder;
   builder.set_lg_k(lg_k);
   update_theta_sketch_a* s = new (counting_allocator<update_theta_sketch_a>().allocate(1)) update_theta_sketch_a(builder.build());

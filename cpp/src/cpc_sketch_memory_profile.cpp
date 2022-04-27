@@ -30,7 +30,7 @@ extern long long int total_allocated_memory;
 void cpc_sketch_memory_profile::run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo) {
   const size_t lg_k = 26;
 
-  typedef cpc_sketch_alloc<counting_allocator<void>> cpc_sketch_a;
+  typedef cpc_sketch_alloc<counting_allocator<uint8_t>> cpc_sketch_a;
   cpc_sketch_a* s = new (counting_allocator<cpc_sketch_a>().allocate(1)) cpc_sketch_a(lg_k);
 
   size_t count = 0;
