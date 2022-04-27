@@ -49,6 +49,8 @@ bin/
 **/tmp/
 **/*.txt
 **/streamA.txt
+**/*.tsv
+**/results/
 
 # Build artifacts
 cpp/Default/

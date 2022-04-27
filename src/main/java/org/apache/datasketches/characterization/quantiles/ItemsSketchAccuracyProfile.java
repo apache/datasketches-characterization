@@ -22,23 +22,30 @@ package org.apache.datasketches.characterization.quantiles;
 import java.util.Comparator;
 import java.util.Random;
 
-import org.apache.datasketches.Properties;
+import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.ItemsSketch;
 
 public class ItemsSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
 
   private int lgK;
+  private int k;
   private int[] inputValues;
   private Integer[] queryValues;
   private boolean useBulk;
 
   @Override
-  public void configure(final Properties props) {
+  public void configure() {
     lgK = Integer.parseInt(props.mustGet("lgK"));
+    k = 1 << lgK;
   }
 
   @Override
-  public void prepareTrial(final int streamLength) {
+  public double getEpsilon() {
+    return DoublesSketch.getNormalizedRankError(k, false);
+  }
+
+  @Override
+  public void prepareTrialSet(final int streamLength) {
     // prepare input data that will be permuted
     inputValues = new int[streamLength];
     for (int i = 0; i < streamLength; i++) {
