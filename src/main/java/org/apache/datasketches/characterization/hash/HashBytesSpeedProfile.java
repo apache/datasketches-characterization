@@ -169,6 +169,7 @@ public class HashBytesSpeedProfile extends BaseHashSpeedProfile {
     vIn = myVin;
   }
 
+  @SuppressWarnings("restriction")
   private static final long readMem(final WritableMemory wmem) {
     long sumInput = 0;
     long rem = wmem.getCapacity();

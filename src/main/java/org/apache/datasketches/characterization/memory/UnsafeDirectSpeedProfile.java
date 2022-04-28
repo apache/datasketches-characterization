@@ -24,6 +24,7 @@ import static org.apache.datasketches.memory.UnsafeUtil.unsafe;
 /**
  * @author Lee Rhodes
  */
+@SuppressWarnings("restriction")
 public class UnsafeDirectSpeedProfile extends BaseSpeedProfile {
   int arrLongs;
   long address;
