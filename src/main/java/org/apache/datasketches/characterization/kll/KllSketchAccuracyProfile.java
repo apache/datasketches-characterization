@@ -109,7 +109,7 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
       }
       else { //consecutive
         inputDoubleValues = new double[streamLength];
-        sortedArr = fillConsecutiveDoubles(inputDoubleValues);
+        sortedArr = fillContiguousDoubles(inputDoubleValues);
         //Compute true ranks
         doubleQueryValues = new double[streamLength];
         trueRanks = getTrueRanksDoubles(sortedArr, doubleQueryValues);
@@ -126,7 +126,7 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
       }
       else { //consecutive
         inputFloatValues = new float[streamLength];
-        sortedArr = fillConsecutiveFloats(inputFloatValues);
+        sortedArr = fillContiguousFloats(inputFloatValues);
         //Compute true ranks
         floatQueryValues = new float[streamLength];
         trueRanks = getTrueRanksFloats(sortedArr, floatQueryValues);
@@ -215,8 +215,12 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
     return (worstPosRankError > -worstNegRankError) ? worstPosRankError : worstNegRankError;
   }
 
+  //************************************************
+
   /**
-   * @param inputDoubleValues empty double[] of size n
+   * Create a set of <i>n</i> uniform random integral values in the range [0, n).
+   * They will not be sorted. There may be duplicates and, therefore, missing values.
+   * @param inputDoubleValues empty double[] of size <i>n</i>.
    * @return sorted int[] of source integers
    */
   static final int[] fillUniformRandomDoubles(final double[] inputDoubleValues) {
@@ -233,10 +237,12 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   /**
-   * @param inputDoubleValues empty double[] of size n
+   * Create a set of <i>n</i> contiguous integral values in the range [0, n)..
+   * They may be sorted, but don't need to be. There are no duplicates and no gaps.
+   * @param inputDoubleValues empty double[] of size <i>n</i>.
    * @return sorted int[] of source integers
    */
-  static final int[] fillConsecutiveDoubles(final double[] inputDoubleValues) {
+  static final int[] fillContiguousDoubles(final double[] inputDoubleValues) {
     final int n = inputDoubleValues.length;
     final int[] valueSourceArr = new int[n];
     for (int i = 0; i < n; i++) {
@@ -248,8 +254,8 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   /**
-   * @param sortedArr of source integers
-   * @param doubleQueryValues empty double[] of size n
+   * @param sortedArr of source integers of size <i>n</i>.
+   * @param doubleQueryValues empty double[] of size <i>n</i>.
    * @return int[] of true ranks aligned to doubleQueryValues
    */
   static final int[] getTrueRanksDoubles(final int[] sortedArr, final double[] doubleQueryValues) {
@@ -296,7 +302,9 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   //************************************************
 
   /**
-   * @param inputFloatValues empty float[] of size n
+   * Create a set of <i>n</i> uniform random integral values in the range [0, n).
+   * They will not be sorted. There may be duplicates and, therefore, missing values.
+   * @param inputFloatValues empty float[] of size <i>n</i>.
    * @return sorted int[] of source integers
    */
   static final int[] fillUniformRandomFloats(final float[] inputFloatValues) {
@@ -313,10 +321,12 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   /**
-   * @param inputFloatValues empty float[] of size n
+   * Create a set of <i>n</i> contiguous integral values in the range [0, n).
+   * They may be sorted, but don't need to be. There are no duplicates and no gaps.
+   * @param inputFloatValues empty float[] of size <i>n</i>.
    * @return sorted int[] of source integers
    */
-  static final int[] fillConsecutiveFloats(final float[] inputFloatValues) {
+  static final int[] fillContiguousFloats(final float[] inputFloatValues) {
     final int n = inputFloatValues.length;
     final int[] valueSourceArr = new int[n];
     for (int i = 0; i < n; i++) {
@@ -328,8 +338,8 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   }
 
   /**
-   * @param sortedArr int[] of source integers
-   * @param floatQueryValues empty float[] of size n
+   * @param sortedArr int[] of source integers of size <i>n</i>.
+   * @param floatQueryValues empty float[] of size <i>n</i>.
    * @return int[] of true ranks aligned to floatQueryValues
    */
   static final int[] getTrueRanksFloats(final int[] sortedArr, final float[] floatQueryValues) {
