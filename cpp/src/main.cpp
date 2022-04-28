@@ -107,6 +107,12 @@ int main(int argc, char **argv) {
     profile.run();
   } else {
     std::cerr << "One parameter expected: profile name" << std::endl;
+    std::cerr << "Known profiles:" << std::endl;
+
+    std::vector<std::string> profile_names = job_profile::get_profile_names();
+    for (std::string& name : profile_names) {
+      std::cerr << "\t" << name << std::endl;
+    }
   }
   return 0;
 }
