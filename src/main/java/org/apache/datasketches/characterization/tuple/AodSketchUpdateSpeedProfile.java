@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.tuple;
 
 import org.apache.datasketches.ResizeFactor;
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
-import org.apache.datasketches.memory.WritableDirectHandle;
+import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.tuple.arrayofdoubles.ArrayOfDoublesUnion;
 import org.apache.datasketches.tuple.arrayofdoubles.ArrayOfDoublesUpdatableSketch;
@@ -29,7 +29,7 @@ import org.apache.datasketches.tuple.arrayofdoubles.ArrayOfDoublesUpdatableSketc
 
 public class AodSketchUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   protected ArrayOfDoublesUpdatableSketch sketch;
-  private WritableDirectHandle handle;
+  private WritableHandle handle;
   private WritableMemory wmem;
 
   @Override
@@ -47,7 +47,7 @@ public class AodSketchUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     if (offheap) {
       final int bytes = ArrayOfDoublesUnion.getMaxBytes(k, numValues);
       handle = WritableMemory.allocateDirect(bytes);
-      wmem = handle.get();
+      wmem = handle.getWritable();
       sketch = udBldr.build(wmem);
     } else {
       sketch = udBldr.build();
@@ -56,7 +56,11 @@ public class AodSketchUpdateSpeedProfile extends BaseUpdateSpeedProfile {
 
   @Override
   public void cleanup() {
-    if (handle != null) { handle.close(); }
+    try {
+      if (handle != null) { handle.close(); }
+    } catch (final Exception e) {
+      // do nothing
+    }
   }
 
   @Override

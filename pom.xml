@@ -84,7 +84,7 @@ under the License.
   <properties>
     <!-- UNIQUE FOR THIS JAVA COMPONENT -->
     <datasketches-memory.version>2.0.0</datasketches-memory.version>
-    <datasketches-java.version>3.1.0</datasketches-java.version>
+    <datasketches-java.version>3.2.0</datasketches-java.version>
     <druid-momentsketch.version>0.16.0-incubating</druid-momentsketch.version>
     <druid-histogram.version>0.16.0-incubating</druid-histogram.version>
     <druid-hll.version>0.16.0-incubating</druid-hll.version>
@@ -97,9 +97,9 @@ under the License.
 
     <!-- System-wide properties -->
     <maven.version>3.5.0</maven.version>
-    <java.version>1.8</java.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <java.version>11</java.version>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <argLine>-Xmx4g -Duser.language=en -Duser.country=US -Dfile.encoding=UTF-8</argLine>
     <charset.encoding>UTF-8</charset.encoding>
     <project.build.sourceEncoding>${charset.encoding}</project.build.sourceEncoding>

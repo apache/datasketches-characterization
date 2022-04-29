@@ -81,9 +81,9 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
     Arrays.sort(queryValues);
     if (useDirect) {
       updateSketchMemory = WritableMemory
-          .wrap(new byte[DoublesSketch.getUpdatableStorageBytes(k, streamLength)]);
+          .writableWrap(new byte[DoublesSketch.getUpdatableStorageBytes(k, streamLength)]);
       compactSketchMemory = WritableMemory
-          .wrap(new byte[DoublesSketch.getCompactStorageBytes(k, streamLength)]);
+          .writableWrap(new byte[DoublesSketch.getCompactStorageBytes(k, streamLength)]);
     }
     resetStats();
   }
@@ -131,7 +131,7 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
       final long stopSerialize = System.nanoTime();
       updateSerializeTimeNs += stopSerialize - startSerialize;
 
-      final WritableMemory mem = WritableMemory.wrap(bytes);
+      final WritableMemory mem = WritableMemory.writableWrap(bytes);
       final long startDeserialize = System.nanoTime();
       if (useDirect) {
         UpdateDoublesSketch.wrap(mem);

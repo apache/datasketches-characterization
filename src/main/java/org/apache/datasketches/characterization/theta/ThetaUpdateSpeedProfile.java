@@ -22,7 +22,7 @@ package org.apache.datasketches.characterization.theta;
 import org.apache.datasketches.Family;
 import org.apache.datasketches.ResizeFactor;
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
-import org.apache.datasketches.memory.WritableDirectHandle;
+import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.Sketch;
 import org.apache.datasketches.theta.UpdateSketch;
@@ -33,7 +33,7 @@ import org.apache.datasketches.theta.UpdateSketchBuilder;
  */
 public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   protected UpdateSketch sketch;
-  private WritableDirectHandle handle;
+  private WritableHandle handle;
   private WritableMemory wmem;
 
   @Override
@@ -54,7 +54,7 @@ public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
     if (offheap) {
       final int bytes = Sketch.getMaxUpdateSketchBytes(k);
       handle = WritableMemory.allocateDirect(bytes);
-      wmem = handle.get();
+      wmem = handle.getWritable();
       sketch = udBldr.build(wmem);
     } else {
       sketch = udBldr.build();
@@ -63,7 +63,11 @@ public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
 
   @Override
   public void cleanup() {
-    if (handle != null) { handle.close(); }
+    try {
+      if (handle != null) { handle.close(); }
+    } catch (final Exception e) {
+      // do nothing
+    }
   }
 
   @Override

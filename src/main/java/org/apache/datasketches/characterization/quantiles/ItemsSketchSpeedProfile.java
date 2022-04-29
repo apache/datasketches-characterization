@@ -111,7 +111,7 @@ public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
     final long stopSerialize = System.nanoTime();
     serializeTimeNs += stopSerialize - startSerialize;
 
-    final WritableMemory mem = WritableMemory.wrap(bytes);
+    final WritableMemory mem = WritableMemory.writableWrap(bytes);
     final long startDeserialize = System.nanoTime();
     ItemsSketch.getInstance(mem, COMPARATOR, SERDE);
     final long stopDeserialize = System.nanoTime();

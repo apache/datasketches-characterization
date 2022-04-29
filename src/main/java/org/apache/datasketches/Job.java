@@ -270,7 +270,7 @@ public class Job {
     final JobProfile profile;
     try {
       final Class<?> clazz = Class.forName(profileStr);
-      profile = (JobProfile) clazz.newInstance();
+      profile = (JobProfile) clazz.getDeclaredConstructor().newInstance();
     } catch (final Exception e) {
       throw new RuntimeException("Cannot instantiate " + profileStr + "\n" + e);
     }
@@ -296,6 +296,7 @@ public class Job {
   /**
    * The JVM may call this method to close the PrintWriter resources.
    */
+  /* DEPRECATED in Object since java 9
   @Override
   protected void finalize() throws Throwable {
     try {
@@ -309,6 +310,7 @@ public class Job {
       super.finalize();
     }
   }
+   */
 
   /**
    * Run multiple jobs from the command line

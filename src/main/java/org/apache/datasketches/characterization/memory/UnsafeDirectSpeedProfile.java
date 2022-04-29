@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.memory;
 
-import static org.apache.datasketches.memory.UnsafeUtil.unsafe;
+import static org.apache.datasketches.memory.internal.UnsafeUtil.unsafe;
 
 /**
  * @author Lee Rhodes
@@ -32,7 +32,7 @@ public class UnsafeDirectSpeedProfile extends BaseSpeedProfile {
   @Override
   void configure(final int arrLongs) { //once per X point
     this.arrLongs = arrLongs;
-    address = unsafe.allocateMemory(arrLongs << 3);
+    address = unsafe.allocateMemory((long) arrLongs << 3);
   }
 
   @Override
@@ -48,7 +48,7 @@ public class UnsafeDirectSpeedProfile extends BaseSpeedProfile {
       long trialSum = 0;
 
       startTime_nS = System.nanoTime();
-      for (int i = 0; i < arrLongs; i++) { trialSum += unsafe.getLong(address + (i << 3)); }
+      for (int i = 0; i < arrLongs; i++) { trialSum += unsafe.getLong(address + ((long) i << 3)); }
       stopTime_nS = System.nanoTime();
 
       if (trialSum != checkSum) {
@@ -57,7 +57,7 @@ public class UnsafeDirectSpeedProfile extends BaseSpeedProfile {
     } else { //write
 
       startTime_nS = System.nanoTime();
-      for (int i = 0; i < arrLongs; i++) { unsafe.putLong(address + (i << 3), i); }
+      for (int i = 0; i < arrLongs; i++) { unsafe.putLong(address + ((long) i << 3), i); }
       stopTime_nS = System.nanoTime();
 
     }

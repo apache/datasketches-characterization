@@ -23,7 +23,7 @@ import static org.apache.datasketches.Util.DEFAULT_UPDATE_SEED;
 
 import org.apache.datasketches.characterization.AccuracyStats;
 import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
-import org.apache.datasketches.memory.WritableDirectHandle;
+import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.Sketch;
 import org.apache.datasketches.theta.UpdateSketch;
@@ -42,7 +42,7 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
   private boolean ordered;
   private boolean offHeap;
   private boolean rebuild; //Theta QS Sketch Accuracy
-  private WritableDirectHandle wdh;
+  private WritableHandle wdh;
   private WritableMemory wmem;
 
   @Override
@@ -60,7 +60,7 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
 
     if (offHeap) {
       wdh = WritableMemory.allocateDirect(maxSharedUpdateBytes);
-      wmem = wdh.get();
+      wmem = wdh.getWritable();
     } else {
       wmem = WritableMemory.allocate(maxSharedUpdateBytes);
     }
@@ -94,8 +94,12 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
 
   @Override
   public void cleanup() {
-    if (wdh != null) {
-      wdh.close();
+    try {
+      if (wdh != null) {
+        wdh.close();
+      }
+    } catch (final Exception e) {
+      // do nothing
     }
   }
 
