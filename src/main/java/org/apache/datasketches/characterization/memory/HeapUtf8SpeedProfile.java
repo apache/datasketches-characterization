@@ -22,8 +22,8 @@ package org.apache.datasketches.characterization.memory;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import org.apache.datasketches.memory.Memory;
-import org.apache.datasketches.memory.internal.Util.RandomCodePoints;
 import org.apache.datasketches.memory.WritableMemory;
+import org.apache.datasketches.memory.internal.Util.RandomCodePoints;
 
 /**
  * @author Lee Rhodes

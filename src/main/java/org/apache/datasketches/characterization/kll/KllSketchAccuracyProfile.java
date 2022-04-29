@@ -35,6 +35,9 @@ import org.apache.datasketches.memory.WritableMemory;
  * This captures the maximum rank error over T trials.
  * The stream is shuffled prior to each trial.
  * This handles either floats or doubles.
+ * The input distribution can be either uniform random or contiguous integral values.
+ * The input is shuffled for each trial.
+ *
  * @author Lee Rhodes
  *
  */
@@ -53,7 +56,7 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   private boolean direct = false;    //heap is default
   private boolean useDouble = false; //useFloat is default
   private String distributionType;
-  private boolean uniformRandom = false;   //consecutive is default;
+  private boolean uniformRandom = false;   //contiguous is default;
   private double epsilon;
   //add other types
 

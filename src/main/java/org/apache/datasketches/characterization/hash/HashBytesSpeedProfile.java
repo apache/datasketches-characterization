@@ -21,8 +21,8 @@ package org.apache.datasketches.characterization.hash;
 
 import static org.apache.datasketches.memory.internal.UnsafeUtil.unsafe;
 
-import org.apache.datasketches.memory.MurmurHash3v2;
 import org.apache.datasketches.hash.XxHash;
+import org.apache.datasketches.memory.MurmurHash3v2;
 import org.apache.datasketches.memory.WritableMemory;
 
 /**
@@ -169,7 +169,7 @@ public class HashBytesSpeedProfile extends BaseHashSpeedProfile {
     vIn = myVin;
   }
 
-  @SuppressWarnings("restriction")
+  //@SuppressWarnings("restriction")
   private static final long readMem(final WritableMemory wmem) {
     long sumInput = 0;
     long rem = wmem.getCapacity();
