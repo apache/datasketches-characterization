@@ -22,7 +22,7 @@ package org.apache.datasketches.characterization.theta.concurrent;
 import static org.apache.datasketches.Util.DEFAULT_UPDATE_SEED;
 
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
-import org.apache.datasketches.memory.WritableDirectHandle;
+import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.Sketch;
 import org.apache.datasketches.theta.UpdateSketch;
@@ -40,7 +40,7 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private boolean offHeap;
   private int poolThreads;
   private double maxConcurrencyError;
-  private WritableDirectHandle wdh;
+  private WritableHandle wdh;
   private WritableMemory wmem;
 
   /**
@@ -60,7 +60,7 @@ public class ConcurrentThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
 
     if (offHeap) {
       wdh = WritableMemory.allocateDirect(maxSharedUpdateBytes);
-      wmem = wdh.get();
+      wmem = wdh.getWritable();
     } else {
       wmem = WritableMemory.allocate(maxSharedUpdateBytes);
     }

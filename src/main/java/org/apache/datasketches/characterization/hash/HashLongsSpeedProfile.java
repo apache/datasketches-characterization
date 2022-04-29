@@ -20,7 +20,7 @@
 package org.apache.datasketches.characterization.hash;
 
 import org.apache.datasketches.hash.MurmurHash3;
-import org.apache.datasketches.hash.MurmurHash3v2;
+import org.apache.datasketches.memory.MurmurHash3v2;
 import org.apache.datasketches.hash.XxHash;
 
 /**

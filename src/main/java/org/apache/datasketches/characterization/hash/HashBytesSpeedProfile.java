@@ -19,9 +19,9 @@
 
 package org.apache.datasketches.characterization.hash;
 
-import static org.apache.datasketches.memory.UnsafeUtil.unsafe;
+import static org.apache.datasketches.memory.internal.UnsafeUtil.unsafe;
 
-import org.apache.datasketches.hash.MurmurHash3v2;
+import org.apache.datasketches.memory.MurmurHash3v2;
 import org.apache.datasketches.hash.XxHash;
 import org.apache.datasketches.memory.WritableMemory;
 
@@ -40,7 +40,7 @@ public class HashBytesSpeedProfile extends BaseHashSpeedProfile {
   @Override
   void configure() { //for all trials at a point
     in = new byte[p.x];
-    wmem = WritableMemory.wrap(in);
+    wmem = WritableMemory.writableWrap(in);
   }
 
   @Override

@@ -59,7 +59,7 @@ public final class ThetaSerDeProfile extends BaseSerDeProfile {
     if (direct) {
       final int bytes = Sketch.getMaxUpdateSketchBytes(k);
       final byte[] memArr = new byte[bytes];
-      final WritableMemory wmem = WritableMemory.wrap(memArr);
+      final WritableMemory wmem = WritableMemory.writableWrap(memArr);
       sketch = udBldr.build(wmem);
     } else {
       sketch = udBldr.build();
