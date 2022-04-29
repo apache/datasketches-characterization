@@ -15,20 +15,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-add_executable(characterization)
+add_executable(characterization-cpp)
 
 find_package(DataSketches 3.2 REQUIRED)
-target_link_libraries(characterization PUBLIC ${DATASKETCHES_LIB})
-target_include_directories(characterization PUBLIC ${DATASKETCHES_INCLUDE_DIR})
+target_link_libraries(characterization-cpp PUBLIC ${DATASKETCHES_LIB})
+target_include_directories(characterization-cpp PUBLIC ${DATASKETCHES_INCLUDE_DIR})
 
-target_compile_features(common INTERFACE cxx_std_11)
-
-set_target_properties(characterization PROPERTIES
+set_target_properties(characterization-cpp PROPERTIES
   CXX_STANDARD 11
   CXX_STANDARD_REQUIRED YES
 )
 
-target_sources(characterization
+target_sources(characterization-cpp
   PRIVATE
     src/main.cpp
     src/job_profile.cpp
@@ -78,6 +76,8 @@ target_sources(characterization
     src/kll_sketch_timing_profile_impl.hpp
     src/memory_usage_profile.cpp
     src/memory_usage_profile.hpp
+    src/quantiles_sketch_accuracy_profile.cpp
+    src/quantiles_sketch_accuracy_profile.hpp
     src/req_merge_timing_profile.hpp
     src/req_merge_timing_profile_impl.hpp
     src/req_sketch_timing_profile.hpp

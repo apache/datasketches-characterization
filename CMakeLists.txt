@@ -75,7 +75,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
+# build the executable wherever we run cmake, not a subdirectory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 ###### TARGETS ######
-# do we need the next line since we don't actually make a library anymore?
 
 add_subdirectory(cpp)

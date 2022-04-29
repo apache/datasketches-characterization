@@ -63,6 +63,8 @@
 #include "req_sketch_timing_profile.hpp"
 #include "req_merge_timing_profile.hpp"
 
+#include "quantiles_sketch_accuracy_profile.hpp"
+
 using namespace datasketches;
 typedef std::unique_ptr<job_profile> job_profile_ptr;
 
@@ -93,6 +95,7 @@ int main(int argc, char **argv) {
   job_profile::add("kll-sketch-accuracy", job_profile_ptr(new kll_sketch_accuracy_profile()));
   job_profile::add("kll-merge-accuracy", job_profile_ptr(new kll_merge_accuracy_profile()));
   job_profile::add("fi-sketch-accuracy", job_profile_ptr(new frequent_items_sketch_accuracy_profile()));
+  job_profile::add("quantiles-sketch-accuracy", job_profile_ptr(new quantiles_sketch_accuracy_profile()));
 
   job_profile::add("cpc-sketch-memory", job_profile_ptr(new cpc_sketch_memory_profile()));
   job_profile::add("hll-sketch-memory", job_profile_ptr(new hll_sketch_memory_profile()));
