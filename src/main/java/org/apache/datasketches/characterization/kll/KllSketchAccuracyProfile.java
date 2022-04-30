@@ -99,41 +99,24 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
   //prepare input data that will be permuted and associated arrays
   public void prepareTrialSet(final int streamLength) {
     this.streamLength = streamLength;
-    final int[] sortedArr;
 
     if (useDouble) {
-      if (uniformRandom) {
-        inputDoubleValues = new double[streamLength];
-        sortedArr = fillUniformRandomDoubles(inputDoubleValues);
-        //Compute true ranks & compress
-        doubleQueryValues = new double[streamLength];
-        trueRanks = getTrueRanksDoubles(sortedArr, doubleQueryValues);
-        compressDoubleQueryValues();
-      }
-      else { //consecutive
-        inputDoubleValues = new double[streamLength];
-        sortedArr = fillContiguousDoubles(inputDoubleValues);
-        //Compute true ranks
-        doubleQueryValues = new double[streamLength];
-        trueRanks = getTrueRanksDoubles(sortedArr, doubleQueryValues);
-      }
+      inputDoubleValues = new double[streamLength];
+      doubleQueryValues = new double[streamLength];
+      final int[] sortedArr = uniformRandom
+          ? fillUniformRandomDoubles(inputDoubleValues)
+          : fillContiguousDoubles(inputDoubleValues);
+      trueRanks = getTrueRanksDoubles(sortedArr, doubleQueryValues);
+      if (uniformRandom) { compressDoubleQueryValues(); }
     }
     else { //useFloats
-      if (uniformRandom) {
-        inputFloatValues = new float[streamLength];
-        sortedArr = fillUniformRandomFloats(inputFloatValues);
-        //Compute true ranks
-        floatQueryValues = new float[streamLength];
-        trueRanks = getTrueRanksFloats(sortedArr, floatQueryValues);
-        compressFloatQueryValues();
-      }
-      else { //consecutive
-        inputFloatValues = new float[streamLength];
-        sortedArr = fillContiguousFloats(inputFloatValues);
-        //Compute true ranks
-        floatQueryValues = new float[streamLength];
-        trueRanks = getTrueRanksFloats(sortedArr, floatQueryValues);
-      }
+      inputFloatValues = new float[streamLength];
+      floatQueryValues = new float[streamLength];
+      final int[] sortedArr = uniformRandom
+          ? fillUniformRandomFloats(inputFloatValues)
+          : fillContiguousFloats(inputFloatValues);
+      trueRanks = getTrueRanksFloats(sortedArr, floatQueryValues);
+      if (uniformRandom) { compressFloatQueryValuesAndTrueRanks(); }
     }
   }
 
@@ -167,17 +150,17 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
       // query sketch and gather results
       worstNegRankError = 0;
       worstPosRankError = 0;
-      final int qLen = trueRanks.length;
+      final int queryLen = trueRanks.length;
       if (useBulk) {
         final double[] estRanks = dskUT.getCDF(doubleQueryValues);
-        for (int i = 0; i < qLen; i++) {
+        for (int i = 0; i < queryLen; i++) {
           final double trueRank = (double) trueRanks[i] / streamLength;
           final double deltaRankErr = estRanks[i] - trueRank;
           if (deltaRankErr < 0) { worstNegRankError = Math.min(worstNegRankError, deltaRankErr); }
           else { worstPosRankError = Math.max(worstPosRankError, deltaRankErr); }
         }
       } else {
-        for (int i = 0; i < qLen; i++) {
+        for (int i = 0; i < queryLen; i++) {
           final double trueRank = (double) trueRanks[i] / streamLength;
           final double deltaRankErr = dskUT.getRank(i) - trueRank;
           if (deltaRankErr < 0) { worstNegRankError = Math.min(worstNegRankError, deltaRankErr); }
@@ -359,7 +342,7 @@ public class KllSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
     return trueRanks;
   }
 
-  final void compressFloatQueryValues() {
+  final void compressFloatQueryValuesAndTrueRanks() {
     //find num duplicates
     final int n = trueRanks.length;
     int dups = 0;

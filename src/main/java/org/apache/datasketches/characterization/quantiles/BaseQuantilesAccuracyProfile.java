@@ -59,7 +59,6 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
 public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
 
   protected Job job;
-  private DoublesSketchBuilder builder;
   protected Properties props;
 
   //JobProfile
@@ -80,13 +79,13 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
   private static final double[] G_QUANTILES_3SD = {M3SD, M2SD, M1SD, MED, P1SD, P2SD, P3SD};
 
   private void doTrials() {
-    final int lgMin = Integer.parseInt(job.getProperties().mustGet("lgMin"));
-    final int lgMax = Integer.parseInt(job.getProperties().mustGet("lgMax"));
-    final int ppo = Integer.parseInt(job.getProperties().mustGet("PPO"));
-    final int numTrials = Integer.parseInt(job.getProperties().mustGet("trials"));
-    final int errorSketchLgK = Integer.parseInt(job.getProperties().mustGet("errLgK"));
+    final int lgMin = Integer.parseInt(props.mustGet("lgMin"));
+    final int lgMax = Integer.parseInt(props.mustGet("lgMax"));
+    final int ppo = Integer.parseInt(props.mustGet("PPO"));
+    final int numTrials = Integer.parseInt(props.mustGet("trials"));
+    final int errorSketchLgK = Integer.parseInt(props.mustGet("errLgK"));
 
-    builder = DoublesSketch.builder().setK(1 << errorSketchLgK);
+    final DoublesSketchBuilder builder = DoublesSketch.builder().setK(1 << errorSketchLgK);
 
     configure();
     job.println("Epsilon:\t" + getEpsilon());
