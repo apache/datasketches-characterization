@@ -20,7 +20,11 @@
 package org.apache.datasketches;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.ceil;
+import static java.lang.Math.exp;
+import static java.lang.Math.floor;
 import static java.lang.Math.log;
+import static java.lang.Math.pow;
 
 /**
  * A simple tool to generate (x,y) pairs of points that follow a power-law
@@ -201,7 +205,7 @@ public class PowerLawGenerator {
       final int ptsPerLogBase) {
     final boolean increasing = end > start;
     final double genIdx = getGenIndex(start, logBase, ptsPerLogBase);
-    return (int) ((increasing) ? Math.floor(genIdx) : Math.ceil(genIdx));
+    return (int) ((increasing) ? floor(genIdx) : ceil(genIdx));
   }
 
   /**
@@ -220,7 +224,7 @@ public class PowerLawGenerator {
       final int ptsPerLogBase) {
     final boolean increasing = end > start;
     final double genIdx = getGenIndex(end, logBase, ptsPerLogBase);
-    return (int) ((!increasing) ? Math.floor(genIdx) : Math.ceil(genIdx));
+    return (int) ((!increasing) ? floor(genIdx) : ceil(genIdx));
   }
 
   /**
@@ -249,7 +253,7 @@ public class PowerLawGenerator {
    * @return the x-coordinate based on the generating index
    */
   public static double getX(final int genIndex, final double logBase, final int ptsPerLogBase) {
-    return Math.pow(logBase, ((double) genIndex) / ptsPerLogBase);
+    return pow(logBase, ((double) genIndex) / ptsPerLogBase);
   }
 
   /**
@@ -261,7 +265,7 @@ public class PowerLawGenerator {
    * @return the y-coordinate
    */
   public static double getY(final DoublePair start, final double slope, final double x) {
-    return start.y * Math.exp(slope * log(x / start.x));
+    return start.y * exp(slope * log(x / start.x));
   }
 
 }

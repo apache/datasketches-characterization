@@ -26,7 +26,7 @@ import static org.apache.datasketches.GaussianRanks.MED;
 import static org.apache.datasketches.GaussianRanks.P1SD;
 import static org.apache.datasketches.GaussianRanks.P2SD;
 import static org.apache.datasketches.GaussianRanks.P3SD;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -107,7 +107,7 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
       job.println(streamLength + "\t"
           + String.format("%.16f\t%.16f\t%.16f\t%.16f\t%.16f\t%.16f\t%.16f",
               qArr[0], qArr[1], qArr[2], qArr[3], qArr[4], qArr[5], qArr[6]));
-      streamLength = pwr2LawNext(ppo, streamLength);
+      streamLength = pwr2SeriesNext(ppo, streamLength);
     }
     job.println("");
   }

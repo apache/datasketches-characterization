@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.memory;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 //import static org.testng.Assert.fail;
 
 import java.util.ArrayList;
@@ -154,7 +154,7 @@ public abstract class BaseUtf8SpeedProfile implements JobProfile {
     final int minX = 1 << lgMinX;
     int lastX = 0;
     while (lastX < maxX) { //do each plot point on the X-axis
-      final int nextX = lastX == 0 ? minX : pwr2LawNext(xPPO, lastX);
+      final int nextX = lastX == 0 ? minX : pwr2SeriesNext(xPPO, lastX);
       lastX = nextX;
       final int trials = getNumTrials(nextX);
       //configure();

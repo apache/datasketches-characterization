@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.quantiles.tdigest;
 
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -66,7 +66,7 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
       }
       job.println(streamLength + "\t"
           + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
-      streamLength = pwr2LawNext(ppo, streamLength);
+      streamLength = pwr2SeriesNext(ppo, streamLength);
     }
   }
 

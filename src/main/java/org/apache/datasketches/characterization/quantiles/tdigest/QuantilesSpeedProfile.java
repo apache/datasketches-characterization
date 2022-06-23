@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.quantiles.tdigest;
 
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -61,7 +61,7 @@ public abstract class QuantilesSpeedProfile implements JobProfile {
         doTrial();
       }
       job.println(getStats(streamLength, numTrials, numQueryValues));
-      streamLength = pwr2LawNext(pointsPerOctave, streamLength);
+      streamLength = pwr2SeriesNext(pointsPerOctave, streamLength);
     }
   }
 

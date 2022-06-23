@@ -23,7 +23,7 @@ import static java.lang.Math.round;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.SpacedPoints.expSpaced;
 import static org.apache.datasketches.Util.evenlySpaced;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -222,7 +222,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
       //go to next stream length
       if (useppo) {
-        streamLength = pwr2LawNext(ppo, streamLength);
+        streamLength = pwr2SeriesNext(ppo, streamLength);
       } else {
         lgCurSL += lgDelta;
         streamLength = 1 << lgCurSL;

@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.uniquecount;
 
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.milliSecToString;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 
 import java.io.PrintWriter;
 
@@ -115,7 +115,7 @@ public abstract class BaseBoundsAccuracyProfile implements JobProfile {
     //This will generate a table of data up for each intermediate Trials point
     int lastT = 0;
     while (lastT < maxT) {
-      final int nextT = lastT == 0 ? minT : pwr2LawNext(tPPO, lastT);
+      final int nextT = lastT == 0 ? minT : pwr2SeriesNext(tPPO, lastT);
       final int delta = nextT - lastT;
       for (int i = 0; i < delta; i++) {
         doTrial();

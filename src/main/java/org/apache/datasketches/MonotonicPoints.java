@@ -23,7 +23,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 import static java.lang.Math.min;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 
 import java.util.Random;
 
@@ -150,7 +150,7 @@ public class MonotonicPoints {
     final int end = 1 << lgEnd;
     int count = 0;
     while (p <= end) {
-      p = pwr2LawNext(ppo, p);
+      p = pwr2SeriesNext(ppo, p);
       count++;
     }
     return count;

@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.kll;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -135,7 +135,7 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
     job.printf(sFmt, (Object[]) columnLabels); //Header
     int pp = 1;
     while (lastSL < maxSL) { //Trials for each plotPoint on X-axis, and one row on output
-      final int nextSL = lastSL == 0 ? minSL : pwr2LawNext(ppoSL, lastSL);
+      final int nextSL = lastSL == 0 ? minSL : pwr2SeriesNext(ppoSL, lastSL);
       lastSL = nextSL;
       final int trials = getNumTrials(nextSL);
 

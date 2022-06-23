@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.uniquecount;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -92,7 +92,7 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
     final StringBuilder dataStr = new StringBuilder();
     job.println(getHeader());
     while (lastU < maxU) { //Trials for each U point on X-axis, and one row on output
-      final int nextU = lastU == 0 ? minU : pwr2LawNext(uPPO, lastU);
+      final int nextU = lastU == 0 ? minU : pwr2SeriesNext(uPPO, lastU);
       lastU = nextU;
       final int trials = getNumTrials(nextU);
 
