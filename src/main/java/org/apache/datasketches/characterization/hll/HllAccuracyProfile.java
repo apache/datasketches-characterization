@@ -33,6 +33,7 @@ public class HllAccuracyProfile extends BaseAccuracyProfile {
   @Override
   public void configure() {
     //Configure Sketch
+    final int lgK = Integer.parseInt(prop.mustGet("LgK"));
     final boolean direct = Boolean.parseBoolean(prop.mustGet("HLL_direct"));
     useComposite = Boolean.parseBoolean(prop.mustGet("HLL_useComposite"));
     final String useCharArrStr = prop.get("Trials_charArr");

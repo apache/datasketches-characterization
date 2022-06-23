@@ -48,7 +48,7 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
   @Override
   public void configure() {
     //Configure Sketches
-    sharedLgK = lgK;
+    sharedLgK = Integer.parseInt(prop.mustGet("LgK"));
     localLgK = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_localLgK"));
     poolThreads = Integer.parseInt(prop.mustGet("CONCURRENT_THETA_poolThreads"));
     maxConcurrencyError = Double.parseDouble(prop.mustGet("CONCURRENT_THETA_maxConcurrencyError"));

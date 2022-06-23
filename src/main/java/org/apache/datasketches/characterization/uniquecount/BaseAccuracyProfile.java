@@ -54,17 +54,23 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   public void start(final Job job) {
     this.job = job;
     prop = job.getProperties();
+    //Uniques Profile
+    lgMinU = Integer.parseInt(prop.mustGet("Trials_lgMinU"));
+    lgMaxU = Integer.parseInt(prop.mustGet("Trials_lgMaxU"));
+    uPPO = Integer.parseInt(prop.mustGet("Trials_UPPO"));
+    //Trials Profile
     lgMinT = Integer.parseInt(prop.mustGet("Trials_lgMinT"));
     lgMaxT = Integer.parseInt(prop.mustGet("Trials_lgMaxT"));
     tPPO = Integer.parseInt(prop.mustGet("Trials_TPPO"));
-    lgMinU = Integer.parseInt(prop.mustGet("Trials_lgMinU"));
-    lgMaxU = Integer.parseInt(prop.mustGet("Trials_lgMaxU"));
+
+    lgQK = Integer.parseInt(prop.mustGet("Trials_lgQK"));
     interData = Boolean.parseBoolean(prop.mustGet("Trials_interData"));
     postPMFs = Boolean.parseBoolean(prop.mustGet("Trials_postPMFs"));
-    uPPO = Integer.parseInt(prop.mustGet("Trials_UPPO"));
-    lgQK = Integer.parseInt(prop.mustGet("Trials_lgQK"));
-    qArr = AccuracyStats.buildLog2AccuracyStatsArray(lgMinU, lgMaxU, uPPO, lgQK);
+    //Sketch Profile
     lgK = Integer.parseInt(prop.mustGet("LgK"));
+
+    qArr = AccuracyStats.buildLog2AccuracyStatsArray(lgMinU, lgMaxU, uPPO, lgQK);
+
     final String getSizeStr = prop.get("Trials_bytes");
     getSize = getSizeStr == null ? false : Boolean.parseBoolean(getSizeStr);
     configure();

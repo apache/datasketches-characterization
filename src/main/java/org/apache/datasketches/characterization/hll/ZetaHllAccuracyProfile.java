@@ -38,6 +38,7 @@ public class ZetaHllAccuracyProfile extends BaseAccuracyProfile {
 
   @Override
   public void configure() {
+    final int lgK = Integer.parseInt(prop.mustGet("LgK"));
     lgSP = Integer.parseInt(prop.mustGet("LgSP"));
     zetaType = prop.mustGet("ZetaType");
     hllBuilder = new HyperLogLogPlusPlus.Builder();

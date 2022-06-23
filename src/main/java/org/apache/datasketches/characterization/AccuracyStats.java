@@ -94,7 +94,7 @@ public class AccuracyStats {
    */
   public static final AccuracyStats[] buildLog10AccuracyStatsArray(
       final int log10Min, final int log10Max, final int ppb, final int lgQK) {
-    final int qLen = MonotonicPoints.countPoints(log10Min, log10Max, ppb);
+    final int qLen = MonotonicPoints.countLog10Points(log10Min, log10Max, ppb);
     final AccuracyStats[] qArr = new AccuracyStats[qLen];
     long p = round(pow(10, log10Min));
     for (int i = 0; i < qLen; i++) {

@@ -43,6 +43,7 @@ public class ThetaUnionAccuracyProfile2 extends BaseAccuracyProfile {
 
   @Override
   public void configure() {
+    final int lgK = Integer.parseInt(prop.mustGet("LgK"));
     final Family family = Family.stringToFamily(prop.mustGet("THETA_famName"));
     final float p = Float.parseFloat(prop.mustGet("THETA_p"));
     final ResizeFactor rf = ResizeFactor.getRF(Integer.parseInt(prop.mustGet("THETA_lgRF")));
