@@ -103,7 +103,7 @@ public abstract class BaseSerDeProfile implements JobProfile {
     job.println(getHeader());
 
     while (lastU < maxU) { //for each U point on X-axis, OR one row on output
-      final int nextU = lastU == 0 ? minU : pwr2SeriesNext(uPPO, lastU);
+      final int nextU = lastU == 0 ? minU : (int)pwr2SeriesNext(uPPO, lastU);
       lastU = nextU;
       final int trials = getNumTrials(nextU);
 

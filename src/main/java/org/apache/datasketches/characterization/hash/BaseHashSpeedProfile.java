@@ -98,7 +98,7 @@ public abstract class BaseHashSpeedProfile implements JobProfile {
     final int minX = 1 << lgMinX;
     int lastX = 0;
     while (lastX < maxX) {
-      final int nextX = lastX == 0 ? minX : pwr2SeriesNext(xPPO, lastX);
+      final int nextX = lastX == 0 ? minX : (int)pwr2SeriesNext(xPPO, lastX);
       lastX = nextX;
       final int trials = getNumTrials(nextX);
       p.reset(nextX, trials);

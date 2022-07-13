@@ -107,7 +107,7 @@ public abstract class BaseQuantilesAccuracyProfile implements JobProfile {
       job.println(streamLength + "\t"
           + String.format("%.16f\t%.16f\t%.16f\t%.16f\t%.16f\t%.16f\t%.16f",
               qArr[0], qArr[1], qArr[2], qArr[3], qArr[4], qArr[5], qArr[6]));
-      streamLength = pwr2SeriesNext(ppo, streamLength);
+      streamLength = (int)pwr2SeriesNext(ppo, streamLength);
     }
     job.println("");
   }

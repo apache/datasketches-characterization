@@ -92,7 +92,7 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
     final StringBuilder dataStr = new StringBuilder();
     job.println(getHeader());
     while (lastU < maxU) { //Trials for each U point on X-axis, and one row on output
-      final int nextU = lastU == 0 ? minU : pwr2SeriesNext(uPPO, lastU);
+      final int nextU = lastU == 0 ? minU : (int)pwr2SeriesNext(uPPO, lastU);
       lastU = nextU;
       final int trials = getNumTrials(nextU);
 

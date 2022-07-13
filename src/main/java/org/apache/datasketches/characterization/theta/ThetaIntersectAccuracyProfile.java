@@ -28,7 +28,7 @@ import org.apache.datasketches.theta.SetOperationBuilder;
 import org.apache.datasketches.theta.UpdateSketch;
 import org.apache.datasketches.theta.UpdateSketchBuilder;
 
-public class ThetaAccuracyIntersectionProfile extends BaseAccuracyProfile {
+public class ThetaIntersectAccuracyProfile extends BaseAccuracyProfile {
   private int myLgK; //avoids temporary conflict with BaseAccuracyProfile
   private boolean rebuild;
   private UpdateSketch skSm;
@@ -37,12 +37,13 @@ public class ThetaAccuracyIntersectionProfile extends BaseAccuracyProfile {
 
   @Override
   public void configure() {
+    if (!intersectTest) { throw new IllegalArgumentException("Missing intersectTest parameter"); }
     //Theta Sketch Profile
     myLgK = Integer.parseInt(prop.mustGet("LgK"));
-    rebuild = Boolean.parseBoolean(prop.mustGet("Rebuild"));
+    rebuild = Boolean.parseBoolean(prop.mustGet("THETA_rebuild"));
     final Family family = Family.stringToFamily(prop.mustGet("THETA_famName"));
-    final ResizeFactor rf = ResizeFactor.getRF(Integer.parseInt(prop.mustGet("LgRF")));
-    final float p = Float.parseFloat(prop.mustGet("P"));
+    final ResizeFactor rf = ResizeFactor.getRF(Integer.parseInt(prop.mustGet("THETA_lgRF")));
+    final float p = Float.parseFloat(prop.mustGet("THETA_p"));
     //final boolean direct = Boolean.parseBoolean(prop.mustGet("Direct"));
     final UpdateSketchBuilder udBldr = new UpdateSketchBuilder()
       .setLogNominalEntries(myLgK)
@@ -61,10 +62,11 @@ public class ThetaAccuracyIntersectionProfile extends BaseAccuracyProfile {
     final int qArrLen = qArr.length;
     skSm.reset();
     skLg.reset();
+    //intersection.reset();
     long lastUniques = 0;
     for (int i = 0; i < qArrLen; i++) {
       final AccuracyStats q = qArr[i];
-      final long delta = (long)(q.trueValue - lastUniques);
+      final long delta = (q.uniques - lastUniques);
       for (long u = 0; u < delta; u++) {
         if (i == 0) { skSm.update(vIn); }
         skLg.update(vIn++);
@@ -75,6 +77,7 @@ public class ThetaAccuracyIntersectionProfile extends BaseAccuracyProfile {
         skLg.rebuild();
       }
       final double est = intersection.intersect(skLg, skSm).getEstimate();
+      //final double est = skLg.getEstimate();
       q.update(est);
     }
   }

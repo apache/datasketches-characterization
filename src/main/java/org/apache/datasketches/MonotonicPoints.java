@@ -150,8 +150,8 @@ public class MonotonicPoints {
    * @return the actual number of plotting points between lgStart and lgEnd.
    */
   public static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {
-    int p = 1 << lgStart;
-    final int end = 1 << lgEnd;
+    long p = 1L << lgStart;
+    final long end = 1L << lgEnd;
     int count = 0;
     while (p <= end) {
       p = pwr2SeriesNext(ppo, p);

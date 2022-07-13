@@ -128,7 +128,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     job.printf(sFmt, (Object[]) columnLabels); //Header
     int pp = 1;
     while (lastSL < maxSL) { //Trials for each plotPoint on X-axis, and one row on output
-      final int nextSL = lastSL == 0 ? minSL : pwr2SeriesNext(ppoSL, lastSL);
+      final int nextSL = lastSL == 0 ? minSL : (int)pwr2SeriesNext(ppoSL, lastSL);
       lastSL = nextSL;
       final int trials = getNumTrials(nextSL);
 

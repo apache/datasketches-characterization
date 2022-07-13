@@ -69,7 +69,7 @@ public abstract class BaseQuantilesSpeedProfile implements JobProfile {
         doTrial();
       }
       job.println(getStats(streamLength, numTrials, numQueryValues));
-      streamLength = pwr2SeriesNext(pointsPerOctave, streamLength);
+      streamLength = (int)pwr2SeriesNext(pointsPerOctave, streamLength);
     }
   }
 

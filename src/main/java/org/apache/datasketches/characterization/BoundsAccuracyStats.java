@@ -87,7 +87,7 @@ public class BoundsAccuracyStats {
     int p = 1 << lgMin;
     for (int i = 0; i < qLen; i++) {
       qArr[i] = new BoundsAccuracyStats(1 << lgQK, p);
-      p = pwr2SeriesNext(ppo, p);
+      p = (int)pwr2SeriesNext(ppo, p);
     }
     return qArr;
   }

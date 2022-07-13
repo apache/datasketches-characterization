@@ -66,7 +66,7 @@ public abstract class QuantilesAccuracyProfile implements JobProfile {
       }
       job.println(streamLength + "\t"
           + String.format("%.2f", rankErrorSketch.getQuantile((double) errorPct / 100) * 100));
-      streamLength = pwr2SeriesNext(ppo, streamLength);
+      streamLength = (int)pwr2SeriesNext(ppo, streamLength);
     }
   }
 

@@ -67,7 +67,7 @@ public class MonotonicPointsTest {
     int q = start;
     while (q <= end) {
       println(q);
-      q = pwr2SeriesNext(4, q);
+      q = (int)pwr2SeriesNext(4, q);
     }
   }
 

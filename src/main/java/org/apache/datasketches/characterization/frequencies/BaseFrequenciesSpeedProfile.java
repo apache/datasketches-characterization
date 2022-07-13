@@ -65,7 +65,7 @@ public abstract class BaseFrequenciesSpeedProfile implements JobProfile {
         doTrial();
       }
       job.println(getStats(streamLength, numTrials));
-      streamLength = pwr2SeriesNext(pointsPerOctave, streamLength);
+      streamLength = (int)pwr2SeriesNext(pointsPerOctave, streamLength);
     }
   }
 

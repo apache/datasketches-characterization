@@ -129,7 +129,7 @@ public class FdtAccuracyProfile implements JobProfile {
     slope = getSlope(p1, p2);
     xPoints = 0;
     int xG;
-    for (xG = minG; xG <= maxG; xG = pwr2SeriesNext(gPPO, xG)) {
+    for (xG = minG; xG <= maxG; xG = (int)pwr2SeriesNext(gPPO, xG)) {
       xPoints++;
     }
   }
@@ -139,7 +139,7 @@ public class FdtAccuracyProfile implements JobProfile {
     groupsGenerated = 0;
     sketchUpdates = 0;
     int xG, yU;
-    for (xG = minG; xG <= maxG; xG = pwr2SeriesNext(gPPO, xG)) { //select major group
+    for (xG = minG; xG <= maxG; xG = (int)pwr2SeriesNext(gPPO, xG)) { //select major group
       groupsGenerated += xG;
       yU = (int) Math.round(getY(p1, slope, xG)); //compute target # uniques
       for (int g = 1; g <= xG; g++) { //select the minor group

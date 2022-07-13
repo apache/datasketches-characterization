@@ -161,7 +161,7 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
     //This will generate a table of data for each intermediate Trials point
     int lastT = 0;
     while (lastT < maxT) {
-      final int nextT = lastT == 0 ? minT : pwr2SeriesNext(tPPO, lastT);
+      final int nextT = lastT == 0 ? minT : (int)pwr2SeriesNext(tPPO, lastT);
       final int delta = nextT - lastT;
       for (int i = 0; i < delta; i++) {
         doTrial();

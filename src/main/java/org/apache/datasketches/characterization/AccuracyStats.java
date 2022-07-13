@@ -39,16 +39,31 @@ public class AccuracyStats {
   public double sumRelErr = 0;
   public double sumSqErr = 0;
   public double rmsre = 0; //used later for plotting, set externally
-  public double trueValue; //set by constructor
+  public double trueValue; //set by constructor, used only for error analysis
+  public long uniques;     //set by constructor, used as a coordinate
   public int bytes = 0;
 
   /**
+   * Used for single sketch or union accuracy.
    * @param k the configuration value for the quantiles sketch. It must be a power of two.
    * @param trueValue the true value
    */
   public AccuracyStats(final int k, final long trueValue) {
     qsk = new DoublesSketchBuilder().setK(k).build(); //Quantiles
     this.trueValue = trueValue;
+    this.uniques = trueValue;
+  }
+
+  /**
+   * Used for intersection accuracy
+   * @param k the configuration value for the quantiles sketch. It must be a power of two.
+   * @param trueValue the true value
+   * @param uniques number of uniques, used as a coordinate in intersection testing.
+   */
+  public AccuracyStats(final int k, final long trueValue, final long uniques) {
+    qsk = new DoublesSketchBuilder().setK(k).build(); //Quantiles
+    this.trueValue = trueValue;
+    this.uniques = uniques;
   }
 
   /**
@@ -76,9 +91,31 @@ public class AccuracyStats {
       final int lgMin, final int lgMax, final int ppo, final int lgQK) {
     final int qLen = MonotonicPoints.countPoints(lgMin, lgMax, ppo);
     final AccuracyStats[] qArr = new AccuracyStats[qLen];
-    int p = 1 << lgMin;
+    long p = 1L << lgMin;
     for (int i = 0; i < qLen; i++) {
       qArr[i] = new AccuracyStats(1 << lgQK, p);
+      p = pwr2SeriesNext(ppo, p);
+    }
+    return qArr;
+  }
+
+  /**
+   * Build the AccuracyStats Array for Intersection.
+   * All elements of the AccuracyStats array have 2^lgMin values as the trueValue.
+   * @param lgMin log_base2 of the minimum number of uniques used
+   * @param lgMax log_base2 of the maximum number of uniques used
+   * @param ppo the number of points per octave
+   * @param lgQK the lgK for the Quantiles sketch
+   * @return an AccuracyStats array
+   */
+  public static final AccuracyStats[] buildLog2IntersectAccuracyStatsArray(
+      final int lgMin, final int lgMax, final int ppo, final int lgQK) {
+    final int qLen = MonotonicPoints.countPoints(lgMin, lgMax, ppo);
+    final AccuracyStats[] qArr = new AccuracyStats[qLen];
+    final long trueValue = 1L << lgMin;
+    long p = trueValue; //becomes the uniques coordinate
+    for (int i = 0; i < qLen; i++) {
+      qArr[i] = new AccuracyStats(1 << lgQK, trueValue, p);
       p = pwr2SeriesNext(ppo, p);
     }
     return qArr;
@@ -99,7 +136,7 @@ public class AccuracyStats {
     long p = round(pow(10, log10Min));
     for (int i = 0; i < qLen; i++) {
       qArr[i] = new AccuracyStats(1 << lgQK, p);
-      p = (int) powerSeriesNextDouble(ppb, p, true, 10.0);
+      p = (long) powerSeriesNextDouble(ppb, p, true, 10.0);
     }
     return qArr;
   }

@@ -155,7 +155,7 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
       doStreamLength(streamLength);
       //go to next stream length
       if (useppo) {
-        streamLength = pwr2SeriesNext(ppo, streamLength);
+        streamLength = (int)pwr2SeriesNext(ppo, streamLength);
       } else {
         lgCurSL += lgDelta;
         streamLength = 1 << lgCurSL;
