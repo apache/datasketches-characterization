@@ -77,7 +77,7 @@ public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
     DoublesSketchAccuracyProfile.shuffle(inputValues);
 
     final long startBuild = System.nanoTime();
-    final ItemsSketch<Double> sketch = ItemsSketch.getInstance(k, COMPARATOR);
+    final ItemsSketch<Double> sketch = ItemsSketch.getInstance(Double.class, k, COMPARATOR);
     final long stopBuild = System.nanoTime();
     buildTimeNs += stopBuild - startBuild;
 
@@ -113,13 +113,13 @@ public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
     final WritableMemory mem = WritableMemory.writableWrap(bytes);
     final long startDeserialize = System.nanoTime();
-    ItemsSketch.getInstance(mem, COMPARATOR, SERDE);
+    ItemsSketch.getInstance(Double.class, mem, COMPARATOR, SERDE);
     final long stopDeserialize = System.nanoTime();
     deserializeTimeNs += stopDeserialize - startDeserialize;
 
     // could record the last one since they must be the same
     // but let's average across all trials to see if there is an anomaly
-    numRetainedItems += sketch.getRetainedItems();
+    numRetainedItems += sketch.getNumRetained();
     serializedSizeBytes += bytes.length;
   }
 

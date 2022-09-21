@@ -65,7 +65,7 @@ public class ItemsSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
     shuffle(inputValues);
 
     // build sketch
-    final ItemsSketch<Integer> sketch = ItemsSketch.getInstance(1 << lgK, Comparator.naturalOrder());
+    final ItemsSketch<Integer> sketch = ItemsSketch.getInstance(Integer.class, 1 << lgK, Comparator.naturalOrder());
     for (int i = 0; i < inputValues.length; i++) {
       sketch.update(inputValues[i]);
     }
