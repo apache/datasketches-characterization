@@ -33,7 +33,7 @@ template<typename T>
 void kll_sketch_memory_profile<T>::run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo) {
   const size_t k = 200;
 
-  typedef kll_sketch<T, std::less<T>, serde<T>, counting_allocator<T>> kll_sketch_t;
+  typedef kll_sketch<T, std::less<T>, counting_allocator<T>> kll_sketch_t;
   kll_sketch_t* s = new (counting_allocator<kll_sketch_t>().allocate(1)) kll_sketch_t(k);
 
   size_t count = 0;

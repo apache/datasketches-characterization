@@ -40,14 +40,14 @@ void kll_accuracy_profile::run() {
   const unsigned num_steps = count_points(lg_min, lg_max, ppo);
   unsigned stream_length = 1 << lg_min;
   for (unsigned i = 0; i < num_steps; i++) {
-    for (unsigned i = 0; i < stream_length; i++) values[i] = i;
+    for (unsigned i = 0; i < stream_length; i++) values[i] = i + 1;
 
     for (unsigned t = 0; t < num_trials; t++) {
       const double maxRankErrorInTrial = run_trial(values, stream_length);
       rank_errors[t] = maxRankErrorInTrial;
     }
 
-    std::sort(&rank_errors[0], &rank_errors[num_trials]);
+    std::sort(rank_errors, rank_errors + num_trials);
     const unsigned error_pct_index = num_trials * error_pct / 100;
     const double rank_error = rank_errors[error_pct_index];
 
