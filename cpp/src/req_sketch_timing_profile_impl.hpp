@@ -57,7 +57,7 @@ void req_sketch_timing_profile<T>::run() {
 
   std::vector<T> rank_query_values(num_queries);
   for (size_t i = 0; i < num_queries; i++) rank_query_values[i] = sample();
-  std::sort(&rank_query_values[0], &rank_query_values[num_queries]);
+  std::sort(rank_query_values.begin(), rank_query_values.end());
 
   double quantile_query_values[num_queries];
   for (size_t i = 0; i < num_queries; i++) quantile_query_values[i] = distribution(generator);
