@@ -23,7 +23,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.Util.milliSecToString;
-import static org.apache.datasketches.Util.pwr2SeriesNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -254,9 +254,9 @@ public class HllConfidenceIntervalInverseProfile implements JobProfile {
     sb.append(LS + LS);
     sb.append(getSumHeader()).append(LS);
     sb.append(trials).append(TAB);
-    sb.append((int)qNinTgtEstRange.getMinValue()).append(TAB);
+    sb.append((int)qNinTgtEstRange.getMinItem()).append(TAB);
     sb.append((int)qNinTgtEstRange.getQuantile(.5)).append(TAB);
-    sb.append((int)qNinTgtEstRange.getMaxValue()).append(TAB);
+    sb.append((int)qNinTgtEstRange.getMaxItem()).append(TAB);
     sb.append(minTgtHits).append(TAB);
     sb.append(maxTgtHits).append(TAB);
     sb.append(totalTgtHits).append(TAB);

@@ -21,8 +21,8 @@ package org.apache.datasketches.characterization;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
-import static org.apache.datasketches.Util.powerSeriesNextDouble;
-import static org.apache.datasketches.Util.pwr2SeriesNext;
+import static org.apache.datasketches.common.Util.powerSeriesNextDouble;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;

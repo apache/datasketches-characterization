@@ -25,8 +25,8 @@ import static java.lang.Math.log;
 import static java.lang.Math.min;
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
-import static org.apache.datasketches.Util.powerSeriesNextDouble;
-import static org.apache.datasketches.Util.pwr2SeriesNext;
+import static org.apache.datasketches.common.Util.powerSeriesNextDouble;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import java.util.Random;
 

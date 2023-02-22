@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.req;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2SeriesNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -95,7 +95,6 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     reqSk = bldr.build();
     //reqSk = new ReqSketch(reqK, hra, null, (byte)INIT_NUMBER_OF_SECTIONS,
     //  MIN_K, NOM_CAPACITY_MULTIPLIER, LAZY_COMPRESSION);
-    reqSk.setLessThanOrEqual(ltEq);
 
   }
 
@@ -137,7 +136,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
         sumUpdateTimePerItem_nS += doTrial(nextSL);
       }
       final double meanUpdateTimePerItem_nS = sumUpdateTimePerItem_nS / trials;
-      final int bytes = reqSk.getSerializationBytes();
+      final int bytes = reqSk.getSerializedSizeBytes();
       job.printf(dFmt, pp, nextSL, trials, bytes, meanUpdateTimePerItem_nS);
       pp++;
     }

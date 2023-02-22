@@ -21,9 +21,9 @@ package org.apache.datasketches.characterization;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.max;
-import static org.apache.datasketches.Util.ceilingPowerBaseOfDouble;
-import static org.apache.datasketches.Util.logBaseOfX;
-import static org.apache.datasketches.Util.powerSeriesNextDouble;
+import static org.apache.datasketches.common.Util.ceilingPowerBaseOfDouble;
+import static org.apache.datasketches.common.Util.logBaseOfX;
+import static org.apache.datasketches.common.Util.powerSeriesNextDouble;
 
 /**
  * @author Lee Rhodes

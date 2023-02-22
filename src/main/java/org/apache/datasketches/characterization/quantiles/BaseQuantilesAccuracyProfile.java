@@ -26,7 +26,7 @@ import static org.apache.datasketches.GaussianRanks.MED;
 import static org.apache.datasketches.GaussianRanks.P1SD;
 import static org.apache.datasketches.GaussianRanks.P2SD;
 import static org.apache.datasketches.GaussianRanks.P3SD;
-import static org.apache.datasketches.Util.pwr2SeriesNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;

@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization;
 
-import static org.apache.datasketches.Util.pwr2SeriesNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;

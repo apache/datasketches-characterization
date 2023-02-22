@@ -86,7 +86,6 @@ public class ReqSketchLongSizeSpeedProfile implements JobProfile {
     final ReqSketchBuilder bldr = ReqSketch.builder();
     bldr.setK(reqK).setHighRankAccuracy(hra);
     reqSk = bldr.build();
-    reqSk.setLessThanOrEqual(ltEq);
   }
 
 //JobProfile interface
@@ -127,7 +126,7 @@ public class ReqSketchLongSizeSpeedProfile implements JobProfile {
         sumUpdateTimePerItem_nS += doTrial(nextSL);
       }
       final double meanUpdateTimePerItem_nS = sumUpdateTimePerItem_nS / trials;
-      final int bytes = reqSk.getSerializationBytes();
+      final int bytes = reqSk.getSerializedSizeBytes();
       job.printf(dFmt, pp, nextSL, trials, bytes, meanUpdateTimePerItem_nS);
       pp++;
     }

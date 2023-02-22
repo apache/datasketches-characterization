@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.uniquecount;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2SeriesNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import java.util.Arrays;
 

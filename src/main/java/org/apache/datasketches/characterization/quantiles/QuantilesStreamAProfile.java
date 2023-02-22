@@ -21,6 +21,7 @@ package org.apache.datasketches.characterization.quantiles;
 
 import static java.lang.Math.rint;
 import static org.apache.datasketches.characterization.ProfileUtil.buildSplitPointsArr;
+import static org.apache.datasketches.quantilescommon.QuantileSearchCriteria.INCLUSIVE;
 
 import java.io.File;
 
@@ -115,7 +116,7 @@ public class QuantilesStreamAProfile implements JobProfile {
     //CDF
     final double[] fracRanks = buildRanksArr(numRanks);
     final long startCdfTime_nS = System.nanoTime();
-    final double[] quantiles = sketch.getQuantiles(fracRanks);
+    final double[] quantiles = sketch.getQuantiles(fracRanks, INCLUSIVE);
     final long cdfTime_nS = System.nanoTime() - startCdfTime_nS;
 
     job.println("CDF");
@@ -127,8 +128,8 @@ public class QuantilesStreamAProfile implements JobProfile {
     job.println("");
 
     //PMF
-    minV = sketch.getMinValue();
-    maxV = sketch.getMaxValue();
+    minV = sketch.getMinItem();
+    maxV = sketch.getMaxItem();
     numItems = sketch.getN();
     spArr = buildSplitPointsArr(minV, maxV, pplb, logBase, eps);
     numSP = spArr.length;

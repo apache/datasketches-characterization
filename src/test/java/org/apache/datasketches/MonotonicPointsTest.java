@@ -19,9 +19,11 @@
 
 package org.apache.datasketches;
 
+import static org.apache.datasketches.MonotonicPoints.countLog10Points;
+import static org.apache.datasketches.MonotonicPoints.countPoints;
+import static org.apache.datasketches.common.Util.powerSeriesNextDouble;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 import static org.testng.Assert.assertEquals;
-import static org.apache.datasketches.MonotonicPoints.*;
-import static org.apache.datasketches.Util.*;
 
 import org.testng.annotations.Test;
 
