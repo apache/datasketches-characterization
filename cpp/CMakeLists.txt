@@ -15,9 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
+cmake_minimum_required(VERSION 3.16.0)
+#include_directories(/Library/Developer/CommandLineTools/usr/include/c++/v1)
 add_executable(characterization)
 
-find_package(DataSketches 3.2 REQUIRED)
+list(APPEND CMAKE_PREFIX_PATH "/tmp/install/DataSketches/include/DataSketches")
+list(APPEND CMAKE_PREFIX_PATH "/tmp/install/DataSketches/lib/DataSketches")
+find_package(DataSketches 4.0.1 REQUIRED)
+#find_package(DataSketches 3.2 REQUIRED)
 target_link_libraries(characterization PUBLIC ${DATASKETCHES_LIB})
 target_include_directories(characterization PUBLIC ${DATASKETCHES_INCLUDE_DIR})
 
@@ -98,4 +103,10 @@ target_sources(characterization
     src/tuple_union_timing_profile.hpp
     src/zipf_distribution.cpp
     src/zipf_distribution.hpp
+
+    # Companion sketch files
+    src/theta_sketch_jaccard_profile.cpp
+    src/theta_sketch_jaccard_profile.hpp
+    src/companion_sketch_size_profile.cpp
+    src/companion_sketch_size_profile.hpp
 )
