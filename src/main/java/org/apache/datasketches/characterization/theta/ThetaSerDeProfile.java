@@ -20,9 +20,6 @@
 package org.apache.datasketches.characterization.theta;
 
 import org.apache.datasketches.characterization.uniquecount.BaseSerDeProfile;
-
-//import static org.testng.Assert.assertEquals;
-
 import org.apache.datasketches.common.Family;
 import org.apache.datasketches.common.ResizeFactor;
 import org.apache.datasketches.memory.Memory;

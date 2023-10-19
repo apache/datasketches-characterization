@@ -21,8 +21,8 @@ package org.apache.datasketches;
 
 import static org.apache.datasketches.Files.isFileValid;
 import static org.apache.datasketches.Files.openPrintWriter;
-import static org.apache.datasketches.Util.getResourcePath;
-import static org.apache.datasketches.Util.milliSecToString;
+import static org.apache.datasketches.common.Util.getResourcePath;
+import static org.apache.datasketches.common.Util.milliSecToString;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;

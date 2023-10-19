@@ -23,6 +23,7 @@ import static org.apache.datasketches.MonotonicPoints.countLog10Points;
 import static org.apache.datasketches.MonotonicPoints.countPoints;
 import static org.apache.datasketches.common.Util.powerSeriesNextDouble;
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
+import static org.apache.datasketches.quantilescommon.QuantilesUtil.evenlySpacedDoubles;
 import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
@@ -53,7 +54,7 @@ public class MonotonicPointsTest {
 
   @Test
   public void checkEvenlySpacedPoints() {
-    double[] arr = Util.evenlySpaced(0.0, 100.0, 21);
+    double[] arr = evenlySpacedDoubles(0.0, 100.0, 21);
     for (int i = 0; i < arr.length; i++) { println(arr[i] + ""); }
   }
 

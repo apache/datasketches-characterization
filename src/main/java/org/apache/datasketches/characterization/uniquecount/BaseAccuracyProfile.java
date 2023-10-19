@@ -20,7 +20,7 @@
 package org.apache.datasketches.characterization.uniquecount;
 
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_4SD;
-import static org.apache.datasketches.Util.milliSecToString;
+import static org.apache.datasketches.common.Util.milliSecToString;
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;

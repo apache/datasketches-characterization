@@ -21,8 +21,8 @@ package org.apache.datasketches.characterization.kll;
 
 import static java.lang.Math.round;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
-import static org.apache.datasketches.Util.evenlySpaced;
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
+import static org.apache.datasketches.quantilescommon.QuantilesUtil.evenlySpacedDoubles;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -173,12 +173,12 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
     for (int sl = 1; sl <= streamLength; sl++) { stream[sl - 1] = sl; } //1 to SL
 
     //compute the true values used at the plot points
-    final double start = 1.0f;
+    final double start = 1.0;
     final double end = streamLength;
-    final double[] fltValues = evenlySpaced(start, end, numPlotPoints);
+    final double[] dblValues = evenlySpacedDoubles(start, end, numPlotPoints);
 
     for (int pp = 0; pp < numPlotPoints; pp++) {
-      trueValues[pp] = round(fltValues[pp]);
+      trueValues[pp] = round(dblValues[pp]);
       corrTrueValues[pp] = trueValues[pp] - trueValueCorrection;
     }
 

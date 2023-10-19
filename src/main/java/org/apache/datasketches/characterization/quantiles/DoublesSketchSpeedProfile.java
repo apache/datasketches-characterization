@@ -34,9 +34,9 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   private static final Random rnd = new Random();
   private int k;
   private DoublesSketchBuilder builder;
-  private double[] inputValues;
+  private double[] randomInput;
   private int numQueryValues;
-  private double[] queryValues;
+  private double[] orderedLittleDoubles;
   private boolean useDirect;
   private WritableMemory updateSketchMemory;
   private WritableMemory compactSketchMemory;
@@ -69,16 +69,16 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   @Override
   public void prepareTrial(final int streamLength) {
     // prepare input data
-    inputValues = new double[streamLength];
+    randomInput = new double[streamLength];
     for (int i = 0; i < streamLength; i++) {
-      inputValues[i] = rnd.nextDouble();
+      randomInput[i] = rnd.nextDouble();
     }
     // prepare query data that must be ordered
-    queryValues = new double[numQueryValues];
+    orderedLittleDoubles = new double[numQueryValues];
     for (int i = 0; i < numQueryValues; i++) {
-      queryValues[i] = rnd.nextDouble();
+      orderedLittleDoubles[i] = rnd.nextDouble();
     }
-    Arrays.sort(queryValues);
+    Arrays.sort(orderedLittleDoubles);
     if (useDirect) {
       updateSketchMemory = WritableMemory
           .writableWrap(new byte[DoublesSketch.getUpdatableStorageBytes(k, streamLength)]);
@@ -91,7 +91,7 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   @SuppressWarnings("unused")
   @Override
   public void doTrial() {
-    DoublesSketchAccuracyProfile.shuffle(inputValues);
+    DoublesSketchAccuracyProfile.shuffle(randomInput);
 
     final long startBuild = System.nanoTime();
     final UpdateDoublesSketch updateSketch = useDirect
@@ -101,28 +101,25 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
     buildTimeNs += stopBuild - startBuild;
 
     final long startUpdate = System.nanoTime();
-    for (int i = 0; i < inputValues.length; i++) {
-      updateSketch.update(inputValues[i]);
+    for (int i = 0; i < randomInput.length; i++) {
+      updateSketch.update(randomInput[i]);
     }
     final long stopUpdate = System.nanoTime();
     updateTimeNs += stopUpdate - startUpdate;
 
     {
       final long startGetQuantiles = System.nanoTime();
-      updateSketch.getQuantiles(numQueryValues);
+      updateSketch.getQuantiles(orderedLittleDoubles);
       final long stopGetQuantiles = System.nanoTime();
       updateGetQuantilesTimeNs += stopGetQuantiles - startGetQuantiles;
 
       final long startGetCdf = System.nanoTime();
-      updateSketch.getCDF(queryValues);
+      updateSketch.getCDF(orderedLittleDoubles);
       final long stopGetCdf = System.nanoTime();
       updateGetCdfTimeNs += stopGetCdf - startGetCdf;
 
       final long startGetRank = System.nanoTime();
-      for (final double value: queryValues) {
-        //updateSketch.getRank(value); //TODO this was not released yet
-        final double estRank = updateSketch.getCDF(new double[] {value})[0];
-      }
+      final double[] estRanks = updateSketch.getRanks(orderedLittleDoubles);
       final long stopGetRank = System.nanoTime();
       updateGetRankTimeNs += stopGetRank - startGetRank;
 
@@ -155,17 +152,17 @@ public class DoublesSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
     {
       final long startGetQuantiles = System.nanoTime();
-      compactSketch.getQuantiles(numQueryValues);
+      compactSketch.getQuantiles(orderedLittleDoubles);
       final long stopGetQuantiles = System.nanoTime();
       compactGetQuantilesTimeNs += stopGetQuantiles - startGetQuantiles;
 
       final long startGetCdf = System.nanoTime();
-      compactSketch.getCDF(queryValues);
+      compactSketch.getCDF(orderedLittleDoubles);
       final long stopGetCdf = System.nanoTime();
       compactGetCdfTimeNs += stopGetCdf - startGetCdf;
 
       final long startGetRank = System.nanoTime();
-      for (final double value: queryValues) {
+      for (final double value: orderedLittleDoubles) {
         //compactSketch.getRank(value);
         final double estRank = compactSketch.getCDF(new double[] {value})[0];
       }

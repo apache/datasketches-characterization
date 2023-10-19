@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.theta.concurrent;
 
-import static org.apache.datasketches.Util.DEFAULT_UPDATE_SEED;
+import static org.apache.datasketches.thetacommon.ThetaUtil.DEFAULT_UPDATE_SEED;
 
 import org.apache.datasketches.characterization.AccuracyStats;
 import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
