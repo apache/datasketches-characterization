@@ -85,11 +85,6 @@ under the License.
     <!-- UNIQUE FOR THIS JAVA COMPONENT -->
     <datasketches-memory.version>2.2.0</datasketches-memory.version>
     <datasketches-java.version>4.1.0</datasketches-java.version>
-    <druid-momentsketch.version>0.16.0-incubating</druid-momentsketch.version>
-    <druid-histogram.version>0.16.0-incubating</druid-histogram.version>
-    <druid-hll.version>0.16.0-incubating</druid-hll.version>
-    <zetasketch.version>0.1.0</zetasketch.version>
-    <t-digest.version>3.2</t-digest.version>
     <!-- END:UNIQUE FOR THIS JAVA COMPONENT -->
 
     <!-- Test -->
