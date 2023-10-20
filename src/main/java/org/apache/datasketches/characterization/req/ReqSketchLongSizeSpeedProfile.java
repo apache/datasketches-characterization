@@ -33,6 +33,7 @@ import org.apache.datasketches.req.ReqSketchBuilder;
  * @author Lee Rhodes
  * @author Pavel Vesely
  */
+@SuppressWarnings("unused")
 public class ReqSketchLongSizeSpeedProfile implements JobProfile {
   private Job job;
   private Properties prop;

@@ -26,6 +26,7 @@ import static org.apache.datasketches.common.Util.milliSecToString;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 
@@ -42,9 +43,10 @@ public class Job {
   private PrintWriter pw = null;
   private PrintWriter pwData = null;
   //Date-Time
+  private Date date = new Date();
   private SimpleDateFormat fileSimpleDateFmt;  //used in the filename
   private SimpleDateFormat readableSimpleDateFmt; //for human readability
-  private GregorianCalendar gCal;
+  protected GregorianCalendar gCal;
   private long startTime_mS;
   private JobProfile profile;
   private final String profileName;
@@ -73,8 +75,13 @@ public class Job {
     if (pw == null || pwData == null) {
       throw new IllegalStateException("Could not configure PrintWriters.");
     }
+    //OUTPUT ORDER
 
     println("START JOB " + profileName );
+    println("Date Time: " + readableSimpleDateFmt.format(date));
+    println("");
+    println("PROPERTIES:");
+    println(prop.extractKvPairs(LS));
     flush(); //flush print buffer
 
     /***RUN THE PROFILE ****************/
@@ -84,9 +91,9 @@ public class Job {
 
     final long testTime_mS = System.currentTimeMillis() - startTime_mS;
     /***********************************/
-    println("PROPERTIES:");
-    println(prop.extractKvPairs(LS));
-    println("Total Job Time        : " + milliSecToString(testTime_mS));
+
+    println("");
+    println("Total Job Time: " + milliSecToString(testTime_mS));
     println("END JOB " + profileName +  LS + LS);
     flush();
     pw.close();
@@ -229,7 +236,7 @@ public class Job {
    * This can be overridden using the key "ReadableDateFormat".
    *
    * <p>The default time-zone is GMT, with an TimeZoneOffset of zero.
-   * This can be overridden using the key "TimeZone" for the 3 letter abreviation of the time
+   * This can be overridden using the key "TimeZone" for the 3 letter abbreviation of the time
    * zone name, and the key "TimeZoneOffset" to specify the offset in milliseconds.
    */
   private final void setDateFormats() {

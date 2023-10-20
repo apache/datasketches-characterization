@@ -41,6 +41,7 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
   int uPPO;
   int lgMinBpU;
   int lgMaxBpU;
+  int numSketches = 1;
   double slope;
 
   //JobProfile
@@ -55,6 +56,8 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
     uPPO = Integer.parseInt(prop.mustGet("Trials_UPPO"));
     lgMinBpU = Integer.parseInt(prop.mustGet("Trials_lgMinBpU"));
     lgMaxBpU = Integer.parseInt(prop.mustGet("Trials_lgMaxBpU"));
+    final String nSk = prop.get("NumSketches");
+    numSketches = (nSk != null) ? Integer.parseInt(nSk) : 1;
     slope = (double) (lgMaxT - lgMinT) / (lgMinBpU - lgMaxBpU);
     configure();
     doTrials();
@@ -103,7 +106,7 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
       }
       final double meanUpdateTimePerU_nS = sumUpdateTimePerU_nS / trials;
 
-      process(meanUpdateTimePerU_nS, trials, nextU, dataStr);
+      process(meanUpdateTimePerU_nS, trials, nextU, dataStr, numSketches);
 
       job.println(dataStr.toString());
     }
@@ -137,29 +140,37 @@ public abstract class BaseUpdateSpeedProfile implements JobProfile {
   /**
    * Process the results
    *
-   * @param meanUpdateTimePerU_nS mean update time per update in nanoseconds.
+   * @param meanUpdateTimePerSet_nS mean update time per update set in nanoseconds.
    * @param uPerTrial number of uniques per trial
    * @param sb The StringBuilder object that is reused for each row of output
+   * @param numSketches the number of sketches per set.
    */
-  private static void process(final double meanUpdateTimePerU_nS, final int trials,
-      final int uPerTrial, final StringBuilder sb) {
+  private static void process(final double meanUpdateTimePerSet_nS, final int trials,
+      final int uPerTrial, final StringBuilder sb, final int numSketches) {
     // OUTPUT
     sb.setLength(0);
     sb.append(uPerTrial).append(TAB);
     sb.append(trials).append(TAB);
-    sb.append(meanUpdateTimePerU_nS);
+    sb.append(meanUpdateTimePerSet_nS);
+    if (numSketches > 1) {
+      sb.append(TAB);
+      sb.append(meanUpdateTimePerSet_nS / numSketches);
+    }
   }
 
   /**
    * Returns a column header row
-   *
    * @return a column header row
    */
-  private static String getHeader() {
+  private String getHeader() {
     final StringBuilder sb = new StringBuilder();
     sb.append("InU").append(TAB);
     sb.append("Trials").append(TAB);
-    sb.append("nS/u");
+    sb.append("nS/Set");
+    if (numSketches > 1) {
+      sb.append(TAB);
+      sb.append("nS/Sketch");
+    }
     return sb.toString();
   }
 
