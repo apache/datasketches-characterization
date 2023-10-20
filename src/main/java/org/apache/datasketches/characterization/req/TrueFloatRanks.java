@@ -21,8 +21,8 @@ package org.apache.datasketches.characterization.req;
 
 import java.util.Arrays;
 
-import org.apache.datasketches.BinarySearch;
 import org.apache.datasketches.characterization.Shuffle;
+import org.apache.datasketches.quantilescommon.BinarySearch;
 import org.testng.annotations.Test;
 
 /**

@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization;
 
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
@@ -87,7 +87,7 @@ public class BoundsAccuracyStats {
     int p = 1 << lgMin;
     for (int i = 0; i < qLen; i++) {
       qArr[i] = new BoundsAccuracyStats(1 << lgQK, p);
-      p = pwr2LawNext(ppo, p);
+      p = (int)pwr2SeriesNext(ppo, p);
     }
     return qArr;
   }

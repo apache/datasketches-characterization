@@ -21,8 +21,8 @@ package org.apache.datasketches.characterization.kll;
 
 import static java.lang.Math.round;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
-import static org.apache.datasketches.Util.evenlySpacedFloats;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
+import static org.apache.datasketches.quantilescommon.QuantilesUtil.evenlySpacedFloats;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -161,7 +161,7 @@ public class KllFloatsSketchRankGaussianAccuracyProfile implements JobProfile {
       doStreamLength(streamLength);
       //go to next stream length
       if (useppo) {
-        streamLength = pwr2LawNext(ppo, streamLength);
+        streamLength = (int)pwr2SeriesNext(ppo, streamLength);
       } else {
         lgCurSL += lgDelta;
         streamLength = 1 << lgCurSL;

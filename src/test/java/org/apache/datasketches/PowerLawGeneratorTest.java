@@ -19,10 +19,7 @@
 
 package org.apache.datasketches;
 
-//import org.testng.Assert;
 import org.testng.annotations.Test;
-
-//import org.apache.datasketches.PowerLawGenerator.Pair;
 
 /**
  * This provides sample code that generates tables of values that can be used
@@ -151,7 +148,6 @@ public class PowerLawGeneratorTest {
       }
       outputX(row++, gi, cur);
     }
-
   }
 
   /**
@@ -182,11 +178,11 @@ public class PowerLawGeneratorTest {
   }
 
   /**
-   * @param s
+   * @param o
    *          value to print
    */
-  private static void println(String s) {
-    //System.out.println(s); //disable here
+  private static void println(Object o) {
+    //System.out.println(o.toString()); //disable here
   }
 
 }

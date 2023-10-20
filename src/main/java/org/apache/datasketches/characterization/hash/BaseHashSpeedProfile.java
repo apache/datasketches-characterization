@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.hash;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -98,7 +98,7 @@ public abstract class BaseHashSpeedProfile implements JobProfile {
     final int minX = 1 << lgMinX;
     int lastX = 0;
     while (lastX < maxX) {
-      final int nextX = lastX == 0 ? minX : pwr2LawNext(xPPO, lastX);
+      final int nextX = lastX == 0 ? minX : (int)pwr2SeriesNext(xPPO, lastX);
       lastX = nextX;
       final int trials = getNumTrials(nextX);
       p.reset(nextX, trials);

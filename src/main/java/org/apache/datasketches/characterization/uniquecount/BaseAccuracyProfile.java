@@ -20,8 +20,8 @@
 package org.apache.datasketches.characterization.uniquecount;
 
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_4SD;
-import static org.apache.datasketches.Util.milliSecToString;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.common.Util.milliSecToString;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -46,6 +46,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   public int lgK;
   boolean interData;
   boolean postPMFs;
+  public boolean intersectTest = false;
   public boolean getSize = false;
   public AccuracyStats[] qArr;
 
@@ -54,17 +55,28 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   public void start(final Job job) {
     this.job = job;
     prop = job.getProperties();
+    //Uniques Profile
+    lgMinU = Integer.parseInt(prop.mustGet("Trials_lgMinU"));
+    lgMaxU = Integer.parseInt(prop.mustGet("Trials_lgMaxU"));
+    uPPO = Integer.parseInt(prop.mustGet("Trials_UPPO"));
+    //Trials Profile
     lgMinT = Integer.parseInt(prop.mustGet("Trials_lgMinT"));
     lgMaxT = Integer.parseInt(prop.mustGet("Trials_lgMaxT"));
     tPPO = Integer.parseInt(prop.mustGet("Trials_TPPO"));
-    lgMinU = Integer.parseInt(prop.mustGet("Trials_lgMinU"));
-    lgMaxU = Integer.parseInt(prop.mustGet("Trials_lgMaxU"));
+
+    lgQK = Integer.parseInt(prop.mustGet("Trials_lgQK"));
     interData = Boolean.parseBoolean(prop.mustGet("Trials_interData"));
     postPMFs = Boolean.parseBoolean(prop.mustGet("Trials_postPMFs"));
-    uPPO = Integer.parseInt(prop.mustGet("Trials_UPPO"));
-    lgQK = Integer.parseInt(prop.mustGet("Trials_lgQK"));
-    qArr = AccuracyStats.buildAccuracyStatsArray(lgMinU, lgMaxU, uPPO, lgQK);
+    //Sketch Profile
     lgK = Integer.parseInt(prop.mustGet("LgK"));
+
+    final String iKey = prop.get("IntersectTest");
+    intersectTest = (iKey == null) ? false : Boolean.parseBoolean(iKey);
+    if (intersectTest) {
+      qArr = AccuracyStats.buildLog2IntersectAccuracyStatsArray(lgMinU, lgMaxU, uPPO, lgQK);
+    } else {
+      qArr = AccuracyStats.buildLog2AccuracyStatsArray(lgMinU, lgMaxU, uPPO, lgQK);
+    }
     final String getSizeStr = prop.get("Trials_bytes");
     getSize = getSizeStr == null ? false : Boolean.parseBoolean(getSizeStr);
     configure();
@@ -93,7 +105,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
    * Manages multiple trials for measuring accuracy.
    *
    * <p>An accuracy trial is run along the count axis (X-axis) first. The "points" along the X-axis
-   * where accuracy data is collected is controlled by the data loaded into the CountAccuracyStats
+   * where accuracy data is collected is controlled by the data loaded into the AccuracyStats
    * array. A single trial consists of a single sketch being updated with the Trials_lgMaxU unique
    * values, stopping at the configured x-axis points along the way where the accuracy is recorded
    * into the corresponding stats array. Each stats array retains the distribution of
@@ -108,44 +120,44 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   private void doTrials() {
     final int minT = 1 << lgMinT;
     final int maxT = 1 << lgMaxT;
-    final int maxU = 1 << lgMaxU;
+    final long maxU = 1L << lgMaxU;
 
-    //This will generate a table of data up for each intermediate Trials point
-    int lastT = 0;
-    while (lastT < maxT) {
-      final int nextT = lastT == 0 ? minT : pwr2LawNext(tPPO, lastT);
-      final int delta = nextT - lastT;
+    //This will generate a table of data for each intermediate Trials point
+    int lastTpt = 0;
+    while (lastTpt < maxT) {
+      final int nextT = lastTpt == 0 ? minT : (int)pwr2SeriesNext(tPPO, lastTpt);
+      final int delta = nextT - lastTpt;
       for (int i = 0; i < delta; i++) {
         doTrial();
       }
-      lastT = nextT;
+      lastTpt = nextT;
       final StringBuilder sb = new StringBuilder();
       if (nextT < maxT) { // intermediate
         if (interData) {
           job.println(getHeader());
-          process(getSize, qArr, lastT, sb);
+          process(getSize, qArr, lastTpt, sb);
           job.println(sb.toString());
         }
       } else { //done
         job.println(getHeader());
-        process(getSize, qArr, lastT, sb);
+        process(getSize, qArr, lastTpt, sb);
         job.println(sb.toString());
       }
 
       job.println(prop.extractKvPairs());
-      job.println("Cum Trials             : " + lastT);
+      job.println("Cum Trials             : " + lastTpt);
       job.println("Cum Updates            : " + vIn);
       final long currentTime_mS = System.currentTimeMillis();
       final long cumTime_mS = currentTime_mS - job.getStartTime();
       job.println("Cum Time               : " + milliSecToString(cumTime_mS));
-      final double timePerTrial_mS = cumTime_mS * 1.0 / lastT;
+      final double timePerTrial_mS = cumTime_mS * 1.0 / lastTpt;
       final double avgUpdateTime_ns = timePerTrial_mS * 1e6 / maxU;
       job.println("Time Per Trial, mSec   : " + timePerTrial_mS);
       job.println("Avg Update Time, nSec  : " + avgUpdateTime_ns);
       job.println("Date Time              : "
           + job.getReadableDateString(currentTime_mS));
 
-      final long timeToComplete_mS = (long)(timePerTrial_mS * (maxT - lastT));
+      final long timeToComplete_mS = (long)(timePerTrial_mS * (maxT - lastTpt));
       job.println("Est Time to Complete   : " + milliSecToString(timeToComplete_mS));
       job.println("Est Time at Completion : "
           + job.getReadableDateString(timeToComplete_mS + currentTime_mS));
@@ -159,25 +171,28 @@ public abstract class BaseAccuracyProfile implements JobProfile {
     }
   }
 
-  private static void process(final boolean getSize, final AccuracyStats[] qArr,
+  private void process(final boolean getSize, final AccuracyStats[] qArr,
       final int cumTrials, final StringBuilder sb) {
 
     final int points = qArr.length;
     sb.setLength(0);
     for (int pt = 0; pt < points; pt++) {
       final AccuracyStats q = qArr[pt];
-      final double uniques = q.trueValue;
+      final double largeUniques = q.uniques;
+      final double trueUniques = q.trueValue;
       final double meanEst = q.sumEst / cumTrials;
       final double meanRelErr = q.sumRelErr / cumTrials;
-      final double meanSqErr = q.sumSqErr / cumTrials; //intermediate
-      final double normMeanSqErr = meanSqErr / (1.0 * uniques * uniques); //intermediate
-      final double rmsRelErr = Math.sqrt(normMeanSqErr);
+      final double meanSqErr = q.sumSqErr / cumTrials; //intermediate value
+      final double normMeanSqErr = meanSqErr / (trueUniques * trueUniques); //intermediate value
+      final double rmsRelErr = Math.sqrt(normMeanSqErr); //a.k.a. Normalied RMS Error or NRMSE
       q.rmsre = rmsRelErr;
       final int bytes = q.bytes;
 
       //OUTPUT
-      //sb.setLength(0);
-      sb.append(uniques).append(TAB);
+      if (intersectTest) {
+        sb.append(largeUniques).append(TAB);
+      }
+      sb.append(trueUniques).append(TAB);
 
       //Sketch meanEst, meanEstErr, norm RMS Err
       sb.append(meanEst).append(TAB);
@@ -191,7 +206,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
       final double[] quants = qArr[pt].qsk.getQuantiles(GAUSSIANS_4SD);
       final int quantsLen = quants.length;
       for (int i = 0; i < quantsLen; i++) {
-        sb.append(quants[i] / uniques - 1.0).append(TAB);
+        sb.append(quants[i] / trueUniques - 1.0).append(TAB);
       }
       if (getSize) {
         sb.append(bytes).append(TAB);
@@ -204,16 +219,19 @@ public abstract class BaseAccuracyProfile implements JobProfile {
     }
   }
 
-  private static String getHeader() {
+  private String getHeader() {
     final StringBuilder sb = new StringBuilder();
-    sb.append("InU").append(TAB);        //col 1
+    if (intersectTest) {
+      sb.append("LargeU").append(TAB);
+    }
+    sb.append("TrueU").append(TAB);        //col 1
     //Estimates
-    sb.append("MeanEst").append(TAB);    //col 2
-    sb.append("MeanRelErr").append(TAB); //col 3
-    sb.append("RMS_RE").append(TAB);     //col 4
+    sb.append("MeanEst").append(TAB);
+    sb.append("MeanRelErr").append(TAB);
+    sb.append("RMS_RE").append(TAB);
 
     //Trials
-    sb.append("Trials").append(TAB);     //col 5
+    sb.append("Trials").append(TAB);
 
     //Quantiles
     sb.append("Min").append(TAB);
@@ -236,7 +254,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
    * Outputs the Probability Mass Function given the AccuracyStats.
    * @param q the given AccuracyStats
    */
-  private static String outputPMF(final AccuracyStats q) {
+  private String outputPMF(final AccuracyStats q) {
     final DoublesSketch qSk = q.qsk;
     final double[] splitPoints = qSk.getQuantiles(GAUSSIANS_4SD); //1:1
     final double[] reducedSp = reduceSplitPoints(splitPoints);
@@ -247,7 +265,12 @@ public abstract class BaseAccuracyProfile implements JobProfile {
     //output Histogram
     final String hdr = String.format("%10s%4s%12s", "Trials", "    ", "Est");
     final String fmt = "%10d%4s%12.2f";
-    sb.append("Histogram At " + q.trueValue).append(LS);
+    if (intersectTest) {
+      sb.append("Intersect Histogram At " + q.uniques).append(LS);
+    } else {
+      sb.append("Histogram At " + q.uniques).append(LS);
+    }
+
     sb.append(hdr).append(LS);
     for (int i = 0; i < reducedSp.length; i++) {
       final int hits = (int)(pmfArr[i + 1] * trials);

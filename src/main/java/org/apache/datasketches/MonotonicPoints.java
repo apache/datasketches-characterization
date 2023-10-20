@@ -23,7 +23,10 @@ import static java.lang.Math.abs;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 import static java.lang.Math.min;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static java.lang.Math.pow;
+import static java.lang.Math.round;
+import static org.apache.datasketches.common.Util.powerSeriesNextDouble;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import java.util.Random;
 
@@ -138,7 +141,8 @@ public class MonotonicPoints {
   }
 
   /**
-   * Counts the actual number of plotting points between lgStart and lgEnd assuming the given PPO.
+   * Counts the actual number of plotting points between lgStart and lgEnd assuming the given PPO
+   * and a logBase of 2.
    * This is not a simple linear function due to points that may be skipped in the low range.
    * @param lgStart Log2 of the starting value
    * @param lgEnd Log2 of the ending value
@@ -146,11 +150,31 @@ public class MonotonicPoints {
    * @return the actual number of plotting points between lgStart and lgEnd.
    */
   public static final int countPoints(final int lgStart, final int lgEnd, final int ppo) {
-    int p = 1 << lgStart;
-    final int end = 1 << lgEnd;
+    long p = 1L << lgStart;
+    final long end = 1L << lgEnd;
     int count = 0;
     while (p <= end) {
-      p = pwr2LawNext(ppo, p);
+      p = pwr2SeriesNext(ppo, p);
+      count++;
+    }
+    return count;
+  }
+
+  /**
+   * Counts the actual number of plotting points between lgStart and lgEnd assuming the given PPO
+   * and a logBase of 2.
+   * This is not a simple linear function due to points that may be skipped in the low range.
+   * @param log10Start Log10 of the starting value
+   * @param log10End Log10 of the ending value
+   * @param ppb the number of logarithmically evenly spaced points per base = 10.
+   * @return the actual number of plotting points between lgStart and lgEnd.
+   */
+  public static final int countLog10Points(final int log10Start, final int log10End, final int ppb) {
+    long p = round(pow(10, log10Start));
+    final long end = round(pow(10, log10End));
+    int count = 0;
+    while (p <= end) {
+      p = (long)powerSeriesNextDouble(ppb, p, true, 10.0);
       count++;
     }
     return count;

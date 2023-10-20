@@ -21,7 +21,7 @@ package org.apache.datasketches.characterization.req;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -32,6 +32,7 @@ import org.apache.datasketches.req.ReqSketchBuilder;
 /**
  * @author Lee Rhodes
  */
+@SuppressWarnings("unused")
 public class ReqSketchSizeSpeedProfile implements JobProfile {
   private Job job;
   private Properties prop;
@@ -95,7 +96,6 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     reqSk = bldr.build();
     //reqSk = new ReqSketch(reqK, hra, null, (byte)INIT_NUMBER_OF_SECTIONS,
     //  MIN_K, NOM_CAPACITY_MULTIPLIER, LAZY_COMPRESSION);
-    reqSk.setLessThanOrEqual(ltEq);
 
   }
 
@@ -128,7 +128,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
     job.printf(sFmt, (Object[]) columnLabels); //Header
     int pp = 1;
     while (lastSL < maxSL) { //Trials for each plotPoint on X-axis, and one row on output
-      final int nextSL = lastSL == 0 ? minSL : pwr2LawNext(ppoSL, lastSL);
+      final int nextSL = lastSL == 0 ? minSL : (int)pwr2SeriesNext(ppoSL, lastSL);
       lastSL = nextSL;
       final int trials = getNumTrials(nextSL);
 
@@ -137,7 +137,7 @@ public class ReqSketchSizeSpeedProfile implements JobProfile {
         sumUpdateTimePerItem_nS += doTrial(nextSL);
       }
       final double meanUpdateTimePerItem_nS = sumUpdateTimePerItem_nS / trials;
-      final int bytes = reqSk.getSerializationBytes();
+      final int bytes = reqSk.getSerializedSizeBytes();
       job.printf(dFmt, pp, nextSL, trials, bytes, meanUpdateTimePerItem_nS);
       pp++;
     }

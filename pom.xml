@@ -83,8 +83,8 @@ under the License.
 
   <properties>
     <!-- UNIQUE FOR THIS JAVA COMPONENT -->
-    <datasketches-memory.version>2.0.0</datasketches-memory.version>
-    <datasketches-java.version>3.2.0</datasketches-java.version>
+    <datasketches-memory.version>2.2.0</datasketches-memory.version>
+    <datasketches-java.version>4.1.0</datasketches-java.version>
     <druid-momentsketch.version>0.16.0-incubating</druid-momentsketch.version>
     <druid-histogram.version>0.16.0-incubating</druid-histogram.version>
     <druid-hll.version>0.16.0-incubating</druid-hll.version>
@@ -97,7 +97,7 @@ under the License.
 
     <!-- System-wide properties -->
     <maven.version>3.5.0</maven.version>
-    <java.version>11</java.version>
+    <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <argLine>-Xmx4g -Duser.language=en -Duser.country=US -Dfile.encoding=UTF-8</argLine>
@@ -105,6 +105,7 @@ under the License.
     <project.build.sourceEncoding>${charset.encoding}</project.build.sourceEncoding>
     <project.build.resourceEncoding>${charset.encoding}</project.build.resourceEncoding>
     <project.reporting.outputEncoding>${charset.encoding}</project.reporting.outputEncoding>
+    <maven.build.timestamp.format>yyyy-MM-dd'T'HH-mm-ss'Z'</maven.build.timestamp.format>
 
     <!-- org.codehaus plugins -->
     <!-- used for strict profile testing-->
@@ -115,14 +116,15 @@ under the License.
     <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version> <!-- overrides parent -->
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version> <!-- overrides parent -->
     <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version> <!-- overrides parent -->
-    <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version> <!-- overrides parent -->
-    <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version> <!-- overrides parent -->
+    <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version> <!-- overrides parent -->
+    <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
+    <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version> <!-- overrides parent -->
     <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version> <!-- overrides parent -->
     <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version> <!-- overrides parent -->
     <maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version> <!-- overrides parent -->
     <maven-remote-resources-plugin.version>[1.7.0,)</maven-remote-resources-plugin.version> <!-- overrides parent -->
     <maven-source-plugin.version>3.2.1</maven-source-plugin.version> <!-- overrides parent -->
-    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version> <!-- overrides parent -->
+    <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version> <!-- overrides parent -->
     <!-- Apache Plugins -->
     <apache-rat-plugin.version>0.13</apache-rat-plugin.version> <!-- overrides parent -->
     <!-- org.jacoco Maven Plugins -->
@@ -147,41 +149,6 @@ under the License.
         <groupId>org.apache.datasketches</groupId>
         <artifactId>datasketches-java</artifactId>
         <version>${datasketches-java.version}</version>
-    </dependency>
-
-    <!-- Druid HLL Sketch -->
-    <dependency>
-        <groupId>org.apache.druid</groupId>
-        <artifactId>druid-hll</artifactId>
-        <version>${druid-hll.version}</version>
-    </dependency>
-
-    <!-- Druid Moment Sketch -->
-    <dependency>
-      <groupId>org.apache.druid.extensions.contrib</groupId>
-      <artifactId>druid-momentsketch</artifactId>
-      <version>${druid-momentsketch.version}</version>
-    </dependency>
-
-    <!-- Druid Histogram -->
-    <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
-      <artifactId>druid-histogram</artifactId>
-      <version>${druid-histogram.version}</version>
-    </dependency>
-    
-    <!-- ZetaSketch -->
-    <dependency>
-      <groupId>com.google.zetasketch</groupId>
-      <artifactId>zetasketch</artifactId>
-      <version>${zetasketch.version}</version>
-    </dependency>
-
-    <!-- t-Digest -->
-    <dependency>
-        <groupId>com.tdunning</groupId>
-        <artifactId>t-digest</artifactId>
-        <version>${t-digest.version}</version>
     </dependency>
 
     <!-- Dependency on Test code -->

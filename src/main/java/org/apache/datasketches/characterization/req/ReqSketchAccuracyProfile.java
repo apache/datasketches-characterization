@@ -22,8 +22,8 @@ package org.apache.datasketches.characterization.req;
 import static java.lang.Math.round;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.SpacedPoints.expSpaced;
-import static org.apache.datasketches.Util.evenlySpaced;
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
+import static org.apache.datasketches.quantilescommon.QuantilesUtil.evenlySpacedDoubles;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -197,7 +197,6 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     bldr.setK(K).setHighRankAccuracy(hra);
     if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
     sk = bldr.build();
-    sk.setLessThanOrEqual(ltEq);
   }
 
   private void doStreamLengths() {
@@ -222,7 +221,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
       //go to next stream length
       if (useppo) {
-        streamLength = pwr2LawNext(ppo, streamLength);
+        streamLength = (int)pwr2SeriesNext(ppo, streamLength);
       } else {
         lgCurSL += lgDelta;
         streamLength = 1 << lgCurSL;
@@ -257,7 +256,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     //generates PP indices in [startIdx, endIdx] inclusive, inclusive
     // PV 2020-01-07: using double so that there's enough precision even for large stream lengths
     final double[] temp = evenlySpaced
-        ? evenlySpaced(startIdx, endIdx, numPlotPoints)
+        ? evenlySpacedDoubles(startIdx, endIdx, numPlotPoints)
         : expSpaced(startIdx, endIdx, numPlotPoints, exponent, hra);
 
     sortedPPIndices = new int[numPlotPoints];
@@ -314,7 +313,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
       errHllSkArr[pp].reset(); //reset the errHllSkArr for next streamLength
     }
-    final int serBytes = sk.getSerializationBytes();
+    final int serBytes = sk.getSerializedSizeBytes();
 
     // special metrics for capturing accuracy per byte
     final double avgRelStdDevTimesSize = serBytes * sumRelStdDev / numRelStdDev;

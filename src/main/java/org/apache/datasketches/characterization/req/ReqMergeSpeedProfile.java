@@ -88,7 +88,7 @@ public class ReqMergeSpeedProfile extends BaseQuantilesSpeedProfile {
 
     // record the last one since they must be the same
     // but let's average across all trials to see if there is an anomaly
-    numRetainedItems += mergedSketch.getRetainedItems();
+    numRetainedItems += mergedSketch.getNumRetained();
   }
 
   @Override

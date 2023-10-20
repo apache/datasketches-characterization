@@ -24,6 +24,8 @@ import static java.lang.Math.exp;
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
 
+import org.apache.datasketches.common.SketchesArgumentException;
+
 /**
  * @author Lee Rhodes
  */

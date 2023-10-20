@@ -19,7 +19,7 @@
 
 package org.apache.datasketches.characterization.frequencies;
 
-import static org.apache.datasketches.Util.pwr2LawNext;
+import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -65,7 +65,7 @@ public abstract class BaseFrequenciesSpeedProfile implements JobProfile {
         doTrial();
       }
       job.println(getStats(streamLength, numTrials));
-      streamLength = pwr2LawNext(pointsPerOctave, streamLength);
+      streamLength = (int)pwr2SeriesNext(pointsPerOctave, streamLength);
     }
   }
 

@@ -17,8 +17,24 @@
  * under the License.
  */
 
-/**
- * @author Lee Rhodes
- */
+package org.apache.datasketches.characterization;
 
-package org.apache.datasketches.characterization.quantiles.tdigest;
+import static org.apache.datasketches.characterization.AccuracyStats.*;
+import org.testng.annotations.Test;
+
+public class AccuracyStatsTest {
+
+  @Test
+  public void checkBuildLog10AccuracyStatsArray() {
+    final int log10Min = 6;
+    final int log10Max = 8;
+    final int ppb = 4;
+    final int lgQK = 10;
+    AccuracyStats[] asArr =
+        buildLog10AccuracyStatsArray(log10Min, log10Max, ppb, lgQK);
+    println(asArr.length);
+  }
+
+  static void println(Object o) { System.out.println(o.toString()); }
+}
+

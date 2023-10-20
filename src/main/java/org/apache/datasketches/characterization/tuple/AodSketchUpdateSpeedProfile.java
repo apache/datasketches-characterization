@@ -19,8 +19,8 @@
 
 package org.apache.datasketches.characterization.tuple;
 
-import org.apache.datasketches.ResizeFactor;
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
+import org.apache.datasketches.common.ResizeFactor;
 import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.tuple.arrayofdoubles.ArrayOfDoublesUnion;

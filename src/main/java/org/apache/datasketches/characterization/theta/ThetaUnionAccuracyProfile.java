@@ -19,9 +19,9 @@
 
 package org.apache.datasketches.characterization.theta;
 
-import org.apache.datasketches.ResizeFactor;
 import org.apache.datasketches.characterization.AccuracyStats;
 import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
+import org.apache.datasketches.common.ResizeFactor;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.SetOperationBuilder;
 import org.apache.datasketches.theta.Sketches;
@@ -40,6 +40,7 @@ public class ThetaUnionAccuracyProfile extends BaseAccuracyProfile {
   @Override
   public void configure() {
     //Configure Sketch
+    final int lgK = Integer.parseInt(prop.mustGet("LgK"));
     //final Family family = Family.stringToFamily(prop.mustGet("THETA_famName"));
     final float p = Float.parseFloat(prop.mustGet("THETA_p"));
     final ResizeFactor rf = ResizeFactor.getRF(Integer.parseInt(prop.mustGet("THETA_lgRF")));

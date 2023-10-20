@@ -20,7 +20,7 @@
 package org.apache.datasketches.characterization.req;
 
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
-import static org.apache.datasketches.Util.evenlySpacedFloats;
+import static org.apache.datasketches.quantilescommon.QuantilesUtil.evenlySpacedFloats;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
@@ -144,7 +144,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     bldr.setK(K).setHighRankAccuracy(hra);
     if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
     sk = bldr.build();
-    sk.setLessThanOrEqual(ltEq);
+
   }
 
   private void configureStream() {
@@ -209,7 +209,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
       }
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
     }
-    job.println(LS + "Serialization Bytes: " + sk.getSerializationBytes());
+    job.println(LS + "Serialization Bytes: " + sk.getSerializedSizeBytes());
     job.println(sk.viewCompactorDetail("%5.0f", false));
   }
 

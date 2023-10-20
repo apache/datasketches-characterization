@@ -21,9 +21,9 @@ package org.apache.datasketches.characterization;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.max;
-import static org.apache.datasketches.Util.ceilingPowerOfBdouble;
-import static org.apache.datasketches.Util.logB;
-import static org.apache.datasketches.Util.pwrLawNextDouble;
+import static org.apache.datasketches.common.Util.ceilingPowerBaseOfDouble;
+import static org.apache.datasketches.common.Util.logBaseOfX;
+import static org.apache.datasketches.common.Util.powerSeriesNextDouble;
 
 /**
  * @author Lee Rhodes
@@ -42,10 +42,10 @@ public class ProfileUtil {
    */
   public static double[] buildSplitPointsArr(final double min, final double max,
       final int pplb, final double logBase, final double eps) {
-    final double ceilPwrBmin = ceilingPowerOfBdouble(logBase, min);
-    final double ceilPwrBmax = ceilingPowerOfBdouble(logBase, max);
-    final int bot = (int) ceil(logB(logBase, max(1.0, ceilPwrBmin)));
-    final int top = (int) ceil(logB(logBase, ceilPwrBmax));
+    final double ceilPwrBmin = ceilingPowerBaseOfDouble(logBase, min);
+    final double ceilPwrBmax = ceilingPowerBaseOfDouble(logBase, max);
+    final int bot = (int) ceil(logBaseOfX(logBase, max(1.0, ceilPwrBmin)));
+    final int top = (int) ceil(logBaseOfX(logBase, ceilPwrBmax));
     final int numSP;
     double next;
     final double[] spArr;
@@ -56,7 +56,7 @@ public class ProfileUtil {
       spArr[1] = 1;
       next = 1.0;
       for (int i = 2; i < numSP; i++) {
-        next = pwrLawNextDouble(pplb, next, false, logBase);
+        next = powerSeriesNextDouble(pplb, next, false, logBase);
         spArr[i] = next;
       }
     } else {
@@ -65,7 +65,7 @@ public class ProfileUtil {
       spArr[0] = ceilPwrBmin;
       next = ceilPwrBmin;
       for (int i = 1; i < numSP; i++) {
-        next = pwrLawNextDouble(pplb, next, false, logBase);
+        next = powerSeriesNextDouble(pplb, next, false, logBase);
         spArr[i] = next;
       }
     }

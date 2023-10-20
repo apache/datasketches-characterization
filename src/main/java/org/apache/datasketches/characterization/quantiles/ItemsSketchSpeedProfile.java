@@ -23,21 +23,21 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
-import org.apache.datasketches.ArrayOfDoublesSerDe;
-import org.apache.datasketches.ArrayOfItemsSerDe;
 import org.apache.datasketches.Properties;
+import org.apache.datasketches.common.ArrayOfDoublesSerDe;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.quantiles.ItemsSketch;
 
 public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
   private static final Comparator<Double> COMPARATOR = Comparator.naturalOrder();
-  private static final ArrayOfItemsSerDe<Double> SERDE = new ArrayOfDoublesSerDe();
+  private static final ArrayOfDoublesSerDe SERDE = new ArrayOfDoublesSerDe();
   private static final Random rnd = new Random();
   private int k;
-  private double[] inputValues;
+  private Double[] randInput;
   private int numQueryValues;
-  private Double[] queryValues;
+  private Double[] orderedBigDoubles;
+  private double[] orderedLittleDoubles;
 
   long buildTimeNs;
   long updateTimeNs;
@@ -58,53 +58,54 @@ public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   @Override
   public void prepareTrial(final int streamLength) {
     // prepare input data
-    inputValues = new double[streamLength];
+    randInput = new Double[streamLength]; //random input doubles [0,1]
     for (int i = 0; i < streamLength; i++) {
-      inputValues[i] = rnd.nextDouble();
+      randInput[i] = rnd.nextDouble();
     }
     // prepare query data that must be ordered
-    queryValues = new Double[numQueryValues];
-    for (int i = 0; i < numQueryValues; i++) {
-      queryValues[i] = rnd.nextDouble();
+    orderedLittleDoubles = new double[numQueryValues];
+    orderedBigDoubles = new Double[numQueryValues];
+    for (int i = 0; i < numQueryValues; i++) { //create the little d's
+      orderedLittleDoubles[i] = rnd.nextDouble();
     }
-    Arrays.sort(queryValues);
+    Arrays.sort(orderedLittleDoubles); //sort the little d's
+    for (int i = 0; i < numQueryValues; i++) { //copy to the big D's
+      orderedBigDoubles[i] = orderedLittleDoubles[i];
+    }
     resetStats();
   }
 
   @SuppressWarnings("unused")
   @Override
   public void doTrial() {
-    DoublesSketchAccuracyProfile.shuffle(inputValues);
+    shuffle(randInput);
 
     final long startBuild = System.nanoTime();
-    final ItemsSketch<Double> sketch = ItemsSketch.getInstance(k, COMPARATOR);
+    final ItemsSketch<Double> sketch = ItemsSketch.getInstance(Double.class, k, COMPARATOR);
     final long stopBuild = System.nanoTime();
     buildTimeNs += stopBuild - startBuild;
 
     final long startUpdate = System.nanoTime();
-    for (int i = 0; i < inputValues.length; i++) {
-      sketch.update(inputValues[i]);
+    for (int i = 0; i < randInput.length; i++) {
+      sketch.update(randInput[i]);
     }
     final long stopUpdate = System.nanoTime();
     updateTimeNs += stopUpdate - startUpdate;
 
     final long startGetQuantiles = System.nanoTime();
-    sketch.getQuantiles(numQueryValues);
+    sketch.getQuantiles(orderedLittleDoubles);
     final long stopGetQuantiles = System.nanoTime();
     getQuantilesTimeNs += stopGetQuantiles - startGetQuantiles;
 
     final long startGetCdf = System.nanoTime();
-    sketch.getCDF(queryValues);
+    sketch.getCDF(orderedBigDoubles);
     final long stopGetCdf = System.nanoTime();
     getCdfTimeNs += stopGetCdf - startGetCdf;
 
-    final long startGetRank = System.nanoTime();
-    for (final double value: queryValues) {
-      //sketch.getRank(value); //TODO this was not released yet
-      final double estRank = sketch.getCDF(new Double[] {value})[0];
-    }
+    final long startGetRanks = System.nanoTime();
+    final double[] estRanks = sketch.getRanks(orderedBigDoubles);
     final long stopGetRank = System.nanoTime();
-    getRankTimeNs += stopGetRank - startGetRank;
+    getRankTimeNs += stopGetRank - startGetRanks;
 
     final long startSerialize = System.nanoTime();
     final byte[] bytes = sketch.toByteArray(SERDE);
@@ -113,13 +114,13 @@ public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
     final WritableMemory mem = WritableMemory.writableWrap(bytes);
     final long startDeserialize = System.nanoTime();
-    ItemsSketch.getInstance(mem, COMPARATOR, SERDE);
+    ItemsSketch.getInstance(Double.class, mem, COMPARATOR, SERDE);
     final long stopDeserialize = System.nanoTime();
     deserializeTimeNs += stopDeserialize - startDeserialize;
 
     // could record the last one since they must be the same
     // but let's average across all trials to see if there is an anomaly
-    numRetainedItems += sketch.getRetainedItems();
+    numRetainedItems += sketch.getNumRetained();
     serializedSizeBytes += bytes.length;
   }
 
@@ -157,4 +158,16 @@ public class ItemsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
     serializedSizeBytes = 0;
   }
 
+  static void shuffle(final Double[] array) {
+    for (int i = 0; i < array.length; i++) {
+      final int r = rnd.nextInt(i + 1);
+      swap(array, i, r);
+    }
+  }
+
+  private static void swap(final Double[] array, final int i1, final int i2) {
+    final Double value = array[i1];
+    array[i1] = array[i2];
+    array[i2] = value;
+  }
 }
