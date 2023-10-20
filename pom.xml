@@ -151,42 +151,6 @@ under the License.
         <version>${datasketches-java.version}</version>
     </dependency>
 
-
-    <!-- Druid HLL Sketch 
-    <dependency>
-        <groupId>org.apache.druid</groupId>
-        <artifactId>druid-hll</artifactId>
-        <version>${druid-hll.version}</version>
-    </dependency> -->
-
-    <!-- Druid Moment Sketch 
-    <dependency>
-      <groupId>org.apache.druid.extensions.contrib</groupId>
-      <artifactId>druid-momentsketch</artifactId>
-      <version>${druid-momentsketch.version}</version>
-    </dependency> -->
-
-    <!-- Druid Histogram 
-    <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
-      <artifactId>druid-histogram</artifactId>
-      <version>${druid-histogram.version}</version>
-    </dependency> -->
-    
-    <!-- ZetaSketch 
-    <dependency>
-      <groupId>com.google.zetasketch</groupId>
-      <artifactId>zetasketch</artifactId>
-      <version>${zetasketch.version}</version>
-    </dependency> -->
-
-    <!-- t-Digest 
-    <dependency>
-        <groupId>com.tdunning</groupId>
-        <artifactId>t-digest</artifactId>
-        <version>${t-digest.version}</version>
-    </dependency> -->
-
     <!-- Dependency on Test code -->
     <dependency>
         <groupId>org.apache.datasketches</groupId>
