@@ -184,7 +184,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
       final double meanRelErr = q.sumRelErr / cumTrials;
       final double meanSqErr = q.sumSqErr / cumTrials; //intermediate value
       final double normMeanSqErr = meanSqErr / (trueUniques * trueUniques); //intermediate value
-      final double rmsRelErr = Math.sqrt(normMeanSqErr); //a.k.a. Normalied RMS Error or NRMSE
+      final double rmsRelErr = Math.sqrt(normMeanSqErr); //a.k.a. Normalized RMS Error or NRMSE
       q.rmsre = rmsRelErr;
       final int bytes = q.bytes;
 

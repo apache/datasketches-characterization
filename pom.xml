@@ -84,11 +84,12 @@ under the License.
   <properties>
     <!-- UNIQUE FOR THIS JAVA COMPONENT -->
     <datasketches-memory.version>2.2.0</datasketches-memory.version>
-    <datasketches-java.version>4.1.0</datasketches-java.version>
+    <datasketches-java.version>4.2.0</datasketches-java.version>
     <!-- END:UNIQUE FOR THIS JAVA COMPONENT -->
 
     <!-- Test -->
     <testng.version>7.5.1</testng.version>
+    <datasketches-java-common.version>1.0.0</datasketches-java-common.version>
 
     <!-- System-wide properties -->
     <maven.version>3.5.0</maven.version>
@@ -146,14 +147,21 @@ under the License.
         <version>${datasketches-java.version}</version>
     </dependency>
 
-    <!-- Dependency on Test code -->
+    <!-- Test Scope -->
+    <dependency>
+      <groupId>org.apache.datasketches</groupId>
+      <artifactId>datasketches-java-common</artifactId>
+      <version>${datasketches-java-common.version}</version>
+      <scope>test</scope>
+    </dependency>
+    
     <dependency>
         <groupId>org.apache.datasketches</groupId>
         <artifactId>datasketches-java</artifactId>
         <version>${datasketches-java.version}</version>
         <type>test-jar</type>
     </dependency>
-
+    
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>

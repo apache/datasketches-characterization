@@ -19,16 +19,19 @@
 
 package org.apache.datasketches;
 
-import static org.apache.datasketches.Files.isFileValid;
 import static org.apache.datasketches.Files.openPrintWriter;
-import static org.apache.datasketches.common.Util.getResourcePath;
 import static org.apache.datasketches.common.Util.milliSecToString;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
+
+import org.apache.datasketches.common.test.ResourceFiles;
 
 /**
  * This class parses an input string job file, which contains properties for a specific
@@ -59,11 +62,13 @@ public class Job {
    */
   public Job(final String jobConfigureFileName) {
     final String jobConfStr;
-    if (isFileValid(jobConfigureFileName)) { //assumes fully qualified
-      jobConfStr = Files.fileToString(jobConfigureFileName); //includes line feeds
-    } else {
-      final String path = getResourcePath(jobConfigureFileName); //try resources
-      jobConfStr = Files.fileToString(path); //includes line feeds
+    File file = new File(jobConfigureFileName);
+    if (file.exists() && file.isFile()) { //assumes fully qualified
+      jobConfStr = readFile(file); //includes line feeds
+    }
+    else {
+      file = ResourceFiles.getResourceFile(jobConfigureFileName); //try resources
+      jobConfStr = readFile(file); //includes line feeds
     }
     prop = parseJobProperties(jobConfStr);
 
@@ -98,6 +103,12 @@ public class Job {
     flush();
     pw.close();
     pwData.close();
+  }
+
+  public String readFile(final File file) {
+    try {
+      return new String(java.nio.file.Files.readAllBytes(file.toPath()), Charset.defaultCharset());
+    } catch (final IOException e) { throw new RuntimeException(e); }
   }
 
   /**

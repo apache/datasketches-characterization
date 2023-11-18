@@ -80,7 +80,7 @@ public class AccuracyStats {
   }
 
   /**
-   * Build the AccuracyStats Array
+   * Build the AccuracyStats Array based on fractional powers of 2
    * @param lgMin log_base2 of the minimum number of uniques used
    * @param lgMax log_base2 of the maximum number of uniques used
    * @param ppo the number of points per octave
@@ -100,7 +100,7 @@ public class AccuracyStats {
   }
 
   /**
-   * Build the AccuracyStats Array for Intersection.
+   * Build the AccuracyStats Array for Intersection based on fractional powers of 2.
    * All elements of the AccuracyStats array have 2^lgMin values as the trueValue.
    * @param lgMin log_base2 of the minimum number of uniques used
    * @param lgMax log_base2 of the maximum number of uniques used
@@ -122,7 +122,7 @@ public class AccuracyStats {
   }
 
   /**
-   * Build the AccuracyStats Array
+   * Build the AccuracyStats Array based on fractional powers of 10
    * @param log10Min log_base2 of the minimum number of uniques used
    * @param log10Max log_base2 of the maximum number of uniques used
    * @param ppb the number of points per base (10)

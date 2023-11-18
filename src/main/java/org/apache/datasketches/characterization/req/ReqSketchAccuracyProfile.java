@@ -35,7 +35,7 @@ import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
-import org.apache.datasketches.req.ReqDebugImpl;
+import org.apache.datasketches.req.ReqDebugImplTest;
 import org.apache.datasketches.req.ReqSketch;
 import org.apache.datasketches.req.ReqSketchBuilder;
 
@@ -75,7 +75,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private int K;
   private boolean hra; //high rank accuracy
   private boolean ltEq;
-  private org.apache.datasketches.req.ReqDebugImpl reqDebugImpl = null;
+  private org.apache.datasketches.req.ReqDebugImplTest reqDebugImplTest = null;
 
 
   // TEMPORARY
@@ -172,7 +172,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     final String reqDebugFmt = prop.get("ReqDebugFmt");
     if (reqDebugLevel != null) {
       final int level = Integer.parseInt(reqDebugLevel);
-      reqDebugImpl = new ReqDebugImpl(level, reqDebugFmt);
+      reqDebugImplTest = new ReqDebugImplTest(level, reqDebugFmt);
     }
   }
 
@@ -195,7 +195,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   void configureSketch() {
     final ReqSketchBuilder bldr = ReqSketch.builder();
     bldr.setK(K).setHighRankAccuracy(hra);
-    if (reqDebugImpl != null) { bldr.setReqDebug(reqDebugImpl); }
+    if (reqDebugImplTest != null) { bldr.setReqDebug(reqDebugImplTest); }
     sk = bldr.build();
   }
 
