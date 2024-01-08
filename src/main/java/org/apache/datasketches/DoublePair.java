@@ -21,6 +21,9 @@ package org.apache.datasketches;
 
 import java.util.Comparator;
 
+/**
+ * A pair (double x, double y) with a comparator on x.
+ */
 public class DoublePair implements Comparator<DoublePair> {
   public double x;
   public double y;
@@ -34,4 +37,5 @@ public class DoublePair implements Comparator<DoublePair> {
   public int compare(final DoublePair p1, final DoublePair p2) {
     return Double.compare(p1.x, p2.x); // handles NaN, +/- 0, etc.
   }
+
 }

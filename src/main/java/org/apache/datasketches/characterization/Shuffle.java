@@ -30,13 +30,15 @@ public final class Shuffle {
   /**
    * Shuffle the given input float array
    * @param array input array
+   * @return the given array, shuffled.
    */
-  public static void shuffle(final float[] array) {
+  public static float[] shuffle(final float[] array) {
     final int arrLen = array.length;
     for (int i = 0; i < arrLen; i++) {
       final int r = rand.nextInt(i + 1);
       swap(array, i, r);
     }
+    return array;
   }
 
   private static void swap(final float[] array, final int i1, final int i2) {
@@ -48,13 +50,15 @@ public final class Shuffle {
   /**
    * Shuffle the given input double array
    * @param array input array
+   * @return the given array, shuffled.
    */
-  public static void shuffle(final double[] array) {
+  public static double[] shuffle(final double[] array) {
     final int arrLen = array.length;
     for (int i = 0; i < arrLen; i++) {
       final int r = rand.nextInt(i + 1);
       swap(array, i, r);
     }
+    return array;
   }
 
   private static void swap(final double[] array, final int i1, final int i2) {
@@ -66,13 +70,15 @@ public final class Shuffle {
   /**
    * Shuffle the given input long array
    * @param array input array
+   * @return the given array, shuffled.
    */
-  public static void shuffle(final long[] array) {
+  public static long[] shuffle(final long[] array) {
     final int arrLen = array.length;
     for (int i = 0; i < arrLen; i++) {
       final int r = rand.nextInt(i + 1);
       swap(array, i, r);
     }
+    return array;
   }
 
   private static void swap(final long[] array, final int i1, final int i2) {
@@ -84,17 +90,39 @@ public final class Shuffle {
   /**
    * Shuffle the given input int array
    * @param array input array
+   * @return the given array, shuffled.
    */
-  public static void shuffle(final int[] array) {
+  public static int[] shuffle(final int[] array) {
     final int arrLen = array.length;
     for (int i = 0; i < arrLen; i++) {
       final int r = rand.nextInt(i + 1);
       swap(array, i, r);
     }
+    return array;
   }
 
   private static void swap(final int[] array, final int i1, final int i2) {
     final int value = array[i1];
+    array[i1] = array[i2];
+    array[i2] = value;
+  }
+
+  /**
+   * Shuffle the given input Object array
+   * @param array input array
+   * @return the given array, shuffled.
+   */
+  public static Object[] shuffle(final Object[] array) {
+    final int arrLen = array.length;
+    for (int i = 0; i < arrLen; i++) {
+      final int r = rand.nextInt(i + 1);
+      swap(array, i, r);
+    }
+    return array;
+  }
+
+  private static void swap(final Object[] array, final int i1, final int i2) {
+    final Object value = array[i1];
     array[i1] = array[i2];
     array[i2] = value;
   }

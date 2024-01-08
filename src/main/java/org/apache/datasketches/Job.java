@@ -81,13 +81,8 @@ public class Job {
       throw new IllegalStateException("Could not configure PrintWriters.");
     }
     //OUTPUT ORDER
-
     println("START JOB " + profileName );
     println("Date Time: " + readableSimpleDateFmt.format(date));
-    println("");
-    println("PROPERTIES:");
-    println(prop.extractKvPairs(LS));
-    flush(); //flush print buffer
 
     /***RUN THE PROFILE ****************/
     startTime_mS = System.currentTimeMillis();
@@ -98,6 +93,9 @@ public class Job {
     /***********************************/
 
     println("");
+    println("PROPERTIES:");
+    println(prop.extractKvPairs(LS));
+
     println("Total Job Time: " + milliSecToString(testTime_mS));
     println("END JOB " + profileName +  LS + LS);
     flush();

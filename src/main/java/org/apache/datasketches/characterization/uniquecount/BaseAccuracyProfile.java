@@ -282,7 +282,7 @@ public abstract class BaseAccuracyProfile implements JobProfile {
   }
 
   /**
-   * This removes possible duplicate values in the given splitpoints array.
+   * This removes possible duplicate values in the given splitPoints array.
    * @param splitPoints the given splitPoints
    * @return the reduced array of splitPoints
    */

@@ -40,7 +40,7 @@ public class AccuracyStats {
   public double sumSqErr = 0;
   public double rmsre = 0; //used later for plotting, set externally
   public double trueValue; //set by constructor, used only for error analysis
-  public long uniques;     //set by constructor, used as a coordinate
+  public long uniques;     //set by constructor, used as a coordinate for intersection
   public int bytes = 0;
 
   /**
@@ -123,8 +123,8 @@ public class AccuracyStats {
 
   /**
    * Build the AccuracyStats Array based on fractional powers of 10
-   * @param log10Min log_base2 of the minimum number of uniques used
-   * @param log10Max log_base2 of the maximum number of uniques used
+   * @param log10Min log_base10 of the minimum number of uniques used
+   * @param log10Max log_base10 of the maximum number of uniques used
    * @param ppb the number of points per base (10)
    * @param lgQK the lgK for the Quantiles sketch
    * @return an AccuracyStats array

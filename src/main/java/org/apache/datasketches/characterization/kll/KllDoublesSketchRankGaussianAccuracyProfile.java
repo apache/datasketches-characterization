@@ -22,11 +22,14 @@ package org.apache.datasketches.characterization.kll;
 import static java.lang.Math.round;
 import static org.apache.datasketches.GaussianRanks.GAUSSIANS_3SD;
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
+import static org.apache.datasketches.quantilescommon.QuantileSearchCriteria.EXCLUSIVE;
+import static org.apache.datasketches.quantilescommon.QuantileSearchCriteria.INCLUSIVE;
 import static org.apache.datasketches.quantilescommon.QuantilesUtil.evenlySpacedDoubles;
 
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
+import org.apache.datasketches.Properties;
 import org.apache.datasketches.characterization.Shuffle;
 import org.apache.datasketches.kll.KllDoublesSketch;
 import org.apache.datasketches.memory.DefaultMemoryRequestServer;
@@ -34,6 +37,7 @@ import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
+import org.apache.datasketches.quantilescommon.QuantileSearchCriteria;
 
 /**
  * @author Lee Rhodes
@@ -41,6 +45,7 @@ import org.apache.datasketches.quantiles.UpdateDoublesSketch;
 public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
   private static final DefaultMemoryRequestServer memReqSvr = new DefaultMemoryRequestServer();
   private Job job;
+  private Properties props;
 
   //FROM PROPERTIES
   //For computing the different stream lengths
@@ -57,6 +62,9 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
 
   //Target sketch configuration & error analysis
   private int k;
+  private QuantileSearchCriteria criteria;
+  private boolean useBulk;
+  private boolean direct;
 
   //DERIVED globals
   private KllDoublesSketch sk;
@@ -67,9 +75,9 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
 
   //Specific to a streamLength
   private double[] stream;
-  private double[] trueValues;
+  private double[] trueNaturalRanks;
   private int trueValueCorrection;
-  private double[] corrTrueValues;
+  private double[] corrNaturalRanks;
 
   private final String[] columnLabels =
     {"nPP", "Value", "Rank", "-3SD","-2SD", "-1SD", "Med", "+1SD", "+2SD", "+3SD"};
@@ -83,6 +91,7 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
   @Override
   public void start(final Job job) {
     this.job = job;
+    this.props = job.getProperties();
     extractProperties();
     configureCommon();
     doJob();
@@ -97,25 +106,27 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
 
   private void extractProperties() {
     //stream length
-    lgMin = Integer.parseInt(job.getProperties().mustGet("LgMin"));
-    lgMax = Integer.parseInt(job.getProperties().mustGet("LgMax"));
-    lgDelta = Integer.parseInt(job.getProperties().mustGet("LgDelta"));
-    ppo = Integer.parseInt(job.getProperties().mustGet("PPO"));
+    lgMin = Integer.parseInt(props.mustGet("LgMin"));
+    lgMax = Integer.parseInt(props.mustGet("LgMax"));
+    lgDelta = Integer.parseInt(props.mustGet("LgDelta"));
+    ppo = Integer.parseInt(props.mustGet("PPO"));
     //numTrials & error quantiles sketch config
-    numTrials = 1 << Integer.parseInt(job.getProperties().mustGet("LgTrials"));
-    errorSkLgK = Integer.parseInt(job.getProperties().mustGet("ErrSkLgK"));
+    numTrials = 1 << Integer.parseInt(props.mustGet("LgTrials"));
+    errorSkLgK = Integer.parseInt(props.mustGet("ErrSkLgK"));
     //plotting & x-axis config
-    numPlotPoints = Integer.parseInt(job.getProperties().mustGet("NumPlotPoints"));
+    numPlotPoints = Integer.parseInt(props.mustGet("NumPlotPoints"));
     //Target sketch config
-    k = Integer.parseInt(job.getProperties().mustGet("K"));
-
+    k = Integer.parseInt(props.mustGet("K"));
+    criteria = props.mustGet("criteria").equalsIgnoreCase("INCLUSIVE") ? INCLUSIVE : EXCLUSIVE;
+    useBulk = Boolean.parseBoolean(props.mustGet("useBulk"));
+    direct = Boolean.parseBoolean(props.mustGet("direct"));
   }
 
   void configureCommon() {
     configureSketch();
-    trueValues = new double[numPlotPoints];
-    corrTrueValues = new double[numPlotPoints];
-    trueValueCorrection = 1; //KLL is always LT
+    trueNaturalRanks = new double[numPlotPoints];
+    corrNaturalRanks = new double[numPlotPoints];
+    trueValueCorrection = (criteria == EXCLUSIVE) ? 1 : 0;
     errQSkArr = new UpdateDoublesSketch[numPlotPoints];
     //configure the error quantiles array
     final DoublesSketchBuilder builder = DoublesSketch.builder().setK(1 << errorSkLgK);
@@ -129,10 +140,12 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
   }
 
   void configureSketch() {
-    final WritableMemory wmem = WritableMemory.allocate(10000);
-    sk = KllDoublesSketch.newDirectInstance(k, wmem, memReqSvr);
-    //sk = KllDoublesSketch.newHeapInstance(k);
-    //sk = new KllDoublesSketch(k);
+    if (direct) {
+      final WritableMemory wmem = WritableMemory.allocate(10000);
+      sk = KllDoublesSketch.newDirectInstance(k, wmem, memReqSvr);
+    } else {
+      sk = KllDoublesSketch.newHeapInstance(k);
+    }
   }
 
   private void doJob() {
@@ -168,37 +181,37 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
     job.printfData(sFmt, (Object[])columnLabels);
 
     //build the stream
-    //the values themselves reflect their integer ranks starting with 1 (except for LT)
     stream = new double[streamLength];
     for (int sl = 1; sl <= streamLength; sl++) { stream[sl - 1] = sl; } //1 to SL
 
     //compute the true values used at the plot points
     final double start = 1.0;
     final double end = streamLength;
-    final double[] dblValues = evenlySpacedDoubles(start, end, numPlotPoints);
+    //approxDblNatRanks are designed to be their natural ranks starting with 1
+    final double[] approxDblNatRanks = evenlySpacedDoubles(start, end, numPlotPoints);
 
     for (int pp = 0; pp < numPlotPoints; pp++) {
-      trueValues[pp] = round(dblValues[pp]);
-      corrTrueValues[pp] = trueValues[pp] - trueValueCorrection;
+      trueNaturalRanks[pp] = round(approxDblNatRanks[pp]); //force nearest integer
+      corrNaturalRanks[pp] = trueNaturalRanks[pp] - trueValueCorrection; //minus: exclusive = 1, inclusive = 0
     }
 
     //Do numTrials for all plot points
     for (int t = 0; t < numTrials; t++) {
       sk.reset();
-      doTrial(sk, stream, trueValues, corrTrueValues, errQSkArr);
+      doTrial(sk, stream, trueNaturalRanks, corrNaturalRanks, errQSkArr);
     }
 
     //at this point each of the errQSkArr sketches has a distribution of error from numTrials
     for (int pp = 0 ; pp < numPlotPoints; pp++) {
-      final double v = trueValues[pp];
-      final double tr = v / streamLength; //the true rank
+      final double trueNatRank = trueNaturalRanks[pp];
+      final double trueNormalizedRank = trueNatRank / streamLength; //create the true normalized rank
 
       //for each of the numErrDistRanks distributions extract the sd quantiles
       final double[] errQ = errQSkArr[pp].getQuantiles(gRanks); //get error values at the Gaussian ranks
 
       //Plot the row. We ignore quantiles collected at 0 and 1.0.
       final double relPP = (double)(pp + 1) / numPlotPoints;
-      job.printfData(fFmt, relPP, v, tr,
+      job.printfData(fFmt, relPP, trueNatRank, trueNormalizedRank,
           errQ[0], errQ[1], errQ[2], errQ[3], errQ[4], errQ[5], errQ[6]);
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
     }
@@ -211,25 +224,31 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
    * We capture the estimated ranks for all plotPoints and then update the errQSkArr with those
    * error values.
    * @param stream the source stream
-   * @param trueValues the true integer ranks at each of the plot points
+   * @param trueNatRanks input quantiles to getRanks and also true natural ranks at each of the plot points
    * @param errQSkArr the quantile error sketches for each plot point to be updated
    */
-  static void doTrial(final KllDoublesSketch sk, final double[] stream, final double[] trueValues,
-      final double[] corrTrueValues, final UpdateDoublesSketch[] errQSkArr) {
+  void doTrial(final KllDoublesSketch sk, final double[] stream, final double[] trueNatRanks,
+      final double[] corrNatRanks, final UpdateDoublesSketch[] errQSkArr) {
     Shuffle.shuffle(stream);
     final int sl = stream.length;
     for (int i = 0; i < sl; i++) {
       sk.update(stream[i]);
     }
-    final int numPP = trueValues.length;
+    final int numPP = trueNatRanks.length;
     //get estimated ranks from sketch for all plot points
-    final double[] estRanks = new double[numPP];
-    for (int pp = 0; pp < numPP; pp++) {
-      estRanks[pp] = sk.getRank(trueValues[pp]);
+    final double[] estRanks;// = new double[numPP];
+    if (useBulk) {
+      estRanks = sk.getRanks(trueNatRanks, criteria);
+    } else {
+      estRanks = new double[numPP];
+      for (int pp = 0; pp < numPP; pp++) {
+        estRanks[pp] = sk.getRank(trueNatRanks[pp], criteria);
+      }
     }
+
     //compute errors for each plotPoint
     for (int pp = 0; pp < numPP; pp++) {
-      final double errorAtPlotPoint = estRanks[pp] - corrTrueValues[pp] / sl;
+      final double errorAtPlotPoint = estRanks[pp] - corrNatRanks[pp] / sl;
       errQSkArr[pp].update(errorAtPlotPoint); //update each of the errQArr sketches
     }
   }
