@@ -32,6 +32,7 @@ import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.characterization.Shuffle;
 import org.apache.datasketches.kll.KllDoublesSketch;
+import org.apache.datasketches.kll.KllSketch;
 import org.apache.datasketches.memory.DefaultMemoryRequestServer;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.quantiles.DoublesSketch;
@@ -178,6 +179,7 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
 
   void doStreamLength(final int streamLength) {
     job.println(LS + "Stream Length: " + streamLength );
+    job.println("Epsilon: " + KllSketch.getNormalizedRankError(k, false));
     job.printfData(sFmt, (Object[])columnLabels);
 
     //build the stream

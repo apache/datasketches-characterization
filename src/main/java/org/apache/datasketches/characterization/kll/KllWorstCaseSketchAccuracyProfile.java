@@ -19,6 +19,8 @@
 
 package org.apache.datasketches.characterization.kll;
 
+import static org.apache.datasketches.Constants.EIGHT_PEBIBYTE;
+import static org.apache.datasketches.Constants.SIXTEEN_MEBIBYTE;
 import static org.apache.datasketches.characterization.Shuffle.shuffle;
 import static org.apache.datasketches.kll.KllSketch.getNormalizedRankError;
 import static org.apache.datasketches.quantilescommon.QuantileSearchCriteria.EXCLUSIVE;
@@ -46,8 +48,6 @@ import org.apache.datasketches.quantilescommon.QuantileSearchCriteria;
  *
  */
 public class KllWorstCaseSketchAccuracyProfile extends BaseQuantilesAccuracyProfile {
-  private static final long EIGHT_PEBIBYTE = 1L << 53; //max integral value that a double can resolve
-  private static final int SIXTEEN_MEBIBYTE = 1 << 24; //max integral value that a float can resolve
   private static SpecialRandom random = new SpecialRandom();
   private static final DefaultMemoryRequestServer memReqSvr = new DefaultMemoryRequestServer();
   private int k;

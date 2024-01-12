@@ -46,10 +46,11 @@ public class AccuracyStats {
   /**
    * Used for single sketch or union accuracy.
    * @param k the configuration value for the quantiles sketch. It must be a power of two.
+   * It is used to store the estimated rank values over a number of trials.
    * @param trueValue the true value
    */
   public AccuracyStats(final int k, final long trueValue) {
-    qsk = new DoublesSketchBuilder().setK(k).build(); //Quantiles
+    qsk = new DoublesSketchBuilder().setK(k).build();
     this.trueValue = trueValue;
     this.uniques = trueValue;
   }

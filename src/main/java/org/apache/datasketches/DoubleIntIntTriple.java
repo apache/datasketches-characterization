@@ -31,7 +31,6 @@ public class DoubleIntIntTriple {
   public int rank;
   private static final CompareValue compValue = new CompareValue();
   private static final CompareIndex compIndex = new CompareIndex();
-  private static final CompareRank compRank = new CompareRank();
 
   public static final DoubleIntIntTriple[] sortByValue(final DoubleIntIntTriple[] array) {
     Arrays.sort(array, compValue);
@@ -40,11 +39,6 @@ public class DoubleIntIntTriple {
 
   public static final DoubleIntIntTriple[] sortByIndex(final DoubleIntIntTriple[] array) {
     Arrays.sort(array, compIndex);
-    return array;
-  }
-
-  public static final DoubleIntIntTriple[] sortByRank(final DoubleIntIntTriple[] array) {
-    Arrays.sort(array, compRank);
     return array;
   }
 
@@ -73,13 +67,6 @@ public class DoubleIntIntTriple {
     @Override
     public int compare(final DoubleIntIntTriple t1, final DoubleIntIntTriple t2) {
       return Integer.compare(t1.index, t2.index);
-    }
-  }
-
-  private static final class CompareRank implements Comparator<DoubleIntIntTriple> {
-    @Override
-    public int compare(final DoubleIntIntTriple t1, final DoubleIntIntTriple t2) {
-      return Integer.compare(t1.rank, t2.rank);
     }
   }
 

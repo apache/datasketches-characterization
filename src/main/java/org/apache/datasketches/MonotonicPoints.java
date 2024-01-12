@@ -162,7 +162,7 @@ public class MonotonicPoints {
 
   /**
    * Counts the actual number of plotting points between lgStart and lgEnd assuming the given PPO
-   * and a logBase of 2.
+   * and a logBase of 10.
    * This is not a simple linear function due to points that may be skipped in the low range.
    * @param log10Start Log10 of the starting value
    * @param log10End Log10 of the ending value
