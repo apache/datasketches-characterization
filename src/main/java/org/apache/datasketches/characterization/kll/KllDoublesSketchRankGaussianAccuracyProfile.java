@@ -53,7 +53,7 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
   private int lgMin;
   private int lgMax;
   private int lgDelta;
-  private int ppo; //not currently used
+  private int ppo; //not used for rank accuracy
 
   private int numTrials; //num of Trials per plotPoint
   private int errorSkLgK; //size of the error quantiles sketches
@@ -218,15 +218,16 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
       errQSkArr[pp].reset(); //reset the errQSkArr for next streamLength
     }
     job.println(LS + "Serialization Bytes: " + sk.getSerializedSizeBytes());
-
   }
 
   /**
    * A trial consists of updating a virgin sketch with a shuffled stream of streamLength values.
    * We capture the estimated ranks for all plotPoints and then update the errQSkArr with those
    * error values.
+   * @param sk the sketch under test
    * @param stream the source stream
    * @param trueNatRanks input quantiles to getRanks and also true natural ranks at each of the plot points
+   * @param corrNatRanks corrected true values based on the comparison inequality
    * @param errQSkArr the quantile error sketches for each plot point to be updated
    */
   void doTrial(final KllDoublesSketch sk, final double[] stream, final double[] trueNatRanks,
@@ -238,7 +239,7 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
     }
     final int numPP = trueNatRanks.length;
     //get estimated ranks from sketch for all plot points
-    final double[] estRanks;// = new double[numPP];
+    final double[] estRanks;
     if (useBulk) {
       estRanks = sk.getRanks(trueNatRanks, criteria);
     } else {
@@ -256,4 +257,3 @@ public class KllDoublesSketchRankGaussianAccuracyProfile implements JobProfile {
   }
 
 }
-
