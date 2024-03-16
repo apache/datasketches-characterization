@@ -17,29 +17,34 @@
 
 package main
 
-import "github.com/apache/datasketches-go/hll"
+import (
+	"github.com/apache/datasketches-go/hll"
+)
 
-type HllSketchAccuracyProfile struct {
+type HllSketchAccuracyRunner struct {
+	sketch hll.HllSketch
 }
 
-func NewHllSketchAccuracyProfile() *HllSketchAccuracyProfile {
-	return &HllSketchAccuracyProfile{}
+func NewHllSketchAccuracyRunner(lgK int, tgtType hll.TgtHllType) *HllSketchAccuracyRunner {
+	sketch, _ := hll.NewHllSketch(lgK, tgtType)
+	return &HllSketchAccuracyRunner{
+		sketch: sketch,
+	}
 }
 
-func (HllSketchAccuracyProfile) runTrial(stats []accuracyStats, key uint64) uint64 {
-	lgK := 12
+func (h *HllSketchAccuracyRunner) runTrial(stats []*accuracyStats, key uint64) uint64 {
+	h.sketch.Reset()
 
-	s, _ := hll.NewHllSketch(lgK, hll.TgtHllTypeDefault)
-	count := 0
-
+	lastUniques := uint64(0)
 	for _, stat := range stats {
-		delta := stat.trueValue - count
-		for i := 0; i < delta; i++ {
-			s.UpdateUInt64(key)
+		delta := stat.trueValue - lastUniques
+		for u := uint64(0); u < delta; u++ {
+			h.sketch.UpdateUInt64(key)
 			key++
 		}
-		count += delta
-		//stat.update(s.get_estimate())
+		lastUniques += delta
+		est, _ := h.sketch.GetEstimate()
+		stat.update(est)
 	}
 
 	return key

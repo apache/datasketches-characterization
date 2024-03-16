@@ -20,7 +20,7 @@ package main
 func main() {
 
 	jobs := map[string]JobProfile{
-		"distinct_count_accuracy_profile": NewDistinctCountAccuracyProfile(NewHllSketchAccuracyProfile()),
+		"distinct_count_accuracy_profile": NewDistinctCountAccuracyProfile(distinctCountJobConfig),
 	}
 
 	for _, job := range jobs {
