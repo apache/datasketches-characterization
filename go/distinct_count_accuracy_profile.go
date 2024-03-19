@@ -52,7 +52,7 @@ type accuracyStats struct {
 	sumSqRelErr float64
 	count       int
 	// Make that a sketch of float64
-	rel_err_distribution *kll.ItemsSketch[int64]
+	rel_err_distribution *kll.ItemsSketch[float64]
 }
 
 func (a *accuracyStats) update(est float64) {
@@ -60,7 +60,7 @@ func (a *accuracyStats) update(est float64) {
 	relativeError := est/float64(a.trueValue) - 1.0
 	a.sumRelErr += relativeError
 	a.sumSqRelErr += relativeError * relativeError
-	a.rel_err_distribution.Update(int64(relativeError))
+	a.rel_err_distribution.Update(relativeError)
 	a.count++
 }
 
@@ -221,7 +221,7 @@ func buildLog2AccuracyStatsArray(lgMin, lgMax, ppo, lgQK int) []*accuracyStats {
 	qArr := make([]*accuracyStats, qLen)
 	p := uint64(1) << lgMin
 	for i := 0; i < qLen; i++ {
-		kllSketch, _ := kll.NewKllItemsSketch[int64](uint16(lgQK), 8, common.ArrayOfLongsSerDe{})
+		kllSketch, _ := kll.NewKllItemsSketch[float64](uint16(lgQK), 8, common.ArrayOfDoublesSerDe{})
 		qArr[i] = &accuracyStats{
 			trueValue:            p,
 			rel_err_distribution: kllSketch,

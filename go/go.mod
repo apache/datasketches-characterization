@@ -18,6 +18,6 @@ module github.com/apache/datasketches-characterization/go
 
 go 1.21.1
 
-require github.com/apache/datasketches-go v0.0.0-20240312184136-6950b3ed5d9c
+require github.com/apache/datasketches-go v0.0.0-20240319101001-9f08c628cc66
 
 require github.com/twmb/murmur3 v1.1.8 // indirect
