@@ -46,22 +46,41 @@ type DistinctCountAccuracyProfileRunner interface {
 }
 
 type accuracyStats struct {
-	trueValue   uint64
+	/*
+	  public UpdateDoublesSketch qsk; //quantile sketch created by constructor
+	  public double sumEst = 0;
+	  public double sumRelErr = 0;
+	  public double sumSqErr = 0;
+	  public double rmsre = 0; //used later for plotting, set externally
+	  public double trueValue; //set by constructor, used only for error analysis
+	  public long uniques;     //set by constructor, used as a coordinate for intersection
+	  public int bytes = 0;
+	*/
+	qsk         *kll.ItemsSketch[float64]
 	sumEst      float64
 	sumRelErr   float64
 	sumSqRelErr float64
-	count       int
-	// Make that a sketch of float64
-	rel_err_distribution *kll.ItemsSketch[float64]
+	rmse        float64
+	trueValue   uint64
+	uniques     int
+	bytes       int
+}
+
+func newAccuracyStats(k int, trueValue uint64) *accuracyStats {
+	qsk, _ := kll.NewKllItemsSketch[float64](uint16(k), 8, common.ArrayOfDoublesSerDe{})
+	return &accuracyStats{
+		qsk:       qsk,
+		trueValue: trueValue,
+		uniques:   int(trueValue),
+	}
 }
 
 func (a *accuracyStats) update(est float64) {
+	a.qsk.Update(est)
 	a.sumEst += est
-	relativeError := est/float64(a.trueValue) - 1.0
-	a.sumRelErr += relativeError
-	a.sumSqRelErr += relativeError * relativeError
-	a.rel_err_distribution.Update(relativeError)
-	a.count++
+	a.sumRelErr += est/float64(a.trueValue) - 1.0
+	erro := est - float64(a.trueValue)
+	a.sumSqRelErr += erro * erro
 }
 
 type DistinctCountAccuracyProfile struct {
@@ -162,7 +181,7 @@ func process(qArr []*accuracyStats, cumTrials int, sb *strings.Builder) {
 		sb.WriteString(fmt.Sprintf("%d", cumTrials))
 		sb.WriteString("\t")
 
-		quants, _ := q.rel_err_distribution.GetQuantiles(GAUSSIANS_4SD, true)
+		quants, _ := q.qsk.GetQuantiles(GAUSSIANS_4SD, true)
 		for i := 0; i < len(quants); i++ {
 			sb.WriteString(fmt.Sprintf("%e", float64(quants[i])/(float64(trueUniques))-1.0))
 			sb.WriteString("\t")
@@ -221,11 +240,7 @@ func buildLog2AccuracyStatsArray(lgMin, lgMax, ppo, lgQK int) []*accuracyStats {
 	qArr := make([]*accuracyStats, qLen)
 	p := uint64(1) << lgMin
 	for i := 0; i < qLen; i++ {
-		kllSketch, _ := kll.NewKllItemsSketch[float64](uint16(lgQK), 8, common.ArrayOfDoublesSerDe{})
-		qArr[i] = &accuracyStats{
-			trueValue:            p,
-			rel_err_distribution: kllSketch,
-		}
+		qArr[i] = newAccuracyStats(1<<lgQK, p)
 		p = pwr2SeriesNext(ppo, p)
 	}
 	return qArr
