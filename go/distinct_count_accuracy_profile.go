@@ -46,16 +46,6 @@ type DistinctCountAccuracyProfileRunner interface {
 }
 
 type accuracyStats struct {
-	/*
-	  public UpdateDoublesSketch qsk; //quantile sketch created by constructor
-	  public double sumEst = 0;
-	  public double sumRelErr = 0;
-	  public double sumSqErr = 0;
-	  public double rmsre = 0; //used later for plotting, set externally
-	  public double trueValue; //set by constructor, used only for error analysis
-	  public long uniques;     //set by constructor, used as a coordinate for intersection
-	  public int bytes = 0;
-	*/
 	qsk         *kll.ItemsSketch[float64]
 	sumEst      float64
 	sumRelErr   float64
