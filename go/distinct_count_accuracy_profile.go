@@ -154,7 +154,7 @@ func process(qArr []*accuracyStats, cumTrials int, sb *strings.Builder) {
 		meanSqErr := q.sumSqRelErr / float64(cumTrials)
 		normMeanSqErr := meanSqErr / (float64(trueUniques) * float64(trueUniques))
 		rmsRelErr := math.Sqrt(normMeanSqErr)
-		//q.rmsre = rmsRelErr
+		q.rmse = rmsRelErr
 
 		sb.WriteString(fmt.Sprintf("%d", trueUniques))
 		sb.WriteString("\t")
