@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# Characterization Java & C++ Component
+# Characterization Java, C++ & Go Component
 
 Please visit the main [DataSketches website](https://datasketches.apache.org) for more information. 
 
@@ -110,3 +110,28 @@ After your project is created, open *Project Properties*
 #### **Build Project**
 After this setup you should be able to *Build Project* from the top-level *Eclipse / Project* Menu.  You may need to unselect the *Build Automatically* option.
 
+## Build Instructions (Go)
+
+### Dependencies
+* Go 1.21 or later is required to compile the Go code.
+
+### Build
+* The project use Go modules, so you can build the project by running the following command:
+    ```
+    go build
+    ```
+  
+### Run
+* The project has a main function that runs the characterization tests. You can run the tests by running the following command:
+    ```
+    ./datasketches-characterization-go <job name>
+    ```
+  or alternatively:
+    ```
+    go run . <job name>
+    ```
+  
+  The list of available jobs can be found in the usage of the program:
+    ```
+    ./datasketches-characterization-go
+    ```
