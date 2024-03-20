@@ -17,13 +17,35 @@
 
 package main
 
-func main() {
+import (
+	"fmt"
+	"os"
+)
 
-	jobs := map[string]JobProfile{
+var (
+	jobs = map[string]JobProfile{
 		"distinct_count_accuracy_profile": NewDistinctCountAccuracyProfile(distinctCountJobConfig),
 	}
+)
 
-	for _, job := range jobs {
-		job.run()
+func usage() {
+	fmt.Println("Usage: go run main.go <job>")
+	fmt.Println("Available jobs:")
+	for job := range jobs {
+		fmt.Println(job)
 	}
+	os.Exit(1)
+}
+
+func main() {
+	if len(os.Args) < 2 || os.Args[1] == "-h" || os.Args[1] == "--help" {
+		usage()
+	}
+
+	job, ok := jobs[os.Args[1]]
+	if !ok {
+		usage()
+	}
+
+	job.run()
 }

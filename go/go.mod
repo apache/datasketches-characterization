@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-module github.com/apache/datasketches-characterization/go
+module github.com/apache/datasketches-characterization/datasketches-characterization-go
 
 go 1.21.1
 
