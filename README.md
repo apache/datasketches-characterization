@@ -124,7 +124,7 @@ After this setup you should be able to *Build Project* from the top-level *Eclip
 ### Run
 * The project has a main function that runs the characterization tests. You can run the tests by running the following command:
     ```
-    ./datasketches-characterization <job name>
+    ./datasketches-characterization-go <job name>
     ```
   or alternatively:
     ```
@@ -133,5 +133,5 @@ After this setup you should be able to *Build Project* from the top-level *Eclip
   
   The list of available jobs can be found in the usage of the program:
     ```
-    ./datasketches-characterization
+    ./datasketches-characterization-go
     ```
