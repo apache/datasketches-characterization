@@ -19,8 +19,10 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 
+                             https://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -84,7 +86,7 @@ under the License.
   <properties>
     <!-- UNIQUE FOR THIS JAVA COMPONENT -->
     <datasketches-memory.version>2.2.0</datasketches-memory.version>
-    <datasketches-java.version>4.2.0</datasketches-java.version>
+    <datasketches-java.version>5.0.1</datasketches-java.version>
     <!-- END:UNIQUE FOR THIS JAVA COMPONENT -->
 
     <!-- Test -->
@@ -134,7 +136,6 @@ under the License.
   </properties>
 
   <dependencies>
-    <!-- UNIQUE FOR THIS JAVA COMPONENT -->
     <dependency>
       <groupId>org.apache.datasketches</groupId>
       <artifactId>datasketches-memory</artifactId>
@@ -142,9 +143,16 @@ under the License.
     </dependency>
 
     <dependency>
-        <groupId>org.apache.datasketches</groupId>
-        <artifactId>datasketches-java</artifactId>
-        <version>${datasketches-java.version}</version>
+      <groupId>org.apache.datasketches</groupId>
+      <artifactId>datasketches-java</artifactId>
+      <version>${datasketches-java.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
+      <!-- <scope>test</scope> remove so we can run from main -->
     </dependency>
 
     <!-- Test Scope -->
@@ -156,19 +164,11 @@ under the License.
     </dependency>
     
     <dependency>
-        <groupId>org.apache.datasketches</groupId>
-        <artifactId>datasketches-java</artifactId>
-        <version>${datasketches-java.version}</version>
-        <type>test-jar</type>
+      <groupId>org.apache.datasketches</groupId>
+      <artifactId>datasketches-java</artifactId>
+      <version>${datasketches-java.version}</version>
+      <type>test-jar</type>
     </dependency>
-    
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>${testng.version}</version>
-      <!-- <scope>test</scope> so we can run from main -->
-    </dependency>
-    <!-- END: UNIQUE FOR THIS JAVA COMPONENT -->
   </dependencies>
 
   <build>
@@ -414,10 +414,11 @@ under the License.
           This also should fix the Maven warning that it can't find the lifecycle-mapping jar.
           This profile is only active when the property "m2e.version" is set, 
           which is the case when building in Eclipse with m2e.
-          The ignore below tells m2eclipse to skip the execution.
+          The none below tells m2eclipse to skip the execution.
     -->
+
     <profile>
-      <id>m2e</id>
+      <id>only-eclipse</id>
       <activation>
         <property>
           <name>m2e.version</name>
@@ -427,31 +428,25 @@ under the License.
         <pluginManagement>
           <plugins>
             <plugin>
-              <groupId>org.eclipse.m2e</groupId>
-              <artifactId>lifecycle-mapping</artifactId>
-              <version>${lifecycle-mapping.version}</version>
-              <configuration>
-                <lifecycleMappingMetadata>
-                  <pluginExecutions>
-                    <pluginExecution>
-                      <pluginExecutionFilter>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-remote-resources-plugin</artifactId>
-                        <versionRange>${maven-remote-resources-plugin.version}</versionRange>
-                        <goals>
-                          <goal>process</goal>
-                        </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <ignore/>
-                      </action>
-                    </pluginExecution>
-                  </pluginExecutions>
-                </lifecycleMappingMetadata>
-              </configuration>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-remote-resources-plugin</artifactId>
+              <version>${maven-remote-resources-plugin.version}</version>
+              <executions>
+                <execution>
+                  <id>process-resource-bundles</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
             </plugin>
           </plugins>
         </pluginManagement>
+
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-remote-resources-plugin</artifactId>
+          </plugin>
+        </plugins>
       </build>
     </profile>
 

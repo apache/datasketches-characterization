@@ -31,10 +31,8 @@ import org.apache.datasketches.kll.KllFloatsSketch;
 import org.apache.datasketches.memory.DefaultMemoryRequestServer;
 import org.apache.datasketches.memory.WritableMemory;
 
-/**
- * @author Lee Rhodes
- */
-public class KllSketchSizeSpeedProfile implements JobProfile {
+@SuppressWarnings("unused")
+public class KllSketchVectorSizeSpeedProfile implements JobProfile {
   private static final DefaultMemoryRequestServer memReqSvr = new DefaultMemoryRequestServer();
   private Job job;
   private Properties prop;
@@ -54,7 +52,7 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
 
   //Target sketch configuration & error analysis
   private int k;
-  private boolean useDouble = false;
+  private boolean useDouble = true;
   private boolean direct = false;
 
   //DERIVED & GLOBALS
@@ -79,7 +77,7 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
     //Target sketch config
     k = Integer.parseInt(prop.mustGet("KllK"));
     type = prop.mustGet("type");
-    if (type.equalsIgnoreCase("double")) { useDouble = true; }
+    //if (type.equalsIgnoreCase("double")) { useDouble = true; }
     direct = Boolean.parseBoolean(prop.mustGet("direct"));
   }
 
@@ -158,12 +156,13 @@ public class KllSketchSizeSpeedProfile implements JobProfile {
   private double doTrial(final int streamLen) {
     if (useDouble) {
       dsk.reset();
-      final long startUpdateTime_nS = System.nanoTime();
+      final double[] dblIn = new double[streamLen];
+      for (int i = 0; i < streamLen; i++) { dblIn[i] = i; }
 
-      for (int i = 0; i < streamLen; i++) {
-        dsk.update(i);
-      }
+      final long startUpdateTime_nS = System.nanoTime();
+      dsk.update(dblIn, 0, streamLen);
       final long updateTime_nS = System.nanoTime() - startUpdateTime_nS;
+
       return (double) updateTime_nS / streamLen;
     }
     else { //use Float

@@ -27,6 +27,7 @@ import org.apache.datasketches.characterization.quantiles.BaseQuantilesSpeedProf
 import org.apache.datasketches.kll.KllFloatsSketch;
 import org.apache.datasketches.memory.Memory;
 
+@SuppressWarnings("unused")
 public class KllFloatsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
 
   private static final Random rnd = new Random();
@@ -47,91 +48,83 @@ public class KllFloatsSketchSpeedProfile extends BaseQuantilesSpeedProfile {
   long numRetainedItems;
   long serializedSizeBytes;
 
-  @Override
+  @Override //before all trials and before all streamLengths
   public void configure(final int k, final int numQueryValues, final Properties properties) {
     this.k = k;
     this.numQueryValues = numQueryValues;
+
+    quantileQueryValues = new double[numQueryValues];
+    final double incrd = 1.0 / numQueryValues;
+    double inVd = 0;
+    for (int i = 0; i < numQueryValues; i++) {
+      quantileQueryValues[i] =  inVd += incrd; //rnd.nextDouble();
+    }
+
+    rankQueryValues = new float[numQueryValues];
+    final float incrf2 = 1.0F / numQueryValues;
+    float inVf2 = 0;
+    for (int i = 0; i < numQueryValues; i++) {
+      rankQueryValues[i] = inVf2 += incrf2; //rnd.nextFloat();
+    }
   }
 
-  @Override
+  @Override //prepare streamLength for all trials
   public void prepareTrial(final int streamLength) {
     // prepare input data
     inputValues = new float[streamLength];
+    final float incrf = 1.0F / streamLength;
+    float inVf = 0;
     for (int i = 0; i < streamLength; i++) {
-      inputValues[i] = rnd.nextFloat();
+      inputValues[i] = inVf += incrf; //rnd.nextFloat();
     }
-    // prepare query data that must be ordered
-    quantileQueryValues = new double[numQueryValues];
-    for (int i = 0; i < numQueryValues; i++) {
-      quantileQueryValues[i] = rnd.nextDouble();
-    }
-    rankQueryValues = new float[numQueryValues];
-    for (int i = 0; i < numQueryValues; i++) {
-      rankQueryValues[i] = rnd.nextFloat();
-    }
-    Arrays.sort(rankQueryValues);
     resetStats();
   }
 
   @Override
   public void doTrial() {
     final long startBuild = System.nanoTime();
-    final KllFloatsSketch sketch = KllFloatsSketch.newHeapInstance(k);
-    //final KllFloatsSketch sketch = new KllFloatsSketch(k);
+    final KllFloatsSketch sketch =  KllFloatsSketch.newHeapInstance(k);
     final long stopBuild = System.nanoTime();
     buildTimeNs += stopBuild - startBuild;
 
-    final long startUpdate = System.nanoTime();
-    for (int i = 0; i < inputValues.length; i++) {
-      sketch.update(inputValues[i]);
-    }
+    for (int i = 0; i < inputValues.length; i++) { sketch.update(inputValues[i]); }
     final long stopUpdate = System.nanoTime();
-    updateTimeNs += stopUpdate - startUpdate;
+    updateTimeNs += stopUpdate - stopBuild;
 
-    final long startGetQuantile = System.nanoTime();
-    for (final double value: quantileQueryValues) {
-      sketch.getQuantile(value);
-    }
-    final long stopGetQuantile = System.nanoTime();
-    getQuantileTimeNs += stopGetQuantile - startGetQuantile;
+//    for (final double r: quantileQueryValues) { sketch.getQuantile(r); }
+//    final long stopGetQuantile = System.nanoTime();
+//    getQuantileTimeNs += stopGetQuantile - stopUpdate;
+//
+//    sketch.getQuantiles(quantileQueryValues);
+//    final long stopGetQuantiles = System.nanoTime();
+//    getQuantilesTimeNs += stopGetQuantiles - stopGetQuantile;
+//
+//    for (final float value: rankQueryValues) { sketch.getRank(value); }
+//    final long stopGetRank = System.nanoTime();
+//    getRankTimeNs += stopGetRank - stopGetQuantiles;
+//
+//    sketch.getRanks(rankQueryValues);
+//    final long stopGetCdf = System.nanoTime();
+//    getCdfTimeNs += stopGetCdf - stopGetRank;
 
-    final long startGetQuantiles = System.nanoTime();
-    sketch.getQuantiles(quantileQueryValues);
-    final long stopGetQuantiles = System.nanoTime();
-    getQuantilesTimeNs += stopGetQuantiles - startGetQuantiles;
-
-    final long startGetRank = System.nanoTime();
-    for (final float value: rankQueryValues) {
-      sketch.getRank(value);
-    }
-    final long stopGetRank = System.nanoTime();
-    getRankTimeNs += stopGetRank - startGetRank;
-
-    final long startGetCdf = System.nanoTime();
-    sketch.getCDF(rankQueryValues);
-    final long stopGetCdf = System.nanoTime();
-    getCdfTimeNs += stopGetCdf - startGetCdf;
-
-    final long startSerialize = System.nanoTime();
-    final byte[] bytes = sketch.toByteArray();
-    final long stopSerialize = System.nanoTime();
-    serializeTimeNs += stopSerialize - startSerialize;
-
-    final Memory mem = Memory.wrap(bytes);
-    final long startDeserialize = System.nanoTime();
-    KllFloatsSketch.heapify(mem);
-    final long stopDeserialize = System.nanoTime();
-    deserializeTimeNs += stopDeserialize - startDeserialize;
+//    final byte[] bytes = sketch.toByteArray();
+//    final long stopSerialize = System.nanoTime();
+//    serializeTimeNs += stopSerialize - stopGetCdf;
+//
+//    final Memory mem = Memory.wrap(bytes);
+//    KllFloatsSketch.heapify(mem);
+//    final long stopDeserialize = System.nanoTime();
+//    deserializeTimeNs += stopDeserialize - stopSerialize;
 
     // could record the last one since they must be the same
     // but let's average across all trials to see if there is an anomaly
-    numRetainedItems += sketch.getNumRetained();
-    serializedSizeBytes += sketch.getSerializedSizeBytes();
+//    numRetainedItems += sketch.getNumRetained();
+//    serializedSizeBytes += sketch.getSerializedSizeBytes();
   }
 
   @Override
   public String getHeader() {
-    return "Stream\tTrials\tBuild\tUpdate\tQuant\tQuants\tRank\tCDF\tSer\tDeser\tItems\tstatsSize";
+    return "StreamLen\tTrials\tBuild\tUpdate\tQuant\tQuants\tRank\tRanks\tSer\tDeser\tRetItems\tSerSize";
   }
 
   @Override

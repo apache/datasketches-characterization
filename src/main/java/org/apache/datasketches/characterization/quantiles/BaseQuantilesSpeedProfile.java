@@ -62,9 +62,8 @@ public abstract class BaseQuantilesSpeedProfile implements JobProfile {
 
     int streamLength = minStreamLen;
     while (streamLength <= maxStreamLen) {
+      final int numTrials = getNumTrials(streamLength, lgMinStreamLen, lgMaxStreamLen, lgMinTrials, lgMaxTrials);
       prepareTrial(streamLength);
-      final int numTrials = getNumTrials(streamLength, lgMinStreamLen, lgMaxStreamLen,
-          lgMinTrials, lgMaxTrials);
       for (int i = 0; i < numTrials; i++) {
         doTrial();
       }

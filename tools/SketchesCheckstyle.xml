@@ -181,7 +181,7 @@ under the License.
     
     <module name="RedundantImport"/>
     
-    <module name="UnusedImports"/>
+    <!-- <module name="UnusedImports"/> -->
     
     <!-- Filters -->
     <!-- Enable suppression using comments: //CHECKSTYLE.OFF: "RULE" and //CHECKSTYLE.ON: "RULE"
