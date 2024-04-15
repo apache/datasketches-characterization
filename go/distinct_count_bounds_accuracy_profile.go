@@ -133,7 +133,7 @@ func (d *DistinctCountBoundsAccuracyProfile) process(cumTrials int, sb *strings.
 		sb.WriteString(fmt.Sprintf("%f", relLUb2))
 		sb.WriteString("\t")
 		sb.WriteString(fmt.Sprintf("%f", relLUb3))
-		sb.WriteString("\t")
+		sb.WriteString("\n")
 
 	}
 }

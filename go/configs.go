@@ -38,6 +38,8 @@ type distinctCountJobConfigType struct {
 
 var (
 	distinctCountJobConfig = distinctCountJobConfigType{
+		lgK: 4,
+
 		lgMinU: 0,
 		lgMaxU: 20,
 		UPPO:   16,
