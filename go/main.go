@@ -19,12 +19,23 @@ package main
 
 import (
 	"fmt"
+	"github.com/apache/datasketches-go/hll"
 	"os"
 )
 
 var (
 	jobs = map[string]JobProfile{
-		"distinct_count_accuracy_profile": NewDistinctCountAccuracyProfile(distinctCountJobConfig),
+		"distinct_count_accuracy_profile": NewDistinctCountAccuracyProfile(
+			distinctCountJobConfig,
+			NewHllSketchAccuracyRunner(distinctCountJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */),
+		),
+		"distinct_count_bound_accuracy_profile": NewDistinctCountBoundsAccuracyProfile(
+			distinctCountJobConfig,
+			NewHllSketchBoundsAccuracyRunner(distinctCountJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */),
+		),
+		"distinct_count_merge_accuracy_profile": NewDistinctCountMergeAccuracyProfile(
+			distinctCountMergeJobConfig,
+		),
 	}
 )
 
@@ -32,7 +43,7 @@ func usage() {
 	fmt.Println("Usage: go run main.go <job>")
 	fmt.Println("Available jobs:")
 	for job := range jobs {
-		fmt.Println(job)
+		fmt.Println(fmt.Sprintf("\t%s", job))
 	}
 	os.Exit(1)
 }

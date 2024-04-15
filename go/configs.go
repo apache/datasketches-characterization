@@ -17,9 +17,9 @@
 
 package main
 
-import "github.com/apache/datasketches-go/hll"
-
 type distinctCountJobConfigType struct {
+	lgK int // lgK of distinct count sketch
+
 	lgMinU int // The starting # of uniques that is printed at the end.
 	lgMaxU int // How high the # uniques go
 	UPPO   int // The horizontal x-resolution of trials points
@@ -31,7 +31,9 @@ type distinctCountJobConfigType struct {
 	lgQK      int  // size of quantiles sketch
 	interData bool // intermediate data
 
-	runner DistinctCountAccuracyProfileRunner
+	numTrials             int
+	numSketches           int
+	distinctKeysPerSketch int
 }
 
 var (
@@ -46,7 +48,11 @@ var (
 
 		lgQK:      12,
 		interData: true,
-
-		runner: NewHllSketchAccuracyRunner(4 /* lgK */, hll.TgtHllTypeHll8 /* tgtType */),
+	}
+	distinctCountMergeJobConfig = distinctCountJobConfigType{
+		lgK:                   12,
+		numTrials:             100,
+		numSketches:           8192,
+		distinctKeysPerSketch: 32768,
 	}
 )
