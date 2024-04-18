@@ -30,8 +30,8 @@ var (
 			NewHllSketchAccuracyRunner(distinctCountJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */),
 		),
 		"distinct_count_bound_accuracy_profile": NewDistinctCountBoundsAccuracyProfile(
-			distinctCountJobConfig,
-			NewHllSketchBoundsAccuracyRunner(distinctCountJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */),
+			distinctCountBoundsJobConfig,
+			NewHllSketchBoundsAccuracyRunner(distinctCountBoundsJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */),
 		),
 		"distinct_count_merge_accuracy_profile": NewDistinctCountMergeAccuracyProfile(
 			distinctCountMergeJobConfig,

@@ -80,8 +80,8 @@ func (h *HllSketchBoundsAccuracyRunner) runTrial(stats []baseAccuracyStats, key 
 		stat := ostat.(*boundsAccuracyStats)
 		delta := stat.trueValue - lastUniques
 		for u := uint64(0); u < delta; u++ {
-			h.sketch.UpdateUInt64(key)
 			key++
+			h.sketch.UpdateUInt64(key)
 		}
 		lastUniques += delta
 		est, _ := h.sketch.GetEstimate()

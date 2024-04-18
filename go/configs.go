@@ -51,6 +51,20 @@ var (
 		lgQK:      12,
 		interData: true,
 	}
+	distinctCountBoundsJobConfig = distinctCountJobConfigType{
+		lgK: 4,
+
+		lgMinU: 0,
+		lgMaxU: 20,
+		UPPO:   16,
+
+		lgMinT: 10,
+		lgMaxT: 20,
+		TPPO:   1,
+
+		lgQK:      12,
+		interData: true,
+	}
 	distinctCountMergeJobConfig = distinctCountJobConfigType{
 		lgK:                   12,
 		numTrials:             100,

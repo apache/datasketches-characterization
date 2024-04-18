@@ -18,18 +18,13 @@
 package main
 
 import (
-	"github.com/apache/datasketches-go/hll"
 	"testing"
 )
 
 func TestHllSketchAccuracyRunner(t *testing.T) {
-	runner := NewHllSketchAccuracyRunner(distinctCountJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */)
-	profile := NewDistinctCountAccuracyProfile(distinctCountJobConfig, runner)
-	profile.run()
+	jobs["distinct_count_accuracy_profile"].run()
 }
 
 func TestHllSketchBoundsAccuracyRunner(t *testing.T) {
-	runner := NewHllSketchBoundsAccuracyRunner(distinctCountJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */)
-	profile := NewDistinctCountBoundsAccuracyProfile(distinctCountJobConfig, runner)
-	profile.run()
+	jobs["distinct_count_bound_accuracy_profile"].run()
 }

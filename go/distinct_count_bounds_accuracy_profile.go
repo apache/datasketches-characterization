@@ -116,23 +116,23 @@ func (d *DistinctCountBoundsAccuracyProfile) process(cumTrials int, sb *strings.
 		// Quantiles
 		quants, _ := q.qsk.GetQuantiles(GAUSSIANS_3SD, true)
 		for i := 0; i < len(quants); i++ {
-			sb.WriteString(fmt.Sprintf("%f", quants[i]/float64(trueUniques)-1.0))
+			sb.WriteString(fmt.Sprintf("%e", quants[i]/float64(trueUniques)-1.0))
 			sb.WriteString("\t")
 		}
 
 		// Bound averages
-		sb.WriteString(fmt.Sprintf("%f", relLb3))
+		sb.WriteString(fmt.Sprintf("%e", relLb3))
 		sb.WriteString("\t")
-		sb.WriteString(fmt.Sprintf("%f", relLb2))
+		sb.WriteString(fmt.Sprintf("%e", relLb2))
 		sb.WriteString("\t")
-		sb.WriteString(fmt.Sprintf("%f", relLb1))
+		sb.WriteString(fmt.Sprintf("%e", relLb1))
 		sb.WriteString("\t")
 
-		sb.WriteString(fmt.Sprintf("%f", relLUb1))
+		sb.WriteString(fmt.Sprintf("%e", relLUb1))
 		sb.WriteString("\t")
-		sb.WriteString(fmt.Sprintf("%f", relLUb2))
+		sb.WriteString(fmt.Sprintf("%e", relLUb2))
 		sb.WriteString("\t")
-		sb.WriteString(fmt.Sprintf("%f", relLUb3))
+		sb.WriteString(fmt.Sprintf("%e", relLUb3))
 		sb.WriteString("\n")
 
 	}
