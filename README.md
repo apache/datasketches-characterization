@@ -17,22 +17,38 @@
     under the License.
 -->
 
-# Characterization Java, C++ & Go Component
+# Characterizations of Java, C++ & Go Library Components
 
 Please visit the main [DataSketches website](https://datasketches.apache.org) for more information. 
 
-If you are interested in making contributions to this site please see our [Community](https://datasketches.apache.org/docs/Community/) page for how to contact us.
+If you are interested in making contributions to this site please see our 
+[Community](https://datasketches.apache.org/docs/Community/) page for how to contact us.
 
 We define characterization as the task of comprehensively measuring accuracy 
-or speed performance of our library. These characterization tests are often long running 
-(some can run for days) and very resource intensive, which makes them unsuitable for including 
-in unit tests.  The code in this repository are some of the test suites we use to create 
-some of the plots on our website and provide evidence for our speed and accuracy claims.  
-This code is shared here so that others can duplicate our own characterizations.
+or speed performance of various library components over a wide range of inputs.
+The output from characterization tests are huge tables of numbers with hundreds or thousands of rows.
+These are then converted into graphs and charts for close examination of behavior. 
+This is different from benchmarking, which is usually focused on testing performance of a given 
+configuration against a single or small set of thresholds for a pass / fail result.
 
-The code here is shared "as-is" and does not pretend to have the same level of quality as the 
-primary repositories (java, pig, hive and vector).  This code is not archived to Maven Central 
-and will change from time-to-time as we grow these characterization suites.
+These characterization tests are often long running (some can run for many hours or a few days) 
+and very resource intensive, which makes them unsuitable for including in unit tests.
+The reason for the long running times is that sketches are stochastic in nature and it takes
+thousands to millions of trials to reduce the statistical noise in order to produce relatively
+smooth graphs that we can then analyze.
+
+The code in this repository are the test suites we use to create most of the plots on 
+our website and provide evidence for our speed and accuracy claims. 
+This code is shared here so that others can duplicate our characterizations.
+
+This code is shared "as-is" and does not pretend to have the same level of quality as the 
+primary repositories (java, C++, Go).  This code is not formally released nor archived to Maven Central 
+and will change from time-to-time as we grow these characterization suites. 
+At any point in time this code is not necessarily up-to-date with the latest releases and thus
+may require some tweeking to get it to compile.  
+
+Caveat Emptor, and enjoy!
+
 
 ## Build / Run Instructions (Java)
 
@@ -116,7 +132,7 @@ After this setup you should be able to *Build Project* from the top-level *Eclip
 * Go 1.21 or later is required to compile the Go code.
 
 ### Build
-* The project use Go modules, so you can build the project by running the following command:
+* The project uses Go modules, so you can build the project by running the following command:
     ```
     go build
     ```
