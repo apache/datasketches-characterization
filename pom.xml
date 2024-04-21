@@ -293,6 +293,7 @@ under the License.
               <exclude>**/test/resources/**/*.txt</exclude>
               <exclude>LICENSE</exclude>
               <exclude>NOTICE</exclude>
+              <exclude>go/go.sum</exclude>
             </excludes>
           </configuration>
         </plugin>
