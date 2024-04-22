@@ -14,38 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package main
 
-import (
-	"github.com/apache/datasketches-go/hll"
+type baseAccuracyStats interface {
+}
+
+type DistinctCountAccuracyProfileRunner interface {
+	runTrial(stats []baseAccuracyStats, key uint64) uint64
+}
+
+const (
+	M4SD = 0.0000316712418331 //minus 4 StdDev
+	M3SD = 0.0013498980316301 //minus 3 StdDev
+	M2SD = 0.0227501319481792 //minus 2 StdDev
+	M1SD = 0.1586552539314570 //minus 1 StdDev
+	MED  = 0.5                //median
+	P1SD = 0.8413447460685430 //plus  1 StdDev
+	P2SD = 0.9772498680518210 //plus  2 StdDev
+	P3SD = 0.9986501019683700 //plus  3 StdDev
+	P4SD = 0.9999683287581670 //plus  4 StdDev
 )
 
-type HllSketchAccuracyRunner struct {
-	sketch hll.HllSketch
-}
-
-func NewHllSketchAccuracyRunner(lgK int, tgtType hll.TgtHllType) *HllSketchAccuracyRunner {
-	sketch, _ := hll.NewHllSketch(lgK, tgtType)
-	return &HllSketchAccuracyRunner{
-		sketch: sketch,
-	}
-}
-
-func (h *HllSketchAccuracyRunner) runTrial(stats []*accuracyStats, key uint64) uint64 {
-	h.sketch.Reset()
-
-	lastUniques := uint64(0)
-	for _, stat := range stats {
-		delta := stat.trueValue - lastUniques
-		for u := uint64(0); u < delta; u++ {
-			h.sketch.UpdateUInt64(key)
-			key++
-		}
-		lastUniques += delta
-		est, _ := h.sketch.GetEstimate()
-		stat.update(est)
-	}
-
-	return key
-}
+var (
+	GAUSSIANS_4SD = []float64{0.0, M4SD, M3SD, M2SD, M1SD, MED, P1SD, P2SD, P3SD, P4SD, 1.0}
+	GAUSSIANS_3SD = []float64{0.0, M3SD, M2SD, M1SD, MED, P1SD, P2SD, P3SD, 1.0}
+)

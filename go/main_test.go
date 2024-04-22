@@ -22,6 +22,9 @@ import (
 )
 
 func TestHllSketchAccuracyRunner(t *testing.T) {
-	runner := NewDistinctCountAccuracyProfile(distinctCountJobConfig)
-	runner.run()
+	jobs["distinct_count_accuracy_profile"].run()
+}
+
+func TestHllSketchBoundsAccuracyRunner(t *testing.T) {
+	jobs["distinct_count_bound_accuracy_profile"].run()
 }

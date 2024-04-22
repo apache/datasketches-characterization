@@ -18,28 +18,27 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"strings"
 	"time"
 )
 
-type DistinctCountAccuracyProfile struct {
+type DistinctCountBoundsAccuracyProfile struct {
 	config    distinctCountJobConfigType
 	runner    DistinctCountAccuracyProfileRunner
 	stats     []baseAccuracyStats
 	startTime int64
 }
 
-func NewDistinctCountAccuracyProfile(config distinctCountJobConfigType, runner DistinctCountAccuracyProfileRunner) *DistinctCountAccuracyProfile {
-	return &DistinctCountAccuracyProfile{
+func NewDistinctCountBoundsAccuracyProfile(config distinctCountJobConfigType, runner DistinctCountAccuracyProfileRunner) *DistinctCountBoundsAccuracyProfile {
+	return &DistinctCountBoundsAccuracyProfile{
 		config:    config,
 		runner:    runner,
-		stats:     buildLog2AccuracyStatsArray(config.lgMinU, config.lgMaxU, config.UPPO, config.lgQK),
+		stats:     buildLog2BoundsAccuracyStatsArray(config.lgMinU, config.lgMaxU, config.UPPO, config.lgQK),
 		startTime: time.Now().UnixMilli(),
 	}
 }
 
-func (d *DistinctCountAccuracyProfile) run() {
+func (d *DistinctCountBoundsAccuracyProfile) run() {
 	minT := 1 << d.config.lgMinT
 	maxT := 1 << d.config.lgMaxT
 	maxU := 1 << d.config.lgMaxU
@@ -93,63 +92,59 @@ func (d *DistinctCountAccuracyProfile) run() {
 	}
 }
 
-func (d *DistinctCountAccuracyProfile) process(cumTrials int, sb *strings.Builder) {
+func (d *DistinctCountBoundsAccuracyProfile) process(cumTrials int, sb *strings.Builder) {
 	points := len(d.stats)
 	for pt := 0; pt < points; pt++ {
-		q := d.stats[pt].(*accuracyStats)
+		q := d.stats[pt].(*boundsAccuracyStats)
 
 		trueUniques := q.trueValue
+		relLb3 := q.sumLB3/float64(cumTrials)/float64(trueUniques) - 1.0
+		relLb2 := q.sumLB2/float64(cumTrials)/float64(trueUniques) - 1.0
+		relLb1 := q.sumLB1/float64(cumTrials)/float64(trueUniques) - 1.0
 
-		meanEst := q.sumEst / float64(cumTrials)
-		meanRelErr := q.sumRelErr / float64(cumTrials)
-		meanSqErr := q.sumSqRelErr / float64(cumTrials)
-		normMeanSqErr := meanSqErr / (float64(trueUniques) * float64(trueUniques))
-		rmsRelErr := math.Sqrt(normMeanSqErr)
-		q.rmse = rmsRelErr
+		relLUb1 := q.sumUB1/float64(cumTrials)/float64(trueUniques) - 1.0
+		relLUb2 := q.sumUB2/float64(cumTrials)/float64(trueUniques) - 1.0
+		relLUb3 := q.sumUB3/float64(cumTrials)/float64(trueUniques) - 1.0
 
+		// OUTPUT
 		sb.WriteString(fmt.Sprintf("%d", trueUniques))
 		sb.WriteString("\t")
-
-		sb.WriteString(fmt.Sprintf("%e", meanEst))
-		sb.WriteString("\t")
-
-		sb.WriteString(fmt.Sprintf("%e", meanRelErr))
-		sb.WriteString("\t")
-
-		sb.WriteString(fmt.Sprintf("%e", rmsRelErr))
-		sb.WriteString("\t")
-
+		// TRIALS
 		sb.WriteString(fmt.Sprintf("%d", cumTrials))
 		sb.WriteString("\t")
 
-		quants, _ := q.qsk.GetQuantiles(GAUSSIANS_4SD, true)
+		// Quantiles
+		quants, _ := q.qsk.GetQuantiles(GAUSSIANS_3SD, true)
 		for i := 0; i < len(quants); i++ {
-			sb.WriteString(fmt.Sprintf("%e", float64(quants[i])/(float64(trueUniques))-1.0))
+			sb.WriteString(fmt.Sprintf("%e", quants[i]/float64(trueUniques)-1.0))
 			sb.WriteString("\t")
 		}
 
-		sb.WriteString(fmt.Sprintf("%d", 0))
+		// Bound averages
+		sb.WriteString(fmt.Sprintf("%e", relLb3))
 		sb.WriteString("\t")
-		sb.WriteString(fmt.Sprintf("%d", 0))
+		sb.WriteString(fmt.Sprintf("%e", relLb2))
+		sb.WriteString("\t")
+		sb.WriteString(fmt.Sprintf("%e", relLb1))
+		sb.WriteString("\t")
 
+		sb.WriteString(fmt.Sprintf("%e", relLUb1))
+		sb.WriteString("\t")
+		sb.WriteString(fmt.Sprintf("%e", relLUb2))
+		sb.WriteString("\t")
+		sb.WriteString(fmt.Sprintf("%e", relLUb3))
 		sb.WriteString("\n")
+
 	}
 }
 
-func (d *DistinctCountAccuracyProfile) setHeader(sb *strings.Builder) string {
-	sb.WriteString("TrueU")
-	sb.WriteString("\t")
-	sb.WriteString("MeanEst")
-	sb.WriteString("\t")
-	sb.WriteString("MeanRelErr")
-	sb.WriteString("\t")
-	sb.WriteString("RMS_RE")
+func (d *DistinctCountBoundsAccuracyProfile) setHeader(sb *strings.Builder) string {
+	sb.WriteString("InU")
 	sb.WriteString("\t")
 	sb.WriteString("Trials")
 	sb.WriteString("\t")
 	sb.WriteString("Min")
 	sb.WriteString("\t")
-	sb.WriteString("Q(.0000317)")
 	sb.WriteString("\t")
 	sb.WriteString("Q(.00135)")
 	sb.WriteString("\t")
@@ -165,23 +160,30 @@ func (d *DistinctCountAccuracyProfile) setHeader(sb *strings.Builder) string {
 	sb.WriteString("\t")
 	sb.WriteString("Q(.99865)")
 	sb.WriteString("\t")
-	sb.WriteString("Q(.9999683)")
 	sb.WriteString("\t")
 	sb.WriteString("Max")
 	sb.WriteString("\t")
-	sb.WriteString("Bytes")
+	sb.WriteString("avgLB3")
 	sb.WriteString("\t")
-	sb.WriteString("ReMerit")
+	sb.WriteString("avgLB2")
+	sb.WriteString("\t")
+	sb.WriteString("avgLB1")
+	sb.WriteString("\t")
+	sb.WriteString("avgUB1")
+	sb.WriteString("\t")
+	sb.WriteString("avgUB2")
+	sb.WriteString("\t")
+	sb.WriteString("avgUB3")
 	sb.WriteString("\n")
 	return sb.String()
 }
 
-func buildLog2AccuracyStatsArray(lgMin, lgMax, ppo, lgQK int) []baseAccuracyStats {
+func buildLog2BoundsAccuracyStatsArray(lgMin, lgMax, ppo, lgQK int) []baseAccuracyStats {
 	qLen := countPoints(lgMin, lgMax, ppo)
 	qArr := make([]baseAccuracyStats, qLen)
 	p := uint64(1) << lgMin
 	for i := 0; i < qLen; i++ {
-		qArr[i] = newAccuracyStats(1<<lgQK, p)
+		qArr[i] = newBoundsAccuracyStats(1<<lgQK, p)
 		p = pwr2SeriesNext(ppo, p)
 	}
 	return qArr
