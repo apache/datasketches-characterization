@@ -58,6 +58,7 @@ var (
 				lgMinT:   11,
 				lgMaxT:   11,
 				lgDeltaU: 2,
+				serDe:    true,
 			},
 			hll.TgtHllTypeHll8,
 		),

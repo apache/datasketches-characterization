@@ -19,6 +19,9 @@ package main
 import (
 	"fmt"
 	"github.com/apache/datasketches-go/hll"
+	"math"
+	"runtime"
+	"runtime/debug"
 	"strings"
 	"time"
 )
@@ -31,8 +34,10 @@ type DistinctCountMergeSpeedProfile struct {
 }
 
 type mergeSpeedStats struct {
-	mergeTime_nS float64
-	totalTime_nS float64
+	serializeTime_nS   float64
+	deserializeTime_nS float64
+	mergeTime_nS       float64
+	totalTime_nS       float64
 }
 
 func NewDistinctCountMergeSpeedProfile(config distinctCountJobConfigType, tgtType hll.TgtHllType) *DistinctCountMergeSpeedProfile {
@@ -51,20 +56,30 @@ func (d *DistinctCountMergeSpeedProfile) run() {
 
 	stats := &mergeSpeedStats{}
 	vIn := int64(0)
+	debug.SetGCPercent(-1)
+	debug.SetMemoryLimit(math.MaxInt64)
+
 	for lgK := d.config.minLgK; lgK <= d.config.maxLgK; lgK++ {
+		runtime.GC()
 		var (
-			lgT             = d.config.maxLgK - lgK + d.config.lgMinT
-			trials          = 1 << lgT
-			sumMergeTime_nS = 0.0
-			sumTotalTime_nS = 0.0
+			lgT                   = d.config.maxLgK - lgK + d.config.lgMinT
+			trials                = 1 << lgT
+			sumSerializeTime_nS   = 0.0
+			sumDeserializeTime_nS = 0.0
+			sumMergeTime_nS       = 0.0
+			sumTotalTime_nS       = 0.0
 		)
 		sb.Reset()
 		vIn = d.resetMerge(lgK, vIn)
 		for t := 0; t < trials; t++ {
 			d.runTrial(stats, lgK, d.config.lgDeltaU)
+			sumSerializeTime_nS += stats.serializeTime_nS
+			sumDeserializeTime_nS += stats.deserializeTime_nS
 			sumMergeTime_nS += stats.mergeTime_nS
 			sumTotalTime_nS += stats.totalTime_nS
 		}
+		stats.serializeTime_nS = sumSerializeTime_nS / float64(trials)
+		stats.deserializeTime_nS = sumDeserializeTime_nS / float64(trials)
 		stats.mergeTime_nS = sumMergeTime_nS / float64(trials)
 		stats.totalTime_nS = sumTotalTime_nS / float64(trials)
 		d.process(stats, lgK, lgT, sb)
@@ -77,6 +92,10 @@ func (d *DistinctCountMergeSpeedProfile) setHeader(sb *strings.Builder) string {
 	sb.WriteString("\t")
 	sb.WriteString("LgT")
 	sb.WriteString("\t")
+	sb.WriteString("Ser_nS")
+	sb.WriteString("\t")
+	sb.WriteString("DeSer_nS")
+	sb.WriteString("\t")
 	sb.WriteString("Merge_nS")
 	sb.WriteString("\t")
 	sb.WriteString("Total_nS")
@@ -86,13 +105,43 @@ func (d *DistinctCountMergeSpeedProfile) setHeader(sb *strings.Builder) string {
 }
 
 func (d *DistinctCountMergeSpeedProfile) runTrial(stats *mergeSpeedStats, lgK int, lgDeltaU int) {
-	start := uint64(0)
-	mergeTime_nS := uint64(0)
+	var (
+		start        = uint64(0)
+		serTime_nS   = uint64(0)
+		deserTime_nS = uint64(0)
+		mergeTime_nS = uint64(0)
+		byteArr      = []byte{}
+	)
 
-	start = uint64(time.Now().UnixNano())
-	d.union.UpdateSketch(d.source)
-	mergeTime_nS = uint64(time.Now().UnixNano()) - start
+	if d.config.serDe {
+		// Serialise
+		if d.config.compact {
+			start = uint64(time.Now().UnixNano())
+			byteArr, _ = d.source.ToCompactSlice()
+			serTime_nS = uint64(time.Now().UnixNano()) - start
+		} else {
+			start = uint64(time.Now().UnixNano())
+			byteArr, _ = d.source.ToUpdatableSlice()
+			serTime_nS = uint64(time.Now().UnixNano()) - start
+		}
 
+		// Deserialise
+		start = uint64(time.Now().UnixNano())
+		source, _ := hll.NewHllSketchFromSlice(byteArr, true)
+		deserTime_nS = uint64(time.Now().UnixNano()) - start
+
+		// Merge
+		start = uint64(time.Now().UnixNano())
+		_ = d.union.UpdateSketch(source)
+		mergeTime_nS += uint64(time.Now().UnixNano()) - start
+	} else {
+		start = uint64(time.Now().UnixNano())
+		_ = d.union.UpdateSketch(d.source)
+		mergeTime_nS = uint64(time.Now().UnixNano()) - start
+	}
+
+	stats.serializeTime_nS = float64(serTime_nS)
+	stats.deserializeTime_nS = float64(deserTime_nS)
 	stats.mergeTime_nS = float64(mergeTime_nS)
 	stats.totalTime_nS = float64(mergeTime_nS)
 }
@@ -100,6 +149,10 @@ func (d *DistinctCountMergeSpeedProfile) process(stats *mergeSpeedStats, lgK int
 	sb.WriteString(fmt.Sprintf("%d", lgK))
 	sb.WriteString("\t")
 	sb.WriteString(fmt.Sprintf("%d", lgT))
+	sb.WriteString("\t")
+	sb.WriteString(fmt.Sprintf("%e", stats.serializeTime_nS))
+	sb.WriteString("\t")
+	sb.WriteString(fmt.Sprintf("%e", stats.deserializeTime_nS))
 	sb.WriteString("\t")
 	sb.WriteString(fmt.Sprintf("%e", stats.mergeTime_nS))
 	sb.WriteString("\t")

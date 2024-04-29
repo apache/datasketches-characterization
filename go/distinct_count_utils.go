@@ -45,6 +45,9 @@ type distinctCountJobConfigType struct {
 	numTrials             int
 	numSketches           int
 	distinctKeysPerSketch int
+
+	serDe   bool
+	compact bool
 }
 
 const (
