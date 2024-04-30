@@ -111,33 +111,47 @@ func (d *DistinctCountMergeSpeedProfile) runTrial(stats *mergeSpeedStats, lgK in
 		deserTime_nS = uint64(0)
 		mergeTime_nS = uint64(0)
 		byteArr      = []byte{}
+		err          error
+		source       hll.HllSketch
 	)
 
 	if d.config.serDe {
 		// Serialise
 		if d.config.compact {
 			start = uint64(time.Now().UnixNano())
-			byteArr, _ = d.source.ToCompactSlice()
+			byteArr, err = d.source.ToCompactSlice()
 			serTime_nS = uint64(time.Now().UnixNano()) - start
 		} else {
 			start = uint64(time.Now().UnixNano())
-			byteArr, _ = d.source.ToUpdatableSlice()
+			byteArr, err = d.source.ToUpdatableSlice()
 			serTime_nS = uint64(time.Now().UnixNano()) - start
+		}
+		if err != nil {
+			panic(err)
 		}
 
 		// Deserialise
 		start = uint64(time.Now().UnixNano())
-		source, _ := hll.NewHllSketchFromSlice(byteArr, true)
+		source, err = hll.NewHllSketchFromSlice(byteArr, true)
 		deserTime_nS = uint64(time.Now().UnixNano()) - start
+		if err != nil {
+			panic(err)
+		}
 
 		// Merge
 		start = uint64(time.Now().UnixNano())
-		_ = d.union.UpdateSketch(source)
+		err = d.union.UpdateSketch(source)
 		mergeTime_nS += uint64(time.Now().UnixNano()) - start
+		if err != nil {
+			panic(err)
+		}
 	} else {
 		start = uint64(time.Now().UnixNano())
-		_ = d.union.UpdateSketch(d.source)
+		err = d.union.UpdateSketch(d.source)
 		mergeTime_nS = uint64(time.Now().UnixNano()) - start
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	stats.serializeTime_nS = float64(serTime_nS)
