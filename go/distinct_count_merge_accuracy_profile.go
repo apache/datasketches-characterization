@@ -27,11 +27,13 @@ import (
 type DistinctCountMergeAccuracyProfile struct {
 	config    distinctCountJobConfigType
 	startTime int64
+	tgtType   hll.TgtHllType
 }
 
-func NewDistinctCountMergeAccuracyProfile(config distinctCountJobConfigType) *DistinctCountMergeAccuracyProfile {
+func NewDistinctCountMergeAccuracyProfile(config distinctCountJobConfigType, tgtType hll.TgtHllType) *DistinctCountMergeAccuracyProfile {
 	return &DistinctCountMergeAccuracyProfile{
 		config:    config,
+		tgtType:   tgtType,
 		startTime: time.Now().UnixMilli(),
 	}
 }
@@ -49,7 +51,7 @@ func (d *DistinctCountMergeAccuracyProfile) run() {
 		union, _ := hll.NewUnion(d.config.lgK)
 
 		for s := 0; s < d.config.numSketches; s++ {
-			sk, _ := hll.NewHllSketch(d.config.lgK, hll.TgtHllTypeHll8)
+			sk, _ := hll.NewHllSketch(d.config.lgK, d.tgtType)
 			for k := 0; k < d.config.distinctKeysPerSketch; k++ {
 				sk.UpdateInt64(key)
 				key += 1

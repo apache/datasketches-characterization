@@ -23,6 +23,33 @@ type DistinctCountAccuracyProfileRunner interface {
 	runTrial(stats []baseAccuracyStats, key uint64) uint64
 }
 
+type distinctCountJobConfigType struct {
+	lgK int // lgK of distinct count sketch
+
+	lgMinU int // The starting # of uniques that is printed at the end.
+	lgMaxU int // How high the # uniques go
+	uppo   int // The horizontal x-resolution of trials points
+
+	lgMinT int // prints intermediate results starting w/ this lgMinT
+	lgMaxT int // The max trials
+	tppo   int // how often intermediate results are printed
+
+	minLgK int // X-axis LgK Profile
+	maxLgK int // X-axis LgK Profile
+
+	lgDeltaU int
+
+	lgQK      int  // size of quantiles sketch
+	interData bool // intermediate data
+
+	numTrials             int
+	numSketches           int
+	distinctKeysPerSketch int
+
+	serDe   bool
+	compact bool
+}
+
 const (
 	M4SD = 0.0000316712418331 //minus 4 StdDev
 	M3SD = 0.0013498980316301 //minus 3 StdDev

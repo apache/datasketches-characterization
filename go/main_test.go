@@ -25,6 +25,10 @@ func TestHllSketchAccuracyRunner(t *testing.T) {
 	jobs["distinct_count_accuracy_profile"].run()
 }
 
-func TestHllSketchBoundsAccuracyRunner(t *testing.T) {
-	jobs["distinct_count_bound_accuracy_profile"].run()
+func TestHllSketchMergeAccuracyRunner(t *testing.T) {
+	jobs["distinct_count_merge_accuracy_profile"].run()
+}
+
+func TestHllSketchMergeSpeedRunner(t *testing.T) {
+	jobs["distinct_count_merge_speed_profile"].run()
 }

@@ -26,15 +26,41 @@ import (
 var (
 	jobs = map[string]JobProfile{
 		"distinct_count_accuracy_profile": NewDistinctCountAccuracyProfile(
-			distinctCountJobConfig,
-			NewHllSketchAccuracyRunner(distinctCountJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */),
-		),
-		"distinct_count_bound_accuracy_profile": NewDistinctCountBoundsAccuracyProfile(
-			distinctCountBoundsJobConfig,
-			NewHllSketchBoundsAccuracyRunner(distinctCountBoundsJobConfig.lgK, hll.TgtHllTypeHll8 /* tgtType */),
+			distinctCountJobConfigType{
+				lgK: 11,
+
+				lgMinU: 0,
+				lgMaxU: 20,
+				uppo:   16,
+
+				lgMinT: 8,
+				lgMaxT: 20,
+				tppo:   1,
+
+				lgQK:      12,
+				interData: true,
+			},
+			hll.TgtHllTypeHll8,
 		),
 		"distinct_count_merge_accuracy_profile": NewDistinctCountMergeAccuracyProfile(
-			distinctCountMergeJobConfig,
+			distinctCountJobConfigType{
+				lgK:                   12,
+				numTrials:             100,
+				numSketches:           8192,
+				distinctKeysPerSketch: 32768,
+			},
+			hll.TgtHllTypeHll8,
+		),
+		"distinct_count_merge_speed_profile": NewDistinctCountMergeSpeedProfile(
+			distinctCountJobConfigType{
+				minLgK:   10,
+				maxLgK:   21,
+				lgMinT:   11,
+				lgMaxT:   11,
+				lgDeltaU: 2,
+				serDe:    true,
+			},
+			hll.TgtHllTypeHll8,
 		),
 	}
 )
