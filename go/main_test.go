@@ -32,3 +32,7 @@ func TestHllSketchMergeAccuracyRunner(t *testing.T) {
 func TestHllSketchMergeSpeedRunner(t *testing.T) {
 	jobs["distinct_count_merge_speed_profile"].run()
 }
+
+func TestHllSketchSerdeRunner(t *testing.T) {
+	jobs["distinct_count_serde_profile"].run()
+}

@@ -37,6 +37,10 @@ type distinctCountJobConfigType struct {
 	minLgK int // X-axis LgK Profile
 	maxLgK int // X-axis LgK Profile
 
+	// Trail Speed
+	lgMinBpU int // start the downward slope of trials at this LgU
+	lgMaxBpU int // stop the downward slope of trials at this LgU
+
 	lgDeltaU int
 
 	lgQK      int  // size of quantiles sketch

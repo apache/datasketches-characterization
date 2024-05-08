@@ -62,6 +62,23 @@ var (
 			},
 			hll.TgtHllTypeHll8,
 		),
+		"distinct_count_serde_profile": NewDistinctCountSerDeProfile(
+			distinctCountJobConfigType{
+				lgMinU: 0,
+				lgMaxU: 20,
+				uppo:   2,
+
+				lgMaxT: 16,
+				lgMinT: 7,
+
+				lgMinBpU: 4,
+				lgMaxBpU: 20,
+
+				lgK:     12,
+				compact: false,
+			},
+			hll.TgtHllTypeHll8,
+		),
 	}
 )
 
