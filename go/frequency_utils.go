@@ -17,26 +17,17 @@
 
 package main
 
-import (
-	"testing"
-)
+type frequencyJobConfigType struct {
+	k int // sketch size and accuracy parameter
 
-func TestHllSketchAccuracyRunner(t *testing.T) {
-	jobs["distinct_count_accuracy_profile"].run()
-}
+	lgMin int // The starting stream length
+	lgMax int // How high the stream length goes
 
-func TestHllSketchMergeAccuracyRunner(t *testing.T) {
-	jobs["distinct_count_merge_accuracy_profile"].run()
-}
+	PPO int // The horizontal x-resolution of trials points
 
-func TestHllSketchMergeSpeedRunner(t *testing.T) {
-	jobs["distinct_count_merge_speed_profile"].run()
-}
+	lgMinTrials int // Min trials at tail (high counts)
+	lgMaxTrials int // Max trials at start (low counts)
 
-func TestHllSketchSerdeRunner(t *testing.T) {
-	jobs["distinct_count_serde_profile"].run()
-}
-
-func TestFrequencyLongSpeedRunner(t *testing.T) {
-	jobs["frequency_long_speed_profile"].run()
+	zipfRange    int
+	zipfExponent float64
 }

@@ -79,6 +79,20 @@ var (
 			},
 			hll.TgtHllTypeHll8,
 		),
+		"frequency_long_speed_profile": NewFrequencyLongSpeedProfile(
+			frequencyJobConfigType{
+				k:            1024,
+				zipfRange:    8192,
+				zipfExponent: 1.1,
+
+				lgMin: 0,
+				lgMax: 23,
+				PPO:   16,
+
+				lgMaxTrials: 16,
+				lgMinTrials: 8,
+			},
+		),
 	}
 )
 
