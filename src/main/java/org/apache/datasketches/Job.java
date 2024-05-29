@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 
-import org.apache.datasketches.common.test.ResourceFiles;
+import org.apache.datasketches.characterization.ResourceFiles;
 
 /**
  * This class parses an input string job file, which contains properties for a specific

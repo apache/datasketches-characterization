@@ -155,13 +155,13 @@ under the License.
       <!-- <scope>test</scope> remove so we can run from main -->
     </dependency>
 
-    <!-- Test Scope -->
+    <!-- Test Scope 
     <dependency>
       <groupId>org.apache.datasketches</groupId>
       <artifactId>datasketches-java-common</artifactId>
       <version>${datasketches-java-common.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency> -->
     
     <dependency>
       <groupId>org.apache.datasketches</groupId>
