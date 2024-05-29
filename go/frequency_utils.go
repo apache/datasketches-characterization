@@ -17,36 +17,17 @@
 
 package main
 
-import "github.com/apache/datasketches-go/hll"
+type frequencyJobConfigType struct {
+	k int // sketch size and accuracy parameter
 
-type distinctCountJobConfigType struct {
-	lgMinU int // The starting # of uniques that is printed at the end.
-	lgMaxU int // How high the # uniques go
-	UPPO   int // The horizontal x-resolution of trials points
+	lgMin int // The starting stream length
+	lgMax int // How high the stream length goes
 
-	lgMinT int // prints intermediate results starting w/ this lgMinT
-	lgMaxT int // The max trials
-	TPPO   int // how often intermediate results are printed
+	PPO int // The horizontal x-resolution of trials points
 
-	lgQK      int  // size of quantiles sketch
-	interData bool // intermediate data
+	lgMinTrials int // Min trials at tail (high counts)
+	lgMaxTrials int // Max trials at start (low counts)
 
-	runner DistinctCountAccuracyProfileRunner
+	zipfRange    int
+	zipfExponent float64
 }
-
-var (
-	distinctCountJobConfig = distinctCountJobConfigType{
-		lgMinU: 0,
-		lgMaxU: 20,
-		UPPO:   16,
-
-		lgMinT: 8,
-		lgMaxT: 20,
-		TPPO:   1,
-
-		lgQK:      12,
-		interData: true,
-
-		runner: NewHllSketchAccuracyRunner(4 /* lgK */, hll.TgtHllTypeHll8 /* tgtType */),
-	}
-)

@@ -22,6 +22,21 @@ import (
 )
 
 func TestHllSketchAccuracyRunner(t *testing.T) {
-	runner := NewDistinctCountAccuracyProfile(distinctCountJobConfig)
-	runner.run()
+	jobs["distinct_count_accuracy_profile"].run()
+}
+
+func TestHllSketchMergeAccuracyRunner(t *testing.T) {
+	jobs["distinct_count_merge_accuracy_profile"].run()
+}
+
+func TestHllSketchMergeSpeedRunner(t *testing.T) {
+	jobs["distinct_count_merge_speed_profile"].run()
+}
+
+func TestHllSketchSerdeRunner(t *testing.T) {
+	jobs["distinct_count_serde_profile"].run()
+}
+
+func TestFrequencyLongSpeedRunner(t *testing.T) {
+	jobs["frequency_long_speed_profile"].run()
 }
