@@ -8,10 +8,10 @@ import static java.lang.Math.log;
 import static java.lang.Math.pow;
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
-public abstract class BaseFilterSpeedProfile implements JobProfile {
+public abstract class BaseFilterUpdateSpeedProfile implements JobProfile {
     Job job;
     public Properties prop;
-    public long vIn = 0;
+    public long vIn = 1;
     int lgMinT;
     int lgMaxT;
     int lgMinU;
@@ -72,7 +72,7 @@ public abstract class BaseFilterSpeedProfile implements JobProfile {
         int lastU = 0;
         final StringBuilder dataStr = new StringBuilder();
         job.println(getHeader());
-        while (lastU < maxU) { //Trials for each U point on X-axis, and one row on output
+        while (lastU < 0.9*maxU) { //Trials for each U point on X-axis, and one row on output
             final int nextU = lastU == 0 ? minU : (int)pwr2SeriesNext(uPPO, lastU);
             lastU = nextU;
             final int trials = getNumTrials(nextU);
