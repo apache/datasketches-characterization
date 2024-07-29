@@ -2,15 +2,11 @@ package org.apache.datasketches.characterization.filters;
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
-import org.apache.datasketches.characterization.AccuracyStats;
-import org.apache.datasketches.quantiles.DoublesSketch;
 
 import java.util.ArrayList;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
-import static org.apache.datasketches.GaussianRanks.GAUSSIANS_4SD;
-import static org.apache.datasketches.common.Util.milliSecToString;
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
 class trialResults{
@@ -20,7 +16,7 @@ class trialResults{
     int numHashbits;
 }
 
-public abstract class BaseSizeProfile implements JobProfile{
+public abstract class BaseSpaceProfile implements JobProfile{
     Job job;
     public Properties prop;
     double targetFpp;

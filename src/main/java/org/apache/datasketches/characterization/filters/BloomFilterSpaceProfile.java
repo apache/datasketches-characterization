@@ -5,7 +5,7 @@ import org.apache.datasketches.filters.bloomfilter.BloomFilterBuilder;
 
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
-public class BloomFilterSizeProfile extends BaseSizeProfile {
+public class BloomFilterSpaceProfile extends BaseSpaceProfile {
     protected BloomFilter sketch;
 
     public void configure() {}

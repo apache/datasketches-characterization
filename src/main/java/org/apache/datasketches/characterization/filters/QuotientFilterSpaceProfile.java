@@ -5,7 +5,7 @@ import org.apache.datasketches.filters.quotientfilter.QuotientFilterBuilder;
 
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
-public class QuotientFilterSizeProfile extends BaseSizeProfile {
+public class QuotientFilterSpaceProfile extends BaseSpaceProfile {
     protected QuotientFilter sketch;
 
     public void configure() {}
