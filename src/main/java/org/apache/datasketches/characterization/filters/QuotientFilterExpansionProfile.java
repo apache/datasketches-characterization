@@ -54,7 +54,7 @@ public class QuotientFilterExpansionProfile implements JobProfile{
     This can be seen through the recursive relationship
      */
     private void doTrial(long numQueries, long startLgU, long endLgU){
-        QuotientFilter qf = new QuotientFilter(lgK, startLenFprint+3);
+        QuotientFilter qf = new QuotientFilter(lgK, startLenFprint);
         final StringBuilder dataStr = new StringBuilder();
 
         // Populate the negative items.  Do this first to easily keep it separate from input item set.
@@ -77,15 +77,17 @@ public class QuotientFilterExpansionProfile implements JobProfile{
             for (long negItem : negativeItems) {
                 if (qf.search(negItem)) ++numFalsePositive;
             }
-            double fpr = (double) numFalsePositive / numQueries;
-            process(inputCardinality, qf.getNumEntries(), qf.getNumSlots(), qf.getFingerprintLength(), fpr, dataStr);
+            //double fpr = (double) numFalsePositive / numQueries;
+            //System.out.println("Expansions " + qf.getNumExpansions() + " " + qf.getNumSlots())  ;
+            process(inputCardinality, qf.getNumEntries(), qf.getNumSlots(), qf.getFingerprintLength(), numFalsePositive, dataStr);
             job.println(dataStr.toString());
             inputCardinality = pwr2SeriesNext(uPPO, inputCardinality);
         }
     }
 
     private static void process(final long numInput, final long numEntries, final long numSlots, final int fPrintLen,
-                                final double falsePositiveRate, final StringBuilder sb){
+                                final long falsePositiveRate, final StringBuilder sb){
+                                //final double falsePositiveRate, final StringBuilder sb){
         // OUTPUT
         sb.setLength(0);
         sb.append(numSlots).append(TAB);
@@ -101,7 +103,8 @@ public class QuotientFilterExpansionProfile implements JobProfile{
         sb.append("NumInput").append(TAB);
         sb.append("FPrintLen").append(TAB);
         sb.append("NumEntries").append(TAB);
-        sb.append("FalsePositiveRate");
+        sb.append("NumFalsePositives");
+        //sb.append("FalsePositiveRate");
         return sb.toString();
     }
 }
