@@ -1,13 +1,10 @@
-# Python Notebooks
+# Quotient Filter Profiles Plotting
 
-These Python notebooks contain the code for generating the plots from
-some of the JAva characterization experiments.
-The notebooks require basic Python data analysis libraries such as:
-- pandas
-- numpy
-- matplotlib
-- seaborn
-- scipy
-- jupyter
-The packages and their dependencies are included in the
-`requirements.txt` file in case you need to make a new virtual environment.
+This folder contains code for plotting quotient filter profiles. 
+The notebooks are used to generate visualizations and analyze the performance of quotient filters.
+
+## Usage
+
+To use the plotting code you may need to install the packages in 
+the `requirements.txt` file.
+
