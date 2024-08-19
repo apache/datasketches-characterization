@@ -1,0 +1,48 @@
+START JOB QuotientFilterAccuracyProfile
+Date Time: 2024/06/17 06:54:41 PST
+numHashes	bitsPerEntry	FPR	filterSizeBits	numQueryPoints	numTrials
+4	4	3.59067e-01	4194304	32	608
+5	5	2.01949e-01	5242880	64	412
+6	6	1.03522e-01	6291456	128	299
+7	7	5.34025e-02	7340032	256	228
+8	8	2.74840e-02	8388608	512	181
+9	9	1.37383e-02	9437184	1024	147
+10	10	7.02004e-03	10485760	2048	122
+11	11	3.26153e-03	11534336	4096	103
+12	12	1.75287e-03	12582912	8192	89
+13	13	8.58456e-04	13631488	16384	77
+14	14	4.60041e-04	14680064	32768	67
+15	15	2.18201e-04	15728640	65536	60
+16	16	1.10122e-04	16777216	131072	53
+17	17	5.43594e-05	17825792	262144	48
+18	18	2.86989e-05	18874368	524288	43
+19	19	1.39383e-05	19922944	1048576	39
+20	20	6.83467e-06	20971520	2097152	36
+21	21	3.29451e-06	22020096	4194304	33
+22	22	1.68880e-06	23068672	8388608	30
+23	23	8.62139e-07	24117248	16777216	28
+24	24	4.77983e-07	25165824	33554432	26
+
+PROPERTIES:
+FileNameDateFormat=yyyyMMdd'_'HHmmssz
+JobProfile=org.apache.datasketches.characterization.filters.QuotientFilterAccuracyProfile
+lgNumQueries=20
+maxNumHashes=24
+minNumHashes=4
+OutputFileName=QuotientFilterAccuracyProfile20240617_065441PST.txt
+OutputFileNameData=QuotientFilterAccuracyProfile20240617_065441PST.tsv
+ReadableDateFormat=yyyy/MM/dd HH:mm:ss z
+TimeZone=PST
+TimeZoneOffset=-28800000
+Trials_lgMaxBpU=5
+Trials_lgMaxT=11
+Trials_lgMinBpU=1
+Trials_lgMinT=4
+Trials_TPPO=1
+Universe_capacity=0.9
+Universe_lgU=20
+
+Total Job Time: 0:16:45.971
+END JOB QuotientFilterAccuracyProfile
+
+
