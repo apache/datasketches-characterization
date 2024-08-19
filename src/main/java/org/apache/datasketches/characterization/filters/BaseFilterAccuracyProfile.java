@@ -25,7 +25,6 @@ public abstract class BaseFilterAccuracyProfile implements JobProfile{
     int minNumHashes;
     int maxNumHashes ;
     int bitsPerEntry;
-
     int lgMinT;
     int lgMaxT;
     int tPPO;
@@ -124,8 +123,8 @@ public abstract class BaseFilterAccuracyProfile implements JobProfile{
             }
             fpr /= numTrials;
             filterNumBits /= numTrials;
-            bitsPerEntry = getBitsperEntry(nh);
-            process(nh, bitsPerEntry, fpr, filterNumBits, numQueries, numTrials, dataStr);
+            //bitsPerEntry = getBitsperEntry(nh);
+            process(nh, fpr, filterNumBits, numQueries, numTrials, dataStr);
             job.println(dataStr.toString());
             numQueries = (int)pwr2SeriesNext(1, 1L<<(nh+1));
         }
@@ -160,20 +159,18 @@ public abstract class BaseFilterAccuracyProfile implements JobProfile{
      * Processes the results of a trial and appends them to a StringBuilder in a tab-separated format.
      *
      * @param numHashes The number of hashes used in the trial.
-     * @param bitsPerEntry The number of bits per entry in the trial.
      * @param falsePositiveRate The false positive rate observed in the trial.
      * @param filterSizeBits The size of the filter used in the trial, in bits.
      * @param numQueryPoints The number of query points used in the trial.
      * @param numTrials The number of trials conducted.
      * @param sb The StringBuilder to which the results are appended.
      */
-    private static void process(final int numHashes, final int bitsPerEntry, final double falsePositiveRate,
+    private static void process(final int numHashes, final double falsePositiveRate,
                                 final long filterSizeBits, final long numQueryPoints,
                                 final long numTrials,  final StringBuilder sb) {
         // OUTPUT
         sb.setLength(0);
         sb.append(numHashes).append(TAB);
-        sb.append(bitsPerEntry).append(TAB);
         sb.append(String.format("%.5e", falsePositiveRate)).append(TAB);
         sb.append(filterSizeBits).append(TAB);
         sb.append(numQueryPoints).append(TAB);
@@ -187,7 +184,6 @@ public abstract class BaseFilterAccuracyProfile implements JobProfile{
     private String getHeader() {
         final StringBuilder sb = new StringBuilder();
         sb.append("numHashes").append(TAB);
-        sb.append("bitsPerEntry").append(TAB);
         sb.append("FPR").append(TAB);
         sb.append("filterSizeBits").append(TAB);
         sb.append("numQueryPoints").append(TAB);

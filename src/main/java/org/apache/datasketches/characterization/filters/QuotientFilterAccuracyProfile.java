@@ -57,7 +57,7 @@ public class QuotientFilterAccuracyProfile extends BaseFilterAccuracyProfile{
 
     @Override
     public long getFilterLengthBits() {
-        return sketch.get_space_use();
+        return sketch.getSpaceUse();
     }
 
 

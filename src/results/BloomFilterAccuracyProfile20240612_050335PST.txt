@@ -1,0 +1,49 @@
+START JOB BloomFilterAccuracyProfile
+Date Time: 2024/06/12 05:03:35 PST
+numHashes	bitsPerEntry	FPR	filterSizeBits	numQueryPoints	numTrials
+4	5	6.62007e-02	5446016	32	608
+5	7	3.12879e-02	6807488	64	412
+6	8	1.54944e-02	8169024	128	299
+7	10	7.69257e-03	9530496	256	228
+8	11	4.18681e-03	10892032	512	181
+9	12	1.82690e-03	12253504	1024	147
+10	14	1.01659e-03	13614976	2048	122
+11	15	4.78800e-04	14976512	4096	103
+12	17	2.34540e-04	16337984	8192	89
+13	18	1.29997e-04	17699520	16384	77
+14	20	5.92132e-05	19060992	32768	67
+15	21	2.97546e-05	20422464	65536	60
+16	23	1.88576e-05	21784000	131072	53
+17	24	7.70887e-06	23145472	262144	48
+18	25	3.32677e-06	24507008	524288	43
+19	27	2.00516e-06	25868480	1048576	39
+20	28	8.74201e-07	27229952	2097152	36
+21	30	5.12961e-07	28591488	4194304	33
+22	31	2.86102e-07	29952960	8388608	30
+23	33	1.49012e-07	31314496	16777216	28
+24	34	5.50197e-08	32675968	33554432	26
+
+PROPERTIES:
+FileNameDateFormat=yyyyMMdd'_'HHmmssz
+filterLengthBits=16777216
+JobProfile=org.apache.datasketches.characterization.filters.BloomFilterAccuracyProfile
+lgNumQueries=20
+maxNumHashes=24
+minNumHashes=4
+OutputFileName=BloomFilterAccuracyProfile20240612_050335PST.txt
+OutputFileNameData=BloomFilterAccuracyProfile20240612_050335PST.tsv
+ReadableDateFormat=yyyy/MM/dd HH:mm:ss z
+TimeZone=PST
+TimeZoneOffset=-28800000
+Trials_lgMaxBpU=5
+Trials_lgMaxT=11
+Trials_lgMinBpU=1
+Trials_lgMinT=4
+Trials_TPPO=1
+Universe_capacity=0.9
+Universe_lgU=20
+
+Total Job Time: 0:03:36.541
+END JOB BloomFilterAccuracyProfile
+
+
