@@ -9,14 +9,14 @@ import org.apache.datasketches.filters.quotientfilter.QuotientFilter;
 public class QuotientFilterUpdateSpeedProfile extends BaseFilterUpdateSpeedProfile{
     protected QuotientFilter sketch;
     protected int lgNumSlots ;
-    protected int numBitsPerSlot;
+    protected int numBitsPerEntry;
     private WritableHandle handle;
     private WritableMemory wmem;
 
     @Override
     public void configure() {
         lgNumSlots = Integer.parseInt(prop.mustGet("lgNumSlots"));
-        numBitsPerSlot = Integer.parseInt(prop.mustGet("numBitsPerSlot"));
+        numBitsPerEntry = Integer.parseInt(prop.mustGet("numBitsPerEntry"));
     }
 
     @Override
@@ -29,7 +29,7 @@ public class QuotientFilterUpdateSpeedProfile extends BaseFilterUpdateSpeedProfi
     @Override
     public double doTrial(final int uPerTrial) {
         //sketch.reset(); //is not implemented
-        sketch = new QuotientFilter(lgNumSlots, numBitsPerSlot);
+        sketch = new QuotientFilter(lgNumSlots, numBitsPerEntry);
         final long startUpdateTime_nS = System.nanoTime();
         for (int u = uPerTrial; u-- > 0;) {
             sketch.insert(++vIn);
