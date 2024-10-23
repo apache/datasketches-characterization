@@ -32,11 +32,11 @@ template<typename T>
 void tdigest_accuracy_profile<T>::run() {
   const unsigned lg_min = 0;
   const unsigned lg_max = 23;
-  const unsigned ppo = 16;
+  const unsigned ppo = 8;
   const unsigned num_trials = 1000;
   const unsigned error_pct = 99;
 
-  const uint16_t compression = 100;
+  const uint16_t compression = 200;
   const std::vector<double> ranks = {0.01, 0.05, 0.5, 0.95, 0.99};
 
   std::vector<std::vector<double>> rank_errors(ranks.size(), std::vector<double>());
@@ -49,7 +49,8 @@ void tdigest_accuracy_profile<T>::run() {
 
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<T> dist(0, 1.0);
+//  std::uniform_real_distribution<T> dist(0, 1.0);
+  std::exponential_distribution<T> dist(1.5);
 
   const unsigned num_steps = count_points(lg_min, lg_max, ppo);
   unsigned stream_length = 1 << lg_min;
