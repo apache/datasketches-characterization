@@ -17,28 +17,40 @@
  * under the License.
  */
 
-#ifndef TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
-#define TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
+#ifndef TDIGEST_MERGE_ACCURACY_PROFILE_IMPL_HPP_
+#define TDIGEST_MERGE_ACCURACY_PROFILE_IMPL_HPP_
 
 #include <tdigest.hpp>
+#include <req_sketch.hpp>
 
 #include "true_rank.hpp"
 
 namespace datasketches {
 
 template<typename T>
-void tdigest_sketch_accuracy_profile<T>::run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
+void tdigest_merge_accuracy_profile<T>::run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
     const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors) {
 
-  tdigest<T> sketch(k);
-  for (size_t i = 0; i < stream_length; ++i) sketch.update(values[i]);
+  const size_t num_sketches = 32;
+  std::vector<tdigest<T>> sketches;
+  for (size_t i = 0; i < num_sketches; ++i) sketches.push_back(tdigest<T>(k));
+
+  size_t s = 0;
+  for (size_t i = 0; i < stream_length; ++i) {
+    sketches[s].update(values[i]);
+    ++s;
+    if (s == num_sketches) s = 0;
+  }
+
+  tdigest<T> merge_sketch(k);
+  for (size_t i = 0; i < num_sketches; ++i) merge_sketch.merge(sketches[i]);
 
   std::sort(values.begin(), values.begin() + stream_length);
   unsigned j = 0;
   for (const double rank: ranks) {
     const T quantile = get_quantile(values, stream_length, rank);
     const double true_rank = get_rank(values, stream_length, quantile, MIDPOINT);
-    rank_errors[j++].push_back(std::abs(sketch.get_rank(quantile) - true_rank));
+    rank_errors[j++].push_back(std::abs(merge_sketch.get_rank(quantile) - true_rank));
   }
 }
 

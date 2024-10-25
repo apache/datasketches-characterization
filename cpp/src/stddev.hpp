@@ -17,30 +17,17 @@
  * under the License.
  */
 
-#ifndef TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
-#define TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
-
-#include <tdigest.hpp>
-
-#include "true_rank.hpp"
+#ifndef STDDEV_HPP_
+#define STDDEV_HPP_
 
 namespace datasketches {
 
-template<typename T>
-void tdigest_sketch_accuracy_profile<T>::run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
-    const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors) {
-
-  tdigest<T> sketch(k);
-  for (size_t i = 0; i < stream_length; ++i) sketch.update(values[i]);
-
-  std::sort(values.begin(), values.begin() + stream_length);
-  unsigned j = 0;
-  for (const double rank: ranks) {
-    const T quantile = get_quantile(values, stream_length, rank);
-    const double true_rank = get_rank(values, stream_length, quantile, MIDPOINT);
-    rank_errors[j++].push_back(std::abs(sketch.get_rank(quantile) - true_rank));
-  }
-}
+const double M3SD = 0.0013498980316301; //minus 3 StdDev
+const double M2SD = 0.0227501319481792; //minus 2 StdDev
+const double M1SD = 0.1586552539314570; //minus 1 StdDev
+const double P1SD = 0.8413447460685430; //plus  1 StdDev
+const double P2SD = 0.9772498680518210; //plus  2 StdDev
+const double P3SD = 0.9986501019683700; //plus  3 StdDev
 
 }
 
