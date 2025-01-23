@@ -296,6 +296,7 @@ under the License.
               <exclude>LICENSE</exclude>
               <exclude>NOTICE</exclude>
               <exclude>go/go.sum</exclude>
+              <exclude>src/notebooks/**</exclude>
             </excludes>
           </configuration>
         </plugin>
