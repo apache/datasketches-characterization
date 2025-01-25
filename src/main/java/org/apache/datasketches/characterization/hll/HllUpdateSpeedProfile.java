@@ -52,17 +52,6 @@ public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   }
 
   @Override
-  public void cleanup() {
-    if (wmem.isAlive()) {
-      try {
-          wmem.close();
-      } catch (final Exception e) {
-        // do nothing
-      }
-    }
-  }
-
-  @Override
   public double doTrial(final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
     final long startUpdateTime_nS = System.nanoTime();

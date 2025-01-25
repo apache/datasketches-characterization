@@ -59,15 +59,6 @@ public class ThetaUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   }
 
   @Override
-  public void cleanup() {
-    try {
-      if (wmem.isAlive()) { wmem.close(); }
-    } catch (final Exception e) {
-      // do nothing
-    }
-  }
-
-  @Override
   public double doTrial(final int uPerTrial) {
     sketch.reset(); // reuse the same sketch
     final long startUpdateTime_nS = System.nanoTime();

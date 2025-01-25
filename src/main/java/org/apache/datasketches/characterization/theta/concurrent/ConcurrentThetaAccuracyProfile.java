@@ -89,17 +89,6 @@ public class ConcurrentThetaAccuracyProfile extends BaseAccuracyProfile {
     }
   }
 
-  @Override
-  public void cleanup() {
-    try {
-      if (wmem.isAlive()) {
-        wmem.close();
-      }
-    } catch (final Exception e) {
-      // do nothing
-    }
-  }
-
   //configures builder for both local and shared
   UpdateSketchBuilder configureBuilder() {
     final UpdateSketchBuilder bldr = new UpdateSketchBuilder();
