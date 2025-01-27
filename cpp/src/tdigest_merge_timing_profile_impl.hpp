@@ -26,7 +26,6 @@
 #include <sstream>
 
 #include <tdigest.hpp>
-#include <req_sketch.hpp>
 
 namespace datasketches {
 
@@ -46,8 +45,6 @@ void tdigest_timing_profile<T>::run() {
   const size_t lg_min_trials(6);
 
   const size_t num_queries(20);
-
-  const uint16_t k = 200;
 
   std::cout << "Stream\tTrials\tBuild\tUpdate\tRank" << std::endl;
 
@@ -69,8 +66,7 @@ void tdigest_timing_profile<T>::run() {
       std::generate(values.begin(), values.begin() + stream_length, [this] { return this->sample(); });
 
       auto start_build(std::chrono::high_resolution_clock::now());
-      tdigest<T> sketch(k);
-//      req_sketch<T> sketch(40);
+      tdigest<T> sketch;
       auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 

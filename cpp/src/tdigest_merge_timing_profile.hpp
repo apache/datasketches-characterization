@@ -17,31 +17,28 @@
  * under the License.
  */
 
-#ifndef TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
-#define TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
+#ifndef TDIGEST_MERGE_TIMING_PROFILE_HPP_
+#define TDIGEST_MERGE_TIMING_PROFILE_HPP_
 
-#include <tdigest.hpp>
+#include <random>
 
-#include "true_rank.hpp"
+#include "job_profile.hpp"
 
 namespace datasketches {
 
 template<typename T>
-void tdigest_sketch_accuracy_profile<T>::run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
-    const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors) {
-
-  tdigest<T> sketch(k);
-  for (size_t i = 0; i < stream_length; ++i) sketch.update(values[i]);
-
-  std::sort(values.begin(), values.begin() + stream_length);
-  unsigned j = 0;
-  for (const double rank: ranks) {
-    const T quantile = get_quantile(values, stream_length, rank);
-    const double true_rank = get_rank(values, stream_length, quantile, MIDPOINT);
-    rank_errors[j++].push_back(std::abs(sketch.get_rank(quantile) - true_rank));
-  }
-}
+class tdigest_timing_profile: public job_profile {
+public:
+  tdigest_timing_profile();
+  void run();
+  T sample();
+private:
+  std::default_random_engine generator;
+  std::uniform_real_distribution<T> distribution;
+};
 
 }
+
+#include "tdigest_merge_timing_profile_impl.hpp"
 
 #endif

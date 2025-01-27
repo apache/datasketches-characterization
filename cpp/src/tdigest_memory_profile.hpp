@@ -17,31 +17,28 @@
  * under the License.
  */
 
-#ifndef TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
-#define TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
+#ifndef TDIGEST_MEMORY_PROFILE_HPP_
+#define TDIGEST_MEMORY_PROFILE_HPP_
 
-#include <tdigest.hpp>
+#include <random>
 
-#include "true_rank.hpp"
+#include "memory_usage_profile.hpp"
 
 namespace datasketches {
 
 template<typename T>
-void tdigest_sketch_accuracy_profile<T>::run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
-    const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors) {
-
-  tdigest<T> sketch(k);
-  for (size_t i = 0; i < stream_length; ++i) sketch.update(values[i]);
-
-  std::sort(values.begin(), values.begin() + stream_length);
-  unsigned j = 0;
-  for (const double rank: ranks) {
-    const T quantile = get_quantile(values, stream_length, rank);
-    const double true_rank = get_rank(values, stream_length, quantile, MIDPOINT);
-    rank_errors[j++].push_back(std::abs(sketch.get_rank(quantile) - true_rank));
-  }
-}
+class tdigest_memory_profile: public memory_usage_profile {
+public:
+  tdigest_memory_profile();
+  void run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo);
+private:
+  std::random_device rd;
+  std::mt19937 gen;
+  std::uniform_real_distribution<T> dist;
+};
 
 }
+
+#include "tdigest_memory_profile_impl.hpp"
 
 #endif
