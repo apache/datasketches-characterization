@@ -25,6 +25,7 @@ import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;
 import org.apache.datasketches.memory.WritableMemory;
 
+@SuppressWarnings("resource")
 public class HllAccuracyProfile extends BaseAccuracyProfile {
   private HllSketch sketch;
   private boolean useComposite; //accuracy, HLL

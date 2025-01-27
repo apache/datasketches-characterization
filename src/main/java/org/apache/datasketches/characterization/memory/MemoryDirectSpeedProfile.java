@@ -19,7 +19,6 @@
 
 package org.apache.datasketches.characterization.memory;
 
-import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 
 /**
@@ -27,22 +26,22 @@ import org.apache.datasketches.memory.WritableMemory;
  */
 public class MemoryDirectSpeedProfile extends BaseSpeedProfile {
   int arrLongs;
-  WritableHandle wh;
   WritableMemory wmem;
 
   @Override
   void configure(final int arrLongs) {
     this.arrLongs = arrLongs;
-    wh = WritableMemory.allocateDirect(arrLongs << 3);
-    wmem = wh.getWritable();
+    wmem = WritableMemory.allocateDirect(arrLongs << 3);
   }
 
   @Override
   void close() {
-    try {
-      wh.close();
-    } catch (final Exception e) {
-      // do nothing
+    if (wmem.isAlive()) {
+      try {
+        wmem.close();
+      } catch (final Exception e) {
+        // do nothing
+      }
     }
   }
 

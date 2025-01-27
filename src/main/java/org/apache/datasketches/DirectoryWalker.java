@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-//import org.testng.annotations.Test;
+import org.testng.annotations.Test;
 
 /**
  * Recursive directory search.
@@ -131,10 +131,10 @@ public class DirectoryWalker {
     return fileList;
   }
 
-  //@Test //example
+  @Test //example
   public static void printFiles() {
-    final String rootPath = "/Users/lrhodes/dev/git/Apache/datasketches-memory/src/";
-    final String fileSelector = ".+[.]java";
+    final String rootPath = "/Users/lrhodes/dev/git/Apache/datasketches-bigquery/";
+    final String fileSelector = ".+[.]sqlx";
     final boolean recursive = true;
 
     final List<String> fileList = appendFileList(rootPath, fileSelector, recursive);

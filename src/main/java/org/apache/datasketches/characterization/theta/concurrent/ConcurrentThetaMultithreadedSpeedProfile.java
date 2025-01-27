@@ -26,7 +26,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.datasketches.characterization.concurrent.ConcurrentTestContext;
 import org.apache.datasketches.characterization.concurrent.ConcurrentTestThread;
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
-import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.theta.Sketch;
 import org.apache.datasketches.theta.UpdateSketch;
@@ -47,7 +46,6 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
   private boolean offHeap;
   private int poolThreads;
   private double maxConcurrencyError;
-  private WritableHandle wdh;
   private WritableMemory wmem;
 
   private int numWriterThreads;
@@ -76,8 +74,7 @@ public class ConcurrentThetaMultithreadedSpeedProfile extends BaseUpdateSpeedPro
     final int maxSharedUpdateBytes = Sketch.getMaxUpdateSketchBytes(1 << sharedLgK);
 
     if (offHeap) {
-      wdh = WritableMemory.allocateDirect(maxSharedUpdateBytes);
-      wmem = wdh.getWritable();
+      wmem = WritableMemory.allocateDirect(maxSharedUpdateBytes);
     } else {
       wmem = null; //WritableMemory.allocate(maxSharedUpdateBytes);
     }

@@ -21,7 +21,6 @@ package org.apache.datasketches.characterization.tuple;
 
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
 import org.apache.datasketches.common.ResizeFactor;
-import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 import org.apache.datasketches.tuple.arrayofdoubles.ArrayOfDoublesUnion;
 import org.apache.datasketches.tuple.arrayofdoubles.ArrayOfDoublesUpdatableSketch;
@@ -29,7 +28,6 @@ import org.apache.datasketches.tuple.arrayofdoubles.ArrayOfDoublesUpdatableSketc
 
 public class AodSketchUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   protected ArrayOfDoublesUpdatableSketch sketch;
-  private WritableHandle handle;
   private WritableMemory wmem;
 
   @Override
@@ -46,8 +44,7 @@ public class AodSketchUpdateSpeedProfile extends BaseUpdateSpeedProfile {
       .setNominalEntries(k).setNumberOfValues(numValues).setSamplingProbability(p).setResizeFactor(rf);
     if (offheap) {
       final int bytes = ArrayOfDoublesUnion.getMaxBytes(k, numValues);
-      handle = WritableMemory.allocateDirect(bytes);
-      wmem = handle.getWritable();
+      wmem = WritableMemory.allocateDirect(bytes);
       sketch = udBldr.build(wmem);
     } else {
       sketch = udBldr.build();
@@ -57,7 +54,7 @@ public class AodSketchUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   @Override
   public void cleanup() {
     try {
-      if (handle != null) { handle.close(); }
+      if (wmem.isAlive()) { wmem.close(); }
     } catch (final Exception e) {
       // do nothing
     }

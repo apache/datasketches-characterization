@@ -85,8 +85,8 @@ under the License.
 
   <properties>
     <!-- UNIQUE FOR THIS JAVA COMPONENT -->
-    <datasketches-memory.version>2.2.0</datasketches-memory.version>
-    <datasketches-java.version>6.0.0</datasketches-java.version>
+    <datasketches-memory.version>3.0.2</datasketches-memory.version>
+    <datasketches-java.version>6.2.0</datasketches-java.version>
     <!-- END:UNIQUE FOR THIS JAVA COMPONENT -->
 
     <!-- Test -->

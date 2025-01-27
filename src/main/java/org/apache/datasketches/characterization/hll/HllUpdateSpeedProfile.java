@@ -22,7 +22,6 @@ package org.apache.datasketches.characterization.hll;
 import org.apache.datasketches.characterization.uniquecount.BaseUpdateSpeedProfile;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.hll.TgtHllType;
-import org.apache.datasketches.memory.WritableHandle;
 import org.apache.datasketches.memory.WritableMemory;
 
 /**
@@ -30,7 +29,6 @@ import org.apache.datasketches.memory.WritableMemory;
  */
 public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
   private HllSketch sketch;
-  private WritableHandle handle;
   private WritableMemory wmem;
 
   @Override
@@ -46,8 +44,7 @@ public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
 
     if (offheap) {
       final int bytes = HllSketch.getMaxUpdatableSerializationBytes(lgK, tgtHllType);
-      handle = WritableMemory.allocateDirect(bytes);
-      wmem = handle.getWritable();
+      wmem = WritableMemory.allocateDirect(bytes);
       sketch = new HllSketch(lgK, tgtHllType, wmem);
     } else {
       sketch = new HllSketch(lgK, tgtHllType);
@@ -56,12 +53,12 @@ public class HllUpdateSpeedProfile extends BaseUpdateSpeedProfile {
 
   @Override
   public void cleanup() {
-    try {
-      if (handle != null) {
-        handle.close();
+    if (wmem.isAlive()) {
+      try {
+          wmem.close();
+      } catch (final Exception e) {
+        // do nothing
       }
-    } catch (final Exception e) {
-      // do nothing
     }
   }
 
