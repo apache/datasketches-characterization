@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.req;
+package org.apache.datasketches.characterization;
 
 import org.testng.annotations.Test;
 
@@ -56,8 +56,8 @@ public class FlipFlopStream {
 
   /**
    * Generates a flip-flop sequence
-   * @param loReps repetitions for the low range
-   * @param hiReps repetitions for the high range
+   * @param loReps : low range repeated steps before flip
+   * @param hiReps : hi range repeated steps before flip
    * @param steps maximum number of steps for this sequence
    */
   public void flipFlop(final int loReps, final int hiReps, int steps) {
@@ -91,12 +91,12 @@ public class FlipFlopStream {
   public void checkFlipFlop() {
     final int N = 50;
     final FlipFlopStream ffs = new FlipFlopStream(N, 1);
-    ffs.flipFlop(1, 1, 20);
-    ffs.flipFlop(10, 1, 10);
-    ffs.flipFlop(1, 10, 10);
-    ffs.flipFlop(1, 1, 10);
+    ffs.flipFlop(1, 1, 20); //flip-flop
+    ffs.flipFlop(10, 1, 10);//forward
+    ffs.flipFlop(0, 10, 10);//reverse
+    ffs.flipFlop(1, 1, 10); //flip-flop
     for (int i = 0; i < N; i++) { println(ffs.arr[i]); }
   }
-
+  
   static void println(final Object o) { System.out.println(o.toString()); }
 }

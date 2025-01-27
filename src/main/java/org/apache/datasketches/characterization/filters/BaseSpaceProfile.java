@@ -1,22 +1,35 @@
-package org.apache.datasketches.characterization.filters;
-import org.apache.datasketches.Job;
-import org.apache.datasketches.JobProfile;
-import org.apache.datasketches.Properties;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
-import java.util.ArrayList;
+package org.apache.datasketches.characterization.filters;
 
 import static java.lang.Math.log;
 import static java.lang.Math.pow;
 import static org.apache.datasketches.common.Util.pwr2SeriesNext;
 
-class trialResults{
-    long filterSizeBits;
-    double measuredFalsePositiveRate;
+import java.util.ArrayList;
 
-    int numHashbits;
-}
+import org.apache.datasketches.Job;
+import org.apache.datasketches.JobProfile;
+import org.apache.datasketches.Properties;
 
-public abstract class BaseSpaceProfile implements JobProfile{
+public abstract class BaseSpaceProfile implements JobProfile {
     Job job;
     public Properties prop;
     double targetFpp;
@@ -35,7 +48,13 @@ public abstract class BaseSpaceProfile implements JobProfile{
     int lgMaxBpU;
     double slope;
 
+    class TrialResults {
+      long filterSizeBits;
+      double measuredFalsePositiveRate;
 
+      int numHashbits;
+  }
+    
     @Override
     public void start(final Job job) {
 
@@ -46,7 +65,7 @@ public abstract class BaseSpaceProfile implements JobProfile{
         lgMinU = Integer.parseInt(prop.mustGet("Trials_lgMinU"));
         lgMaxU = Integer.parseInt(prop.mustGet("Trials_lgMaxU"));
         uPPO = Integer.parseInt(prop.mustGet("Trials_UPPO"));
-        inputCardinality = (int)pwr2SeriesNext(uPPO, 1L<<lgMinU);
+        inputCardinality = (int)pwr2SeriesNext(uPPO, 1L << lgMinU);
 
         //Trials Profile
         lgMinT = Integer.parseInt(prop.mustGet("Trials_lgMinT"));
@@ -74,7 +93,7 @@ public abstract class BaseSpaceProfile implements JobProfile{
 
     // In here should have the logic to initialize a new sketch for a different number of input items for each trial.
     //public abstract long doTrial(long inputCardinality, double targetFpp);
-    public abstract trialResults doTrial(long inputCardinality, double targetFpp);
+    public abstract TrialResults doTrial(long inputCardinality, double targetFpp);
 
     /*
      This experiment varies the cardinality of the input and measures the filter size required
@@ -84,23 +103,22 @@ public abstract class BaseSpaceProfile implements JobProfile{
      */
     private void doTrials() {
         final StringBuilder dataStr = new StringBuilder();
-        final int minT = 1 << lgMinT;
-        final int maxT = 1 << lgMaxT;
+        //final int minT = 1 << lgMinT;
+        //final int maxT = 1 << lgMaxT;
         final long maxU = 1L << lgMaxU;
         job.println(getHeader());
 
-        while(inputCardinality < maxU) {
+        while (inputCardinality < maxU) {
             numTrials = getNumTrials(inputCardinality);
             //doTrial(inputCardinality, targetFpp, final long numQueries);
             inputCardinality = (int)pwr2SeriesNext(uPPO, inputCardinality);
             //long filterNumBits = doTrial(inputCardinality, targetFpp) ;
-            trialResults results =  doTrial(inputCardinality, targetFpp) ;
+            final TrialResults results = doTrial(inputCardinality, targetFpp);
             process(inputCardinality, results.filterSizeBits, numTrials,
                     results.measuredFalsePositiveRate,  results.numHashbits, dataStr);
             job.println(dataStr.toString()) ;
         }
     }
-
 
     /**
      * Computes the number of trials for a given current number of uniques for a
@@ -144,7 +162,7 @@ public abstract class BaseSpaceProfile implements JobProfile{
         sb.append(numHashBits);
     }
 
-    private String getHeader() {
+    private static String getHeader() {
         final StringBuilder sb = new StringBuilder();
         sb.append("TrueU").append(TAB);
         sb.append("Size").append(TAB);

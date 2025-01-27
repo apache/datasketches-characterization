@@ -30,7 +30,9 @@ import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.MonotonicPoints;
 import org.apache.datasketches.Properties;
 import org.apache.datasketches.characterization.Shuffle;
-import org.apache.datasketches.characterization.req.StreamMaker.Pattern;
+import org.apache.datasketches.characterization.StreamMaker;
+import org.apache.datasketches.characterization.StreamMaker.Pattern;
+import org.apache.datasketches.characterization.TrueRanks;
 import org.apache.datasketches.hll.HllSketch;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
@@ -93,7 +95,7 @@ public class ReqSketchAccuracyProfile implements JobProfile {
   private HllSketch[] errHllSkArr;
 
   //Specific to a streamLength
-  private TrueFloatRanks trueRanks;
+  private TrueRanks trueRanks;
   //The entire stream
   private float[] stream; //a shuffled array of values from 1...N
   private float[] sortedStream;
@@ -237,11 +239,11 @@ public class ReqSketchAccuracyProfile implements JobProfile {
     stream = streamMaker.makeStream(streamLength, pattern, offset);
     //compute true ranks
     if (ltEq) {
-      trueRanks = new TrueFloatRanks(stream, true);
+      trueRanks = new TrueRanks(stream, true);
     } else {
-      trueRanks = new TrueFloatRanks(stream, false);
+      trueRanks = new TrueRanks(stream, false);
     }
-    sortedStream = trueRanks.getSortedStream();
+    sortedStream = trueRanks.getSortedFloatStream();
     sortedAbsRanks = trueRanks.getSortedAbsRanks();
 
     //compute the true values used at the plot points

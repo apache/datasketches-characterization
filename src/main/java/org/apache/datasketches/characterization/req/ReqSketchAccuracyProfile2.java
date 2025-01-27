@@ -25,7 +25,9 @@ import static org.apache.datasketches.quantilescommon.QuantilesUtil.evenlySpaced
 import org.apache.datasketches.Job;
 import org.apache.datasketches.JobProfile;
 import org.apache.datasketches.Properties;
-import org.apache.datasketches.characterization.req.StreamMaker.Pattern;
+import org.apache.datasketches.characterization.StreamMaker;
+import org.apache.datasketches.characterization.StreamMaker.Pattern;
+import org.apache.datasketches.characterization.TrueRanks;
 import org.apache.datasketches.quantiles.DoublesSketch;
 import org.apache.datasketches.quantiles.DoublesSketchBuilder;
 import org.apache.datasketches.quantiles.UpdateDoublesSketch;
@@ -71,7 +73,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
 
   //Specific to the stream
   private StreamMaker streamMaker;
-  private TrueFloatRanks trueRanks;
+  private TrueRanks trueRanks;
   private float[] sortedPPValues;
   private int[] sortedPPIndices;
   private int[] sortedPPAbsRanks;
@@ -152,9 +154,9 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     streamMaker = new StreamMaker();
     final float[] stream = streamMaker.makeStream(N, pattern, offset);
     if (ltEq) {
-      trueRanks = new TrueFloatRanks(stream, true);
+      trueRanks = new TrueRanks(stream, true);
     } else {
-      trueRanks = new TrueFloatRanks(stream, false);
+      trueRanks = new TrueRanks(stream, false);
     }
   }
 
@@ -163,7 +165,7 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
     sortedPPAbsRanks = new int[numPlotPoints];
     sortedPPValues = new float[numPlotPoints];
     final int[] sortedAbsRanks = trueRanks.getSortedAbsRanks();
-    final float[] sortedStream = trueRanks.getSortedStream();
+    final float[] sortedStream = trueRanks.getSortedFloatStream();
     final int minIdx = (int)Math.round((double)(N - 1) / numPlotPoints);
     final float[] temp = evenlySpacedFloats(minIdx, N - 1, numPlotPoints); //indices
 
@@ -215,10 +217,10 @@ public class ReqSketchAccuracyProfile2 implements JobProfile {
 
   void doTrial() { //for all plot points
     sk.reset();
-    final float[] stream = trueRanks.getStream();
+    final float[] stream = trueRanks.getFloatStream();
     for (int i = 0; i < N; i++) { sk.update(stream[i]); }
 
-    final float[] sortedStream = trueRanks.getSortedStream();
+    final float[] sortedStream = trueRanks.getSortedFloatStream();
     final int[] sortedAbsRanks = trueRanks.getSortedAbsRanks();
 
     int pp = 0;

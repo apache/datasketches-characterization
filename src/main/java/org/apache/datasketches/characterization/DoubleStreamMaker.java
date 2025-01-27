@@ -17,34 +17,41 @@
  * under the License.
  */
 
-package org.apache.datasketches.characterization.req;
+package org.apache.datasketches.characterization;
 
-import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.FLIP_FLOP;
-import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.RANDOM;
-import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.REVERSED;
-import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.SORTED;
-import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.SQRT;
-import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.ZOOM_IN;
-import static org.apache.datasketches.characterization.req.StreamMaker.Pattern.ZOOM_OUT;
+import static org.apache.datasketches.characterization.DoubleStreamMaker.Pattern.FLIP_FLOP;
+import static org.apache.datasketches.characterization.DoubleStreamMaker.Pattern.RANDOM;
+import static org.apache.datasketches.characterization.DoubleStreamMaker.Pattern.REVERSED;
+import static org.apache.datasketches.characterization.DoubleStreamMaker.Pattern.SORTED;
+import static org.apache.datasketches.characterization.DoubleStreamMaker.Pattern.SQRT;
+import static org.apache.datasketches.characterization.DoubleStreamMaker.Pattern.ZOOM_IN;
+import static org.apache.datasketches.characterization.DoubleStreamMaker.Pattern.ZOOM_OUT;
+import static org.apache.datasketches.characterization.StreamMaker.Pattern.FLIP_FLOP;
+import static org.apache.datasketches.characterization.StreamMaker.Pattern.RANDOM;
+import static org.apache.datasketches.characterization.StreamMaker.Pattern.REVERSED;
+import static org.apache.datasketches.characterization.StreamMaker.Pattern.SORTED;
+import static org.apache.datasketches.characterization.StreamMaker.Pattern.SQRT;
+import static org.apache.datasketches.characterization.StreamMaker.Pattern.ZOOM_IN;
+import static org.apache.datasketches.characterization.StreamMaker.Pattern.ZOOM_OUT;
 
-import org.apache.datasketches.characterization.Shuffle;
+import org.apache.datasketches.characterization.StreamMaker.Pattern;
 import org.testng.annotations.Test;
 
 /**
  * @author Lee Rhodes
  */
-public class StreamMaker {
+public class DoubleStreamMaker {
   static final String LS = System.getProperty("line.separator");
   static String TAB = "\t";
 
   public enum Pattern { SORTED, REVERSED, ZOOM_IN, ZOOM_OUT, RANDOM, SQRT, FLIP_FLOP,
     CLUSTERED, CLUSTERED_ZOOM_IN, ZOOM_IN_SQRT }
-
-  public float min = 0;
-  public float max = 0;
-
-  public float[] makeStream(final int n, final Pattern pattern, final int offset) {
-    float[] arr = new float[n];
+  
+  public double min = 0;
+  public double max = 0;
+  
+  public double[] makeStream(final int n, final Pattern pattern, final int offset) {
+    double[] arr = new double[n];
     min = offset;
     max = n - 1 + offset;
     switch (pattern) {
@@ -109,13 +116,13 @@ public class StreamMaker {
         break;
       }
       case FLIP_FLOP: {
-        final FlipFlopStream ffs = new FlipFlopStream(n, offset);
-        ffs.flipFlop(1, 1, n * 2 / 5);
+        final DoubleFlipFlopStream dffs = new DoubleFlipFlopStream(n, offset);
+        dffs.flipFlop(1, 1, n * 2 / 5);
         final int m = n / 5;
-        ffs.flipFlop(m, 1, m);
-        ffs.flipFlop(1, m, m);
-        ffs.flipFlop(1, 1, n);
-        arr = ffs.getArray();
+        dffs.flipFlop(m, 1, m);
+        dffs.flipFlop(1, m, m);
+        dffs.flipFlop(1, 1, n);
+        arr = dffs.getArray();
         break;
       }
       case CLUSTERED: {
@@ -127,9 +134,9 @@ public class StreamMaker {
     }
     return arr;
   }
-
+  
   public void printStream(final int n, final Pattern order, final int offset) {
-    final float[] stream = makeStream(n, order, offset);
+    final double[] stream = makeStream(n, order, offset);
     println(order + " n:" + n + " offset: " + offset);
     for (int i = 0; i < stream.length; i++) {
       //if (i != 0 && i % 21 == 0) { println(""); }
@@ -140,18 +147,18 @@ public class StreamMaker {
 
   @Test
   public void checkStreamMaker() {
-    printStream(100, SORTED, 1);
-    printStream(100, REVERSED, 1);
+    printStream(100, Pattern.SORTED, 1);
+    printStream(100, Pattern.REVERSED, 1);
     //printStream(100, ZOOM_IN, 0);
-    printStream(100, ZOOM_IN, 1);
+    printStream(100, Pattern.ZOOM_IN, 1);
     //printStream(100, ZOOM_OUT, 0);
-    printStream(100, ZOOM_OUT, 1);
+    printStream(100, Pattern.ZOOM_OUT, 1);
     //printStream(100, RANDOM, 0);
-    printStream(100, RANDOM, 1);
+    printStream(100, Pattern.RANDOM, 1);
     //printStream(100, SQRT, 0);
-    printStream(100, SQRT, 1);
+    printStream(100, Pattern.SQRT, 1);
     //printStream(100, FLIP_FLOP, 0);
-    printStream(100, FLIP_FLOP, 1);
+    printStream(100, Pattern.FLIP_FLOP, 1);
   }
 
   static void print(final Object o) { System.out.print(o.toString()); }
