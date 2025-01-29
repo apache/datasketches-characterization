@@ -34,9 +34,6 @@ public class BloomFilterUpdateSpeedProfile extends BaseFilterUpdateSpeedProfile 
     }
 
     @Override
-    public void cleanup() { }
-
-    @Override
     public double doTrial(final int uPerTrial) {
         sketch.reset();
         final long startUpdateTime_nS = System.nanoTime();
