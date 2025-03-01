@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.apache.datasketches</groupId>
+    <artifactId>datasketches-characterization</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>datasketches-characterization-java-seventeen</artifactId>
+  <packaging>jar</packaging>
+
+  <name>${project.artifactId}</name>
+  <description>Characterization code for the DataSketches library. (Java 17)</description>
+
+  <properties>
+    <datasketches-memory.version>4.1.0</datasketches-memory.version>
+    <datasketches-java.version>7.0.1</datasketches-java.version>
+
+    <testng.version>7.10.2</testng.version>
+
+    <java.version>17</java.version>
+    <!-- commented out to allow building all submodules from parent pom with any of java 8, 11, 17, 21
+    <java.version.range>[17,18)</java.version.range>
+    -->
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.datasketches</groupId>
+      <artifactId>datasketches-memory</artifactId>
+      <version>${datasketches-memory.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.datasketches</groupId>
+      <artifactId>datasketches-java</artifactId>
+      <version>${datasketches-java.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
+      <!-- <scope>test</scope> remove so we can run from main -->
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.datasketches</groupId>
+      <artifactId>datasketches-java</artifactId>
+      <version>${datasketches-java.version}</version>
+      <type>test-jar</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!--
+        Rat licence checks disabled here because they are handled by parent pom.
+        This avoids the need to configure exclusions redundantly at each level.
+      -->
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-toolchains-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source-generated</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+             </goals>
+             <configuration>
+               <sources>
+                 <source>${project.build.directory}/generated-sources/java-base</source>
+               </sources>
+             </configuration>
+           </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-sources-from-base</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/generated-sources/java-base</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>../java-base/src/main/java</directory>
+                  <excludes>
+                    <exclude>org/apache/datasketches/characterization/hash/HashLongsSpeedProfile.java</exclude>
+                    <exclude>org/apache/datasketches/characterization/hash/HashBytesSpeedProfile.java</exclude>
+                    <exclude>org/apache/datasketches/characterization/memory/UnsafeDirectSpeedProfile.java</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-resources-from-base</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/generated-resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>../java-base/src/main/resources</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+   </build>
+</project>
