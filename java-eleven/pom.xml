@@ -42,7 +42,7 @@ under the License.
     <datasketches-memory.version>3.0.2</datasketches-memory.version>
     <datasketches-java.version>6.2.0</datasketches-java.version>
 
-    <testng.version>7.10.2</testng.version>
+    <testng.version>7.11.0</testng.version>
 
     <java.version>11</java.version>
     <!-- commented out to allow building all submodules from parent pom with any of java 8, 11, 17, 21
