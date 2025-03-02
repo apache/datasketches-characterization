@@ -362,7 +362,6 @@ under the License.
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-remote-resources-plugin</artifactId>
-              <version>${version.maven-remote-resources-plugin}</version>
               <executions>
                 <execution>
                   <id>process-resource-bundles</id>
@@ -390,7 +389,6 @@ under the License.
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>
-              <version>${version.maven-compiler-plugin}</version>
               <dependencies>
                 <dependency>
                   <groupId>org.codehaus.plexus</groupId>
@@ -467,7 +465,6 @@ under the License.
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-jar-plugin</artifactId>
-              <version>${version.maven-jar-plugin}</version>
               <executions>
                 <execution>
                   <id>default-jar</id>
@@ -508,7 +505,6 @@ under the License.
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-gpg-plugin</artifactId>
-              <version>${version.maven-gpg-plugin}</version>
               <executions>
                 <execution>
                   <id>sign-artifacts</id>
@@ -554,7 +550,6 @@ under the License.
         <plugins>
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>${version.maven-assembly-plugin}</version>
             <executions>
               <execution>
                 <id>source-release-assembly</id>
