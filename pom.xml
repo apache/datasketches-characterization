@@ -98,7 +98,8 @@ under the License.
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <argLine>-Xmx4g -Duser.language=en -Duser.country=US -Dfile.encoding=UTF-8</argLine>
+    <add-modules></add-modules>
+    <argLine>-Xmx4g -Duser.language=en -Duser.country=US -Dfile.encoding=UTF-8 ${add-modules}</argLine>
     <charset.encoding>UTF-8</charset.encoding>
     <project.build.sourceEncoding>${charset.encoding}</project.build.sourceEncoding>
     <project.build.resourceEncoding>${charset.encoding}</project.build.resourceEncoding>
@@ -249,7 +250,7 @@ under the License.
               <configuration>
                 <rules>
                   <requireJavaVersion>
-                    <version>[8,9),[11,12)</version>
+                    <version>[8,9),[11,12),[17,18)</version>
                   </requireJavaVersion>
                   <requireMavenVersion>
                     <version>${maven.version}</version>
@@ -429,6 +430,36 @@ under the License.
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <testng.version>7.10.2</testng.version>
       </properties>
+    </profile>
+    <profile>
+      <id>java17</id>
+      <activation>
+        <jdk>17</jdk>
+      </activation>
+      <properties>
+        <java.version>17</java.version>
+        <maven.compiler.release>17</maven.compiler.release>
+        <add-modules>--add-modules=jdk.incubator.foreign</add-modules>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <datasketches-memory.version>4.1.0</datasketches-memory.version>
+        <datasketches-java.version>7.0.1</datasketches-java.version>
+        <testng.version>7.10.2</testng.version>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>org/apache/datasketches/characterization/hash/HashLongsSpeedProfile.java</exclude>
+                <exclude>org/apache/datasketches/characterization/hash/HashBytesSpeedProfile.java</exclude>
+                <exclude>org/apache/datasketches/characterization/memory/UnsafeDirectSpeedProfile.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+       </build>
     </profile>
     <!-- Ignore nuisance warning from Apache parent plugin: 
           "maven-remote-resources-plugin (goal "process") is ignored by m2e".
