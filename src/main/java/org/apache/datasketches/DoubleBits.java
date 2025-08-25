@@ -106,7 +106,7 @@ public final class DoubleBits {
    * Returns the signum function of the argument; zero if the argument
    * is zero, 1.0 if the argument is greater than zero, -1.0 if the
    * argument is less than zero.  If the argument is +/- NaN or zero,
-   * the result is the same as the argument.<br/>
+   * the result is the same as the argument.
    *
    * <p>Note that this is a faster, simpler replacement for the needlessly
    * complicated implementation in sun.misc.FpUtils.</p>
@@ -335,7 +335,7 @@ public final class DoubleBits {
 
   /**
    * The maximum integral value that a double can resolve exactly is 8PebiBytes
-   * or (1L << 53).
+   * or (1L &lt;&lt; 53).
    */
   @Test
   public static void checkMaxIntegralPrcisionOfDouble() {
@@ -347,7 +347,7 @@ public final class DoubleBits {
 
   /**
    * The maximum integral value that a float can resolve exactly is 16MebiBytes
-   * or (1 << 24).
+   * or (1 &lt;&lt; 24).
    */
   @Test
   public static void checkMaxIntegralPrcisionOfFloat() {

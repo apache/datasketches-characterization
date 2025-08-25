@@ -11,6 +11,10 @@
 **/*.iws
 **/.idea/
 
+# Netbeans project files
+nb-configuration.xml
+nbactions.xml
+
 # Additional tools
 **/.clover/
 

@@ -19,9 +19,9 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<project xmlns="https://maven.apache.org/POM/4.0.0" 
-         xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              https://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -94,7 +94,7 @@ under the License.
     <datasketches-java-common.version>1.0.0</datasketches-java-common.version>
 
     <!-- System-wide properties -->
-    <maven.version>3.5.0</maven.version>
+    <maven.version>[3.6.3,4.0.0)</maven.version>
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -107,26 +107,26 @@ under the License.
 
     <!-- org.codehaus plugins -->
     <!-- used for strict profile testing-->
-    <plexus-compiler-javac-errorprone.version>2.8.5</plexus-compiler-javac-errorprone.version>
-    <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
+    <plexus-compiler-javac-errorprone.version>2.15.0</plexus-compiler-javac-errorprone.version>
+    <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
 
     <!--  Maven Plugins -->
-    <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version> <!-- overrides parent -->
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version> <!-- overrides parent -->
-    <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version> <!-- overrides parent -->
-    <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version> <!-- overrides parent -->
-    <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
-    <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version> <!-- overrides parent -->
-    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version> <!-- overrides parent -->
-    <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version> <!-- overrides parent -->
-    <maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version> <!-- overrides parent -->
-    <maven-remote-resources-plugin.version>[1.7.0,)</maven-remote-resources-plugin.version> <!-- overrides parent -->
-    <maven-source-plugin.version>3.2.1</maven-source-plugin.version> <!-- overrides parent -->
-    <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version> <!-- overrides parent -->
+    <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version> <!-- overrides parent -->
+    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version> <!-- overrides parent -->
+    <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version> <!-- overrides parent -->
+    <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version> <!-- overrides parent -->
+    <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version> <!-- overrides parent -->
+    <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version> <!-- overrides parent -->
+    <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version> <!-- overrides parent -->
+    <maven-release-plugin.version>3.1.1</maven-release-plugin.version> <!-- overrides parent -->
+    <maven-remote-resources-plugin.version>3.3.0</maven-remote-resources-plugin.version> <!-- overrides parent -->
+    <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+    <maven-source-plugin.version>3.3.1</maven-source-plugin.version> <!-- overrides parent -->
+    <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version> <!-- overrides parent -->
     <!-- Apache Plugins -->
-    <apache-rat-plugin.version>0.13</apache-rat-plugin.version> <!-- overrides parent -->
+    <apache-rat-plugin.version>0.16.1</apache-rat-plugin.version> <!-- overrides parent -->
     <!-- org.jacoco Maven Plugins -->
-    <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     <!-- org.eluder Maven Plugins -->
     <coveralls-repo-token></coveralls-repo-token>
     <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
@@ -174,7 +174,6 @@ under the License.
   <build>
     <pluginManagement>
       <plugins>
-
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
@@ -250,10 +249,10 @@ under the License.
               <configuration>
                 <rules>
                   <requireJavaVersion>
-                    <version>${java.version}</version>
+                    <version>[8,9),[11,12)</version>
                   </requireJavaVersion>
                   <requireMavenVersion>
-                    <version>${maven.version},</version>
+                    <version>${maven.version}</version>
                   </requireMavenVersion>
                   <bannedDependencies>
                     <excludes>
@@ -297,8 +296,15 @@ under the License.
               <exclude>LICENSE</exclude>
               <exclude>NOTICE</exclude>
               <exclude>go/go.sum</exclude>
+              <exclude>src/notebooks/**</exclude>
             </excludes>
           </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
         </plugin>
 
         <plugin>
@@ -413,6 +419,18 @@ under the License.
     </plugins>
   </build>
   <profiles>
+    <profile>
+      <id>java11</id>
+      <activation>
+        <jdk>11</jdk>
+      </activation>
+      <properties>
+        <java.version>11</java.version>
+        <maven.compiler.release>11</maven.compiler.release>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <testng.version>7.10.2</testng.version>
+      </properties>
+    </profile>
     <!-- Ignore nuisance warning from Apache parent plugin: 
           "maven-remote-resources-plugin (goal "process") is ignored by m2e".
           This also should fix the Maven warning that it can't find the lifecycle-mapping jar.
@@ -420,7 +438,6 @@ under the License.
           which is the case when building in Eclipse with m2e.
           The none below tells m2eclipse to skip the execution.
     -->
-
     <profile>
       <id>only-eclipse</id>
       <activation>
@@ -471,8 +488,6 @@ under the License.
                 </dependency>
               </dependencies>
               <configuration>
-                <source>${maven.compiler.source}</source>
-                <target>${maven.compiler.target}</target>
                 <compilerId>javac-with-errorprone</compilerId>
                 <forceJavacCompilerUse>true</forceJavacCompilerUse>
               </configuration>

@@ -36,13 +36,7 @@ public class MemoryDirectSpeedProfile extends BaseSpeedProfile {
 
   @Override
   void close() {
-    if (wmem.isAlive()) {
-      try {
-        wmem.close();
-      } catch (final Exception e) {
-        // do nothing
-      }
-    }
+    // do nothing
   }
 
   @Override
