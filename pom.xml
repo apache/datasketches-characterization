@@ -288,6 +288,7 @@ under the License.
               <!-- rat uses .gitignore for excludes by default -->
               <exclude>**/*.yaml</exclude>
               <exclude>**/*.yml</exclude>
+              <exclude>**/*.ipynb</exclude>
               <exclude>**/.*</exclude>
               <exclude>**/go.mod</exclude>
               <exclude>**/go.sum</exclude>
