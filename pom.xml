@@ -86,7 +86,7 @@ under the License.
   <properties>
     <!-- System-wide properties -->
     <java.version.range>[8,9),[11,12),[17,18),[21,22)</java.version.range>
-    <maven.version>[3.6.3,4.0.0)</maven.version>
+    <maven.version.range>[3.6.3,4.0.0)</maven.version.range>
     <argLine>-Xmx4g -Duser.language=en -Duser.country=US -Dfile.encoding=UTF-8</argLine>
     <charset.encoding>UTF-8</charset.encoding>
     <project.build.sourceEncoding>${charset.encoding}</project.build.sourceEncoding>
@@ -108,9 +108,11 @@ under the License.
     <!-- org.eluder Maven Plugins -->
     <coveralls-repo-token></coveralls-repo-token>
     <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
+     <!-- pl.project13.maven Plugins-->
+    <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
     <!-- other -->
     <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
-    <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+
   </properties>
 
   <build>
@@ -157,7 +159,7 @@ under the License.
                     <version>${java.version.range}</version>
                   </requireJavaVersion>
                   <requireMavenVersion>
-                    <version>${maven.version}</version>
+                    <version>${maven.version.range}</version>
                   </requireMavenVersion>
                   <bannedDependencies>
                     <excludes>
