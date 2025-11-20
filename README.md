@@ -129,7 +129,7 @@ After this setup you should be able to *Build Project* from the top-level *Eclip
 ## Build Instructions (Go)
 
 ### Dependencies
-* Go 1.21 or later is required to compile the Go code.
+* Go 1.24.9 or later is required to compile the Go code.
 
 ### Build
 * The project uses Go modules, so you can build the project by running the following command:

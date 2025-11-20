@@ -18,12 +18,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/apache/datasketches-go/common"
-	"github.com/apache/datasketches-go/hll"
-	"github.com/apache/datasketches-go/kll"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/apache/datasketches-go/common"
+	"github.com/apache/datasketches-go/hll"
+	"github.com/apache/datasketches-go/kll"
 )
 
 type DistinctCountAccuracyProfile struct {
@@ -58,7 +59,7 @@ func NewDistinctCountAccuracyProfile(config distinctCountJobConfigType, tgtType 
 }
 
 func newAccuracyStats(k int, trueValue uint64) *accuracyStats {
-	qsk, _ := kll.NewKllItemsSketch[float64](uint16(k), 8, common.ArrayOfDoublesSerDe{})
+	qsk, _ := kll.NewKllItemsSketch[float64](uint16(k), 8, common.ItemSketchDoubleComparator(false), common.ItemSketchDoubleSerDe{})
 	return &accuracyStats{
 		qsk:       qsk,
 		trueValue: trueValue,
