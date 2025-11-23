@@ -19,8 +19,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/apache/datasketches-go/hll"
 	"os"
+
+	"github.com/apache/datasketches-go/hll"
+	"github.com/apache/datasketches-go/theta"
 )
 
 var (
@@ -91,6 +93,95 @@ var (
 
 				lgMaxTrials: 16,
 				lgMinTrials: 8,
+			},
+		),
+		"theta_accuracy_profile": MustNewThetaAccuracyProfile(
+			thetaJobConfig{
+				lgMinU: 0,
+				lgMaxU: 20,
+				uppo:   16,
+
+				lgMinT: 8,
+				lgMaxT: 18,
+				tppo:   1,
+
+				interData: true,
+				lgQK:      12,
+
+				lgK:          12,
+				p:            1,
+				resizeFactor: theta.ResizeX1,
+			},
+		),
+		"theta_update_speed_profile": MustNewThetaUpdateSpeedProfile(
+			thetaJobConfig{
+				lgMinU: 0,
+				lgMaxU: 23,
+				uppo:   16,
+
+				lgMinT: 4,
+				lgMaxT: 23,
+
+				lgMinBpU: 4,
+				lgMaxBpU: 20,
+
+				lgK:          12,
+				p:            1.0,
+				resizeFactor: theta.ResizeX1,
+			},
+		),
+		"theta_union_accuracy_profile": MustNewThetaUnionAccuracyProfile(
+			thetaJobConfig{
+				lgMinU: 0,
+				lgMaxU: 24,
+				uppo:   16,
+
+				lgMinT: 8,
+				lgMaxT: 10,
+				tppo:   1,
+
+				lgQK:      10,
+				interData: true,
+
+				lgK:          19,
+				p:            1,
+				resizeFactor: theta.ResizeX1,
+			},
+		),
+		"theta_union_update_speed_profile": MustNewThetaUnionUpdateSpeedProfile(
+			thetaJobConfig{
+				lgMinU: 0,
+				lgMaxU: 24,
+				uppo:   16,
+
+				lgMinT: 6,
+				lgMaxT: 14,
+
+				lgMinBpU: 0,
+				lgMaxBpU: 24,
+
+				lgK:         12,
+				numSketches: 32,
+			},
+		),
+		"theta_intersection_accuracy_profile": MustNewIntersectionThetaAccuracyProfile(
+			thetaJobConfig{
+				isIntersectionProfile: true,
+
+				lgMinU: 16,
+				lgMaxU: 30,
+				uppo:   1,
+
+				lgMinT: 2,
+				lgMaxT: 9,
+				tppo:   4,
+
+				lgQK:      12,
+				interData: true,
+
+				lgK:          12,
+				p:            1,
+				resizeFactor: theta.ResizeX1,
 			},
 		),
 	}
