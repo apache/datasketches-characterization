@@ -20,4 +20,7 @@ go 1.24.9
 
 require github.com/apache/datasketches-go v0.0.0-20251119134622-22517a622447
 
-require github.com/twmb/murmur3 v1.1.8 // indirect
+require (
+	github.com/twmb/murmur3 v1.1.8 // indirect
+	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
+)

@@ -1,5 +1,3 @@
-github.com/apache/datasketches-go v0.0.0-20240319101001-9f08c628cc66 h1:D1waSfcR2fuDfd5leic6q88xYyX+q9spGh7lfdSv11s=
-github.com/apache/datasketches-go v0.0.0-20240319101001-9f08c628cc66/go.mod h1:MieYfErTcRk22fstMEpxXk0/bzFfSbnfE/Kxz6tLvCE=
 github.com/apache/datasketches-go v0.0.0-20251119134622-22517a622447 h1:9B5BDC0HxnZiunOdZVSqxN2yTtM3agAmrZVeBD9DwoA=
 github.com/apache/datasketches-go v0.0.0-20251119134622-22517a622447/go.mod h1:4FkC6sbeiSlLSW/OwrtiTfwj01JYf9AK7DlENi9IIzg=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -10,5 +8,7 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/twmb/murmur3 v1.1.8 h1:8Yt9taO/WN3l08xErzjeschgZU2QSrwm1kclYq+0aRg=
 github.com/twmb/murmur3 v1.1.8/go.mod h1:Qq/R7NUyOfr65zD+6Q5IHKsJLwP7exErjN6lyyq3OSQ=
+golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 h1:R84qjqJb5nVJMxqWYb3np9L5ZsaDtB+a39EqjV0JSUM=
+golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0/go.mod h1:S9Xr4PYopiDyqSyp5NjCrhFrqg6A5zA2E/iPHPhqnS8=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=

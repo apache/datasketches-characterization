@@ -46,6 +46,7 @@ type accuracyStats struct {
 	sumRelErr   float64
 	sumSqRelErr float64
 	trueValue   uint64
+	numOfUnique uint64
 }
 
 func NewDistinctCountAccuracyProfile(config distinctCountJobConfigType, tgtType hll.TgtHllType) *DistinctCountAccuracyProfile {
@@ -63,6 +64,15 @@ func newAccuracyStats(k int, trueValue uint64) *accuracyStats {
 	return &accuracyStats{
 		qsk:       qsk,
 		trueValue: trueValue,
+	}
+}
+
+func newAccuracyStatsWithNumOfUnique(k int, trueValue uint64, numOfUnique uint64) *accuracyStats {
+	qsk, _ := kll.NewKllItemsSketch[float64](uint16(k), 8, common.ItemSketchDoubleComparator(false), common.ItemSketchDoubleSerDe{})
+	return &accuracyStats{
+		qsk:         qsk,
+		trueValue:   trueValue,
+		numOfUnique: numOfUnique,
 	}
 }
 
@@ -280,6 +290,20 @@ func buildLog2AccuracyStatsArray(lgMin, lgMax, ppo, lgQK int) []baseAccuracyStat
 	p := uint64(1) << lgMin
 	for i := 0; i < qLen; i++ {
 		qArr[i] = newAccuracyStats(1<<lgQK, p)
+		p = pwr2SeriesNext(ppo, p)
+	}
+	return qArr
+}
+
+func buildLog2IntersectionAccuracyStatsArray(
+	lgMin, lgMax, ppo, lgQK int,
+) []*accuracyStats {
+	qLen := countPoints(lgMin, lgMax, ppo)
+	qArr := make([]*accuracyStats, 0, qLen)
+	trueValue := 1 << lgMin
+	p := uint64(trueValue)
+	for i := 0; i < qLen; i++ {
+		qArr = append(qArr, newAccuracyStatsWithNumOfUnique(1<<lgQK, uint64(trueValue), p))
 		p = pwr2SeriesNext(ppo, p)
 	}
 	return qArr

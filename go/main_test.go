@@ -40,3 +40,23 @@ func TestHllSketchSerdeRunner(t *testing.T) {
 func TestFrequencyLongSpeedRunner(t *testing.T) {
 	jobs["frequency_long_speed_profile"].run()
 }
+
+func TestThetaSketchAccuracyRunner(t *testing.T) {
+	jobs["theta_accuracy_profile"].run()
+}
+
+func TestThetaSketchUpdateSpeedRunner(t *testing.T) {
+	jobs["theta_update_speed_profile"].run()
+}
+
+func TestThetaSketchUnionAccuracyRunner(t *testing.T) {
+	jobs["theta_union_accuracy_profile"].run()
+}
+
+func TestThetaSketchUnionUpdateSpeedRunner(t *testing.T) {
+	jobs["theta_union_update_speed_profile"].run()
+}
+
+func TestThetaSketchIntersectionAccuracyRunner(t *testing.T) {
+	jobs["theta_intersection_accuracy_profile"].run()
+}
