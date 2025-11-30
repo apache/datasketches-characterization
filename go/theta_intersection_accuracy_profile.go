@@ -144,10 +144,12 @@ func (p *ThetaIntersectionAccuracyProfile) runTrial(key uint64) uint64 {
 		}
 		lastUniques += delta
 
-		// Create fresh intersection for each measurement point
+		p.smallSketch.Trim()
+		p.largeSketch.Trim()
+
 		intersection := theta.NewIntersection()
-		intersection.Update(p.smallSketch)
 		intersection.Update(p.largeSketch)
+		intersection.Update(p.smallSketch)
 
 		result, _ := intersection.OrderedResult()
 
