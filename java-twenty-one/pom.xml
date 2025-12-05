@@ -45,7 +45,7 @@ under the License.
     <testng.version>7.11.0</testng.version>
 
     <java.version>21</java.version>
-    <!-- commented out to allow building all submodules from parent pom with any of java 8, 11, 17, 21
+    <!-- commented out to allow building all submodules from parent pom with any of java 8, 11, 17, 21, 25
     <java.version.range>[21,22)</java.version.range>
     -->
     <maven.compiler.release>21</maven.compiler.release>

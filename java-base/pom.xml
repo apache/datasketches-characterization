@@ -41,10 +41,11 @@ under the License.
   <properties>
     <datasketches-memory.version>3.0.2</datasketches-memory.version>
     <datasketches-java.version>6.2.0</datasketches-java.version>
+
     <testng.version>7.5.1</testng.version>
 
     <java.version>1.8</java.version>
-    <!-- commented out to allow building all submodules from parent pom with any of java 8, 11, 17, 21
+    <!-- commented out to allow building all submodules from parent pom with any of java 8, 11, 17, 21, 25
     <java.version.range>[8,9)</java.version.range>
     -->
     <maven.compiler.release>8</maven.compiler.release>
