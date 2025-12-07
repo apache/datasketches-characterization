@@ -29,9 +29,8 @@ import (
 type ThetaIntersectionAccuracyProfile struct {
 	config thetaJobConfig
 
-	smallSketch  *theta.QuickSelectUpdateSketch
-	largeSketch  *theta.QuickSelectUpdateSketch
-	intersection *theta.Intersection
+	smallSketch *theta.QuickSelectUpdateSketch
+	largeSketch *theta.QuickSelectUpdateSketch
 
 	stats     []*accuracyStats
 	startTime int64
@@ -67,12 +66,11 @@ func MustNewIntersectionThetaAccuracyProfile(cfg thetaJobConfig) *ThetaIntersect
 	}
 
 	return &ThetaIntersectionAccuracyProfile{
-		config:       cfg,
-		smallSketch:  smallSketch,
-		largeSketch:  largeSketch,
-		intersection: theta.NewIntersection(),
-		stats:        stats,
-		startTime:    time.Now().UnixMilli(),
+		config:      cfg,
+		smallSketch: smallSketch,
+		largeSketch: largeSketch,
+		stats:       stats,
+		startTime:   time.Now().UnixMilli(),
 	}
 }
 
@@ -136,7 +134,7 @@ func (p *ThetaIntersectionAccuracyProfile) runTrial(key uint64) uint64 {
 
 	lastUniques := uint64(0)
 	for i, stat := range p.stats {
-		delta := stat.trueValue - lastUniques
+		delta := stat.numOfUnique - lastUniques
 		for u := uint64(0); u < delta; u++ {
 			key++
 			if i == 0 {
@@ -146,10 +144,14 @@ func (p *ThetaIntersectionAccuracyProfile) runTrial(key uint64) uint64 {
 		}
 		lastUniques += delta
 
-		p.intersection.Update(p.smallSketch)
-		p.intersection.Update(p.largeSketch)
+		p.smallSketch.Trim()
+		p.largeSketch.Trim()
 
-		result, _ := p.intersection.OrderedResult()
+		intersection := theta.NewIntersection()
+		intersection.Update(p.largeSketch)
+		intersection.Update(p.smallSketch)
+
+		result, _ := intersection.OrderedResult()
 
 		est := result.Estimate()
 		lb3, _ := result.LowerBound(3)
@@ -165,6 +167,8 @@ func (p *ThetaIntersectionAccuracyProfile) runTrial(key uint64) uint64 {
 }
 
 func (p *ThetaIntersectionAccuracyProfile) setHeader(sb *strings.Builder) string {
+	sb.WriteString("LargeU")
+	sb.WriteString("\t")
 	sb.WriteString("TrueU")
 	sb.WriteString("\t")
 	sb.WriteString("MeanEst")
@@ -204,8 +208,6 @@ func (p *ThetaIntersectionAccuracyProfile) setHeader(sb *strings.Builder) string
 	sb.WriteString("avgUB2")
 	sb.WriteString("\t")
 	sb.WriteString("avgUB3")
-	sb.WriteString("\t")
-	sb.WriteString("Max")
 	return sb.String()
 }
 
@@ -214,6 +216,7 @@ func (p *ThetaIntersectionAccuracyProfile) process(cumTrials int, sb *strings.Bu
 	for pt := 0; pt < points; pt++ {
 		q := p.stats[pt]
 
+		largeUniques := q.numOfUnique
 		trueUniques := q.trueValue
 		meanEst := q.sumEst / float64(cumTrials)
 		meanRelErr := q.sumRelErr / float64(cumTrials)
@@ -229,6 +232,8 @@ func (p *ThetaIntersectionAccuracyProfile) process(cumTrials int, sb *strings.Bu
 		relUb2 := q.sumUB2/float64(cumTrials)/float64(trueUniques) - 1.0
 		relUb3 := q.sumUB3/float64(cumTrials)/float64(trueUniques) - 1.0
 
+		sb.WriteString(fmt.Sprintf("%d", largeUniques))
+		sb.WriteString("\t")
 		sb.WriteString(fmt.Sprintf("%d", trueUniques))
 		sb.WriteString("\t")
 

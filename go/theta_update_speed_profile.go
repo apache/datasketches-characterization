@@ -118,7 +118,7 @@ func (p *ThetaUpdateSpeedProfile) runTrial(uPerTrial int) float64 {
 
 	elapsedTime := time.Now().Sub(startTime)
 
-	return float64(elapsedTime)
+	return float64(elapsedTime) / float64(uPerTrial)
 }
 
 func (p *ThetaUpdateSpeedProfile) setHeader(sb *strings.Builder) string {
