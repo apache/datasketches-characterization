@@ -48,6 +48,7 @@ under the License.
     <!-- commented out to allow building all submodules from parent pom with any of java 8, 11, 17, 21, 25
     <java.version.range>[21,22)</java.version.range>
     -->
+    <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
     <maven.compiler.release>21</maven.compiler.release>
     <maven.javadoc.skip>true</maven.javadoc.skip>
   </properties>
@@ -82,48 +83,18 @@ under the License.
 
   <build>
     <plugins>
-      <!--
-        Rat licence checks disabled here because they are handled by parent pom.
-        This avoids the need to configure exclusions redundantly at each level.
-      -->
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-toolchains-plugin</artifactId>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
         <configuration>
           <compilerArgs>
             <arg>--enable-preview</arg>
           </compilerArgs>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source-generated</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-             </goals>
-             <configuration>
-               <sources>
-                 <source>${project.build.directory}/generated-sources/java-base</source>
-               </sources>
-             </configuration>
-           </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
@@ -171,6 +142,50 @@ under the License.
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-toolchains-plugin</artifactId>
+        <configuration>
+          <toolchains>
+            <jdk>
+              <version>${java.version}</version>
+            </jdk>
+          </toolchains>
+        </configuration>
+      </plugin>
+
+      <!--
+        Rat licence checks disabled here because they are handled by parent pom.
+        This avoids the need to configure exclusions redundantly at each level.
+      -->
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source-generated</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+             </goals>
+             <configuration>
+               <sources>
+                 <source>${project.build.directory}/generated-sources/java-base</source>
+               </sources>
+             </configuration>
+           </execution>
+        </executions>
+      </plugin>
+
     </plugins>
-   </build>
+  </build>
 </project>

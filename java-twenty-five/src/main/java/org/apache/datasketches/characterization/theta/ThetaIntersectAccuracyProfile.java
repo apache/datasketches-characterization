@@ -1,0 +1,86 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.datasketches.characterization.theta;
+
+import org.apache.datasketches.characterization.AccuracyStats;
+import org.apache.datasketches.characterization.uniquecount.BaseAccuracyProfile;
+import org.apache.datasketches.common.Family;
+import org.apache.datasketches.common.ResizeFactor;
+import org.apache.datasketches.theta.ThetaIntersection;
+import org.apache.datasketches.theta.ThetaSetOperationBuilder;
+import org.apache.datasketches.theta.UpdatableThetaSketch;
+import org.apache.datasketches.theta.UpdatableThetaSketchBuilder;
+
+public class ThetaIntersectAccuracyProfile extends BaseAccuracyProfile {
+  private int myLgK; //avoids temporary conflict with BaseAccuracyProfile
+  private boolean rebuild;
+  private UpdatableThetaSketch skSm;
+  private UpdatableThetaSketch skLg;
+  private ThetaIntersection intersection;
+
+  @Override
+  public void configure() {
+    if (!intersectTest) { throw new IllegalArgumentException("Missing intersectTest parameter"); }
+    //Theta Sketch Profile
+    myLgK = Integer.parseInt(prop.mustGet("LgK"));
+    rebuild = Boolean.parseBoolean(prop.mustGet("THETA_rebuild"));
+    final Family family = Family.stringToFamily(prop.mustGet("THETA_famName"));
+    final ResizeFactor rf = ResizeFactor.getRF(Integer.parseInt(prop.mustGet("THETA_lgRF")));
+    final float p = Float.parseFloat(prop.mustGet("THETA_p"));
+    //final boolean direct = Boolean.parseBoolean(prop.mustGet("Direct"));
+    final UpdatableThetaSketchBuilder udBldr = new UpdatableThetaSketchBuilder()
+      .setLogNominalEntries(myLgK)
+      .setFamily(family)
+      .setP(p)
+      .setResizeFactor(rf);
+    skSm = udBldr.build();
+    skLg = udBldr.build();
+    final ThetaSetOperationBuilder soBldr = new ThetaSetOperationBuilder()
+        .setLogNominalEntries(myLgK);
+    intersection = soBldr.buildIntersection();
+  }
+
+  @Override
+  public void doTrial() {
+    final int qArrLen = qArr.length;
+    skSm.reset();
+    skLg.reset();
+    //intersection.reset();
+    long lastUniques = 0;
+    for (int i = 0; i < qArrLen; i++) {
+      final AccuracyStats q = qArr[i];
+      final long delta = (q.uniques - lastUniques);
+      for (long u = 0; u < delta; u++) {
+        if (i == 0) { skSm.update(vIn); }
+        skLg.update(vIn++);
+      }
+      lastUniques += delta;
+      if (rebuild) {
+        skSm.rebuild();
+        skLg.rebuild();
+      }
+      final double est = intersection.intersect(skLg, skSm).getEstimate();
+      //final double est = skLg.getEstimate();
+      q.update(est);
+    }
+  }
+
+}
+
