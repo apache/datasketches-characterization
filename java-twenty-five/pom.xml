@@ -75,77 +75,7 @@ under the License.
 
   <build>
     <plugins>
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-sources-from-base</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/generated-sources/java-base</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>../java-base/src/main/java</directory>
-                  <excludes>
-                    <exclude>org/apache/datasketches/characterization/hll/HllBoundsAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/hll/HllUpdateSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/hll/HllMergeSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/hll/HllUnionUpdateSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/hll/HllConfidenceIntervalInverseProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/hll/HllSerDeProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/hll/HllAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/memory/MemoryDirectSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/memory/UnsafeDirectSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/hash/HashBytesSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/hash/HashLongsSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/tuple/AodSketchUpdateSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/frequencies/LongsSketchSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/kll/KllFloatsSketchRankGaussianAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/kll/KllDoublesSketchWeightedRankGaussianAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/kll/KllWorstCaseSketchAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/kll/KllFloatsSketchSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/kll/KllFloatsSketchWeightedRankGaussianAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/kll/KllSketchSizeSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/kll/KllSketchVectorSizeSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/kll/KllDoublesSketchRankGaussianAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/theta/ThetaUpdateSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/theta/ThetaUnionAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/theta/ThetaAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/theta/ThetaUnionAccuracyProfile2.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/theta/concurrent/ConcurrentThetaMultithreadedSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/theta/concurrent/ConcurrentThetaAccuracyProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/theta/concurrent/ConcurrentThetaUpdateSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/theta/ThetaSerDeProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/quantiles/ItemsSketchSpeedProfile.java</exclude>
-                    <exclude>org/apache/datasketches/characterization/quantiles/DoublesSketchSpeedProfile.java</exclude>
-                  </excludes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-resources-from-base</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/generated-resources</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>../java-base/src/main/resources</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-toolchains-plugin</artifactId>
