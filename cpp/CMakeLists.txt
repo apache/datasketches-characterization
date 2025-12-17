@@ -17,7 +17,7 @@
 
 add_executable(characterization)
 
-find_package(DataSketches 3.2 REQUIRED)
+find_package(DataSketches 5.3 REQUIRED)
 target_link_libraries(characterization PUBLIC ${DATASKETCHES_LIB})
 target_include_directories(characterization PUBLIC ${DATASKETCHES_INCLUDE_DIR})
 

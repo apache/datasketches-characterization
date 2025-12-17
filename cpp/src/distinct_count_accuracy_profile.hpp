@@ -21,18 +21,18 @@
 #define DISTINCT_COUNT_ACCURACY_PROFILE_HPP_
 
 #include "job_profile.hpp"
-
+#include "stddev.hpp"
 #include "kll_sketch.hpp"
 
 namespace datasketches {
 
 // quantile fractions computed from the standard normal cumulative distribution.
-static const double M3SD = 0.0013498980316301; //minus 3 StdDev
-static const double M2SD = 0.0227501319481792; //minus 2 StdDev
-static const double M1SD = 0.1586552539314570; //minus 1 StdDev
-static const double P1SD = 0.8413447460685430; //plus  1 StdDev
-static const double P2SD = 0.9772498680518210; //plus  2 StdDev
-static const double P3SD = 0.9986501019683700; //plus  3 StdDev
+// static const double M3SD = 0.0013498980316301; //minus 3 StdDev
+// static const double M2SD = 0.0227501319481792; //minus 2 StdDev
+// static const double M1SD = 0.1586552539314570; //minus 1 StdDev
+// static const double P1SD = 0.8413447460685430; //plus  1 StdDev
+// static const double P2SD = 0.9772498680518210; //plus  2 StdDev
+// static const double P3SD = 0.9986501019683700; //plus  3 StdDev
 static const double FRACTIONS[] = {0.0, M3SD, M2SD, M1SD, 0.5, P1SD, P2SD, P3SD, 1.0};
 static const size_t FRACT_LEN = 9;
 

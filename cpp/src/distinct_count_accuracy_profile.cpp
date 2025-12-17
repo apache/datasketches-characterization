@@ -67,7 +67,12 @@ size_t accuracy_stats::get_count() const {
 
 std::vector<double> accuracy_stats::get_quantiles(
     const double* fractions, size_t size) const {
-  return rel_err_distribution.get_quantiles(fractions, size);
+  std::vector<double> quantiles;
+  quantiles.reserve(size);
+  for (size_t i = 0; i < size; i++) {
+    quantiles.push_back(rel_err_distribution.get_quantile(fractions[i]));
+  }
+  return quantiles;
 }
 
 /**
