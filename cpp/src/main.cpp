@@ -54,6 +54,7 @@
 #include "theta_union_accuracy_profile.hpp"
 
 #include "tdigest_timing_profile.hpp"
+#include "tdigest_accuracy_profile_impl.hpp"
 #include "tdigest_sketch_accuracy_profile.hpp"
 #include "tdigest_merge_accuracy_profile.hpp"
 #include "tdigest_memory_profile.hpp"

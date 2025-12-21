@@ -26,6 +26,8 @@
 #include <random>
 #include <chrono>
 
+#include "tdigest_accuracy_profile.hpp"
+
 namespace datasketches {
 
 template<typename T>
