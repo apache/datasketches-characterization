@@ -56,7 +56,7 @@ void tdigest_accuracy_profile<T>::run() {
     #pragma omp parallel for
     for (unsigned t = 0; t < num_trials; t++) {
       std::random_device rd;
-      std::mt19937 gen(rd());
+      std::mt19937 gen( rd());
       //  std::uniform_real_distribution<T> dist(0, 1.0);
       std::exponential_distribution<T> dist(1.5);
 
@@ -77,7 +77,6 @@ void tdigest_accuracy_profile<T>::run() {
       const size_t error_pct_index = num_trials * error_pct / 100;
       const double rank_error = errors[error_pct_index];
       std::cout << "\t" << rank_error * 100;
-      errors.clear();
     }
     std::cout << "\n";
 
