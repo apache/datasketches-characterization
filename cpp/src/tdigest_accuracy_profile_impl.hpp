@@ -52,7 +52,7 @@ void tdigest_accuracy_profile<T>::run() {
   unsigned stream_length = 1;
 
   for (unsigned i = 0; i < num_steps; ++i) {
-    std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+    // std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
     #pragma omp parallel for
     for (unsigned t = 0; t < num_trials; t++) {
       std::random_device rd;
@@ -67,8 +67,8 @@ void tdigest_accuracy_profile<T>::run() {
       }
       run_trial(values, stream_length, compression, ranks, rank_errors, t);
     }
-    std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
+    // std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+    // std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
 
     std::cout << stream_length;
 
