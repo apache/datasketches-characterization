@@ -65,7 +65,7 @@ void tdigest_accuracy_profile<T>::run() {
       for (size_t j = 0; j < stream_length; ++j) {
         values[j] = dist(gen);
       }
-      run_trial(values, stream_length, compression, ranks, rank_errors);
+      run_trial(values, stream_length, compression, ranks, rank_errors, t);
     }
     std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;

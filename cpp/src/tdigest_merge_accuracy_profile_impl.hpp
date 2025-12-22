@@ -29,7 +29,7 @@ namespace datasketches {
 
 template<typename T>
 void tdigest_merge_accuracy_profile<T>::run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
-    const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors) {
+    const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors, const size_t t) {
 
   const size_t num_sketches = 32;
   std::vector<tdigest<T>> sketches;

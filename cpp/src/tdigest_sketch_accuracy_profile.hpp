@@ -28,7 +28,7 @@ template<typename T>
 class tdigest_sketch_accuracy_profile: public tdigest_accuracy_profile<T> {
 public:
   void run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
-      const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors);
+      const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors, const size_t t);
 };
 
 }

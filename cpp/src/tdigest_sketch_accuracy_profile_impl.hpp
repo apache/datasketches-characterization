@@ -28,7 +28,7 @@ namespace datasketches {
 
 template<typename T>
 void tdigest_sketch_accuracy_profile<T>::run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
-    const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors) {
+    const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors, const size_t t) {
 
   tdigest<T> sketch(k);
   for (size_t i = 0; i < stream_length; ++i) sketch.update(values[i]);
@@ -38,7 +38,7 @@ void tdigest_sketch_accuracy_profile<T>::run_trial(std::vector<T>& values, size_
   for (const double rank: ranks) {
     const T quantile = get_quantile(values, stream_length, rank);
     const double true_rank = get_rank(values, stream_length, quantile, MIDPOINT);
-    rank_errors[j++].push_back(std::abs(sketch.get_rank(quantile) - true_rank));
+    rank_errors[j++][t] = (std::abs(sketch.get_rank(quantile) - true_rank));
   }
 }
 
