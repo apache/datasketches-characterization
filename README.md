@@ -126,6 +126,43 @@ After your project is created, open *Project Properties*
 #### **Build Project**
 After this setup you should be able to *Build Project* from the top-level *Eclipse / Project* Menu.  You may need to unselect the *Build Automatically* option.
 
+### Using Clion
+#### 1. Install DataSketches (C++)
+If you have not installed DataSketches yet, clone and build it (following the instruction in the repo)
+
+#### 2. Open the Project in Clion
+1. Launch Clion
+2. Load the project
+3. Choose the `CMakeLists.txt` file in the project directory.
+
+CLion will automatically load and index the project.
+
+#### 3. Configure CMake Prefix Path
+Open **File -> Settings -> Build, Execution, Deployment -> CMake**.
+
+Then add the following entry in **CMake options**:
+```
+-DCMAKE_PREFIX_PATH=<install_path>
+```
+(e.g. `-DCMAKE_PREFIX_PATH=/tmp/install/DataSketches`)
+
+Press **Apply** and **OK**.
+CLion will re-run CMake and detect DataSketches correctly.
+
+#### 4. Build the Project
+Use CLion’s standard build controls:
+* Select the desired build profile (Debug / Release)
+* Click Build
+
+#### 5. Run a Characterization
+Either run in the terminal:
+```
+ ./cmake-build-debug/cpp/characterization <characterization_name>`
+```
+Or go to **characterization -> Edit Configurations** and add the characterization name in the `Program Arguments` field.
+
+
+This will compile and link the C++ characterization executable.
 ## Build Instructions (Go)
 
 ### Dependencies

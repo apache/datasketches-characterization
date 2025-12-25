@@ -17,9 +17,17 @@
 
 add_executable(characterization)
 
-find_package(DataSketches 3.2 REQUIRED)
+find_package(DataSketches 5.3 REQUIRED)
 target_link_libraries(characterization PUBLIC ${DATASKETCHES_LIB})
 target_include_directories(characterization PUBLIC ${DATASKETCHES_INCLUDE_DIR})
+
+find_package(OpenMP REQUIRED)
+
+target_compile_options(characterization PRIVATE
+  -O3
+  -DNDEBUG
+)
+target_link_libraries(characterization PRIVATE OpenMP::OpenMP_CXX)
 
 target_compile_features(common INTERFACE cxx_std_11)
 

@@ -111,7 +111,11 @@ void memory_usage_profile::print_stats(size_t lg_min_x, size_t num_points, size_
     std::cout << p << "\t";
     std::cout << stats[i].get_n() << "\t";
     // quantiles
-    const auto quants = stats[i].get_quantiles(FRACTIONS, FRACT_LEN);
+    std::vector<double> quants;
+    quants.reserve(FRACT_LEN);
+    for (size_t i = 0; i < FRACT_LEN; i++) {
+      quants.push_back(stats[i].get_quantile(FRACTIONS[i]));
+    }
     for (size_t i = 0; i < FRACT_LEN; i++) {
       const double quantile = quants[i];
       std::cout << quantile;

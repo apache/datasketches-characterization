@@ -31,7 +31,7 @@ class tdigest_accuracy_profile: public job_profile {
 public:
   void run();
   virtual void run_trial(std::vector<T>& values, size_t stream_length, uint16_t k,
-      const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors) = 0;
+      const std::vector<double>& ranks, std::vector<std::vector<double>>& rank_errors, const size_t t) = 0;
 };
 
 }

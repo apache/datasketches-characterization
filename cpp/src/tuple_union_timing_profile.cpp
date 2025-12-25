@@ -24,7 +24,7 @@
 #include <sstream>
 
 #include <tuple_union.hpp>
-#include <array_of_doubles_union.hpp>
+#include "array_of_doubles_sketch.hpp"
 
 #include "tuple_union_timing_profile.hpp"
 

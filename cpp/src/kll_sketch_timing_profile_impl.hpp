@@ -94,7 +94,9 @@ void kll_sketch_timing_profile<T>::run() {
       get_quantile_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_quantile - start_get_quantile);
 
       auto start_get_quantiles(std::chrono::high_resolution_clock::now());
-      sketch.get_quantiles(quantile_query_values, num_queries);
+      for (size_t i = 0; i < num_queries; i++) {
+        sketch.get_quantile(quantile_query_values[i]);
+      }
       auto finish_get_quantiles(std::chrono::high_resolution_clock::now());
       get_quantiles_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_quantiles - start_get_quantiles);
 
