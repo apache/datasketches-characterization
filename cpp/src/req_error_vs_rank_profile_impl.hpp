@@ -41,38 +41,57 @@ template<typename T>
 void req_error_vs_rank_profile<T>::run() {
   const size_t lg_stream_len = 25;
   const size_t plot_points = 100;
-
   const size_t num_trials = 10000;
 
+  // req sketch parameters
   const bool hra = true;
   const uint16_t k = 12;
 
   const uint16_t error_sketch_k = 1000;
-
   size_t stream_len = 1 << lg_stream_len;
-  std::vector<T> values(stream_len);
 
   std::vector<double> plot_ranks(plot_points);
-  for (size_t i = 0; i < plot_points; ++i) plot_ranks[i] = static_cast<double>(i) / (plot_points - 1);
+  for (size_t i = 0; i < plot_points; ++i) {
+    plot_ranks[i] = static_cast<double>(i) / (plot_points - 1);
+  }
 
-  std::vector<kll_sketch<double>> error_distributions(plot_points);
-  std::generate(error_distributions.begin(), error_distributions.end(), []{return kll_sketch<double>(error_sketch_k);});
+  // Global result (merged after)
+  std::vector<kll_sketch<double>> error_distributions(plot_points, kll_sketch<double>(error_sketch_k));
 
   std::cout << "Trials: " << num_trials << "\n";
-  for (size_t t = 1; t <= num_trials; ++t) {
-    if (t % 10 == 0) std::cout << "trial " << t << "\n";
-    std::generate(values.begin(), values.end(), [this]{return sample();});
-//    req_sketch<T> sketch(k, hra);
-    tdigest<T> sketch(100);
-    for (auto value: values) sketch.update(value);
-    std::sort(values.begin(), values.end());
-    for (size_t i = 0; i < plot_points; ++i) {
-      const T quantile = get_quantile(values, values.size(), plot_ranks[i]);
-//      const double true_rank = get_rank(values, values.size(), quantile, INCLUSIVE);
-      const double true_rank = get_rank(values, values.size(), quantile, MIDPOINT);
-      error_distributions[i].update(sketch.get_rank(quantile) - true_rank);
+  std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+  #pragma omp parallel
+  {
+    std::vector<kll_sketch<double>> local_error_distributions(plot_points, kll_sketch<double>(error_sketch_k));
+    std::vector<T> values(stream_len);
+
+    #pragma omp for schedule(static)
+    for (size_t t = 1; t <= num_trials; ++t) {
+      std::generate(values.begin(), values.end(), [this]{return sample();});
+      //    req_sketch<T> sketch(k, hra);
+      tdigest<T> sketch(100);
+      for (auto value: values) {
+        sketch.update(value);
+      }
+      std::sort(values.begin(), values.end());
+      for (size_t i = 0; i < plot_points; ++i) {
+        const T quantile = get_quantile(values, values.size(), plot_ranks[i]);
+        //      const double true_rank = get_rank(values, values.size(), quantile, INCLUSIVE);
+        const double true_rank = get_rank(values, values.size(), quantile, MIDPOINT);
+        local_error_distributions[i].update(sketch.get_rank(quantile) - true_rank);
+      }
+    }
+
+    // Merge local sketches into global one
+    #pragma omp critical
+    {
+      for (size_t i = 0; i < plot_points; ++i) {
+        error_distributions[i].merge(local_error_distributions[i]);
+      }
     }
   }
+  std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+  std::cout << "Duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << std::endl;
 
   std::cout << "Rank\t-3SD\t-2SD\t-1SD\tMed\t+1SD\t+2SD\t+3SD\n";
   for (size_t i = 0; i < plot_points; ++i) {
