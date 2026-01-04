@@ -29,12 +29,9 @@ namespace datasketches {
 template<typename T>
 class tdigest_memory_profile: public memory_usage_profile {
 public:
-  tdigest_memory_profile();
+  tdigest_memory_profile() = default;
   void run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo);
 private:
-  std::random_device rd;
-  std::mt19937 gen;
-  std::uniform_real_distribution<T> dist;
 };
 
 }

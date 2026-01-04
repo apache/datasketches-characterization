@@ -29,7 +29,7 @@
 namespace datasketches {
 
 // global variable for the counting_allocator
-long long int total_allocated_memory;
+thread_local long long int total_allocated_memory;
 
 /**
  * Manages multiple trials for measuring memory usage.
@@ -76,6 +76,7 @@ void memory_usage_profile::run() {
   while (last_trials < max_trials) {
     const size_t next_trials = (last_trials == 0) ? minT : pwr_2_law_next(trials_ppo, last_trials);
     const int delta = next_trials - last_trials;
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < delta; i++) {
       run_trial(lg_min_x, num_points, x_ppo);
     }

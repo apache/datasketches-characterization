@@ -28,18 +28,15 @@
 namespace datasketches {
 
 // this relies on a global variable to count total amount of allocated memory
-extern long long int total_allocated_memory;
-
-template<typename T>
-tdigest_memory_profile<T>::tdigest_memory_profile():
-rd(),
-gen(rd()),
-dist(0, 1.0)
-{}
+extern thread_local long long int total_allocated_memory;
 
 template<typename T>
 void tdigest_memory_profile<T>::run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo) {
   const size_t k = 40;
+  total_allocated_memory = 0;
+
+  thread_local std::mt19937 gen(std::random_device{}());
+  std::uniform_real_distribution<T> dist(0, 1.0);
 
 //  using tdigest_t = tdigest<T, counting_allocator<T>>;
 //  tdigest_t* td = new (counting_allocator<tdigest_t>().allocate(1)) tdigest_t(k);
@@ -55,7 +52,10 @@ void tdigest_memory_profile<T>::run_trial(size_t lg_min_x, size_t num_points, si
       s->update(dist(gen));
     }
     count += delta;
-    stats[i].update(total_allocated_memory);
+    #pragma omp critical(memory_usage_stats_update)
+    {
+      stats[i].update(total_allocated_memory);
+    }
     p = pwr_2_law_next(x_ppo, p);
   }
 

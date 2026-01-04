@@ -25,10 +25,12 @@
 namespace datasketches {
 
 // this relies on a global variable to count total amount of allocated memory
-extern long long int total_allocated_memory;
+extern thread_local long long int total_allocated_memory;
 
 void cpc_sketch_memory_profile::run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo) {
   const size_t lg_k = 26;
+  total_allocated_memory = 0;
+  uint64_t key = 0;
 
   typedef cpc_sketch_alloc<counting_allocator<uint8_t>> cpc_sketch_a;
   cpc_sketch_a* s = new (counting_allocator<cpc_sketch_a>().allocate(1)) cpc_sketch_a(lg_k);
@@ -41,7 +43,10 @@ void cpc_sketch_memory_profile::run_trial(size_t lg_min_x, size_t num_points, si
       s->update(key++);
     }
     count += delta;
-    stats[i].update(total_allocated_memory);
+    #pragma omp critical(memory_usage_stats_update)
+    {
+      stats[i].update(total_allocated_memory);
+    }
     p = pwr_2_law_next(x_ppo, p);
   }
 

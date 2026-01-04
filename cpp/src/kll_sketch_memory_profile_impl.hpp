@@ -27,11 +27,13 @@
 namespace datasketches {
 
 // this relies on a global variable to count total amount of allocated memory
-extern long long int total_allocated_memory;
+extern thread_local long long int total_allocated_memory;
 
 template<typename T>
 void kll_sketch_memory_profile<T>::run_trial(size_t lg_min_x, size_t num_points, size_t x_ppo) {
   const size_t k = 200;
+  total_allocated_memory = 0;
+  T value = 0;
 
   typedef kll_sketch<T, std::less<T>, counting_allocator<T>> kll_sketch_t;
   kll_sketch_t* s = new (counting_allocator<kll_sketch_t>().allocate(1)) kll_sketch_t(k);
@@ -45,7 +47,10 @@ void kll_sketch_memory_profile<T>::run_trial(size_t lg_min_x, size_t num_points,
       value += 1; // distribution does not really matter
     }
     count += delta;
-    stats[i].update(total_allocated_memory);
+    #pragma omp critical(memory_usage_stats_update)
+    {
+      stats[i].update(total_allocated_memory);
+    }
     p = pwr_2_law_next(x_ppo, p);
   }
 
