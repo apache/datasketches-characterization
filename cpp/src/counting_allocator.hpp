@@ -26,7 +26,7 @@
 namespace datasketches {
 
 // this relies on a global variable to count total amount of allocated memory
-extern long long int total_allocated_memory;
+extern thread_local long long int total_allocated_memory;
 
 template <class T> class counting_allocator {
 public:
