@@ -60,3 +60,11 @@ func TestThetaSketchUnionUpdateSpeedRunner(t *testing.T) {
 func TestThetaSketchIntersectionAccuracyRunner(t *testing.T) {
 	jobs["theta_intersection_accuracy_profile"].run()
 }
+
+func TestArrayOfNumbersUpdateSpeedRunner(t *testing.T) {
+	jobs["array_of_numbers_update_speed_profile"].run()
+}
+
+func TestArrayOfNumbersUnionUpdateSpeedRunner(t *testing.T) {
+	jobs["array_of_numbers_union_update_speed_profile"].run()
+}

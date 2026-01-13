@@ -184,6 +184,44 @@ var (
 				resizeFactor: theta.ResizeX1,
 			},
 		),
+		"array_of_numbers_update_speed_profile": MustNewArrayOfNumberUpdateSpeedProfile(
+			arrayOfNumbersSketchJobConfig{
+				lgMinU: 0,
+				lgMaxU: 23,
+				uppo:   16,
+
+				lgMaxT: 23,
+				lgMinT: 4,
+
+				lgMinBpU: 4,
+				lgMaxBpU: 20,
+
+				lgK:          12,
+				numValues:    1,
+				resizeFactor: theta.ResizeX8,
+				p:            1.0,
+			},
+		),
+		"array_of_numbers_union_update_speed_profile": MustNewArrayOfNumberUpdateSpeedProfile(
+			arrayOfNumbersSketchJobConfig{
+				lgMinU: 0,
+				lgMaxU: 24,
+				uppo:   16,
+
+				lgMaxT: 14,
+				lgMinT: 6,
+
+				lgMinBpU: 0,
+				lgMaxBpU: 24,
+
+				lgK:          12,
+				numValues:    1,
+				resizeFactor: theta.ResizeX8,
+				p:            1.0,
+
+				numSketches: 32,
+			},
+		),
 	}
 )
 

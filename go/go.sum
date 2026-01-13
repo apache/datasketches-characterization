@@ -1,5 +1,9 @@
 github.com/apache/datasketches-go v0.0.0-20251119134622-22517a622447 h1:9B5BDC0HxnZiunOdZVSqxN2yTtM3agAmrZVeBD9DwoA=
 github.com/apache/datasketches-go v0.0.0-20251119134622-22517a622447/go.mod h1:4FkC6sbeiSlLSW/OwrtiTfwj01JYf9AK7DlENi9IIzg=
+github.com/apache/datasketches-go v0.0.0-20260112141520-e1cb959c71df h1:aNlsKI1eBiWAiUzJ/496C0dergqspcnBPBy68oO4K9s=
+github.com/apache/datasketches-go v0.0.0-20260112141520-e1cb959c71df/go.mod h1:s+dd951Fa5Xk8BV/jy2+hm38Ab4bJ5vN1DNB1eV7kPU=
+github.com/apache/datasketches-go v0.1.0-RC1 h1:4M/7NdXhh4TgefHPzEmikwTnsmXJ0NCsvKvZLgybf0Q=
+github.com/apache/datasketches-go v0.1.0-RC1/go.mod h1:s+dd951Fa5Xk8BV/jy2+hm38Ab4bJ5vN1DNB1eV7kPU=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
