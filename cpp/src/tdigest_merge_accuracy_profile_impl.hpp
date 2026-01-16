@@ -50,7 +50,7 @@ void tdigest_merge_accuracy_profile<T>::run_trial(std::vector<T>& values, size_t
   for (const double rank: ranks) {
     const T quantile = get_quantile(values, stream_length, rank);
     const double true_rank = get_rank(values, stream_length, quantile, MIDPOINT);
-    rank_errors[j++].push_back(std::abs(merge_sketch.get_rank(quantile) - true_rank));
+    rank_errors[j++][t] = std::abs(merge_sketch.get_rank(quantile) - true_rank);
   }
 }
 
