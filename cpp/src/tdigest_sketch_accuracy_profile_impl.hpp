@@ -21,9 +21,6 @@
 #define TDIGEST_SKETCH_ACCURACY_PROFILE_IMPL_HPP_
 
 #include <tdigest.hpp>
-#include <ddsketch.hpp>
-#include <sparse_store.hpp>
-#include <logarithmic_mapping.hpp>
 
 #include "true_rank.hpp"
 
