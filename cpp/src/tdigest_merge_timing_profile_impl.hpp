@@ -17,8 +17,8 @@
  * under the License.
  */
 
-#ifndef TDIGEST_TIMING_PROFILE_IMPL_HPP_
-#define TDIGEST_TIMING_PROFILE_IMPL_HPP_
+#ifndef TDIGEST_MERGE_TIMING_PROFILE_IMPL_HPP_
+#define TDIGEST_MERGE_TIMING_PROFILE_IMPL_HPP_
 
 #include <iostream>
 #include <algorithm>
@@ -30,13 +30,13 @@
 namespace datasketches {
 
 template<typename T>
-tdigest_timing_profile<T>::tdigest_timing_profile():
+tdigest_merge_timing_profile<T>::tdigest_merge_timing_profile():
 generator(std::chrono::system_clock::now().time_since_epoch().count()),
 distribution(0.0, 1.0)
 {}
 
 template<typename T>
-void tdigest_timing_profile<T>::run() {
+void tdigest_merge_timing_profile<T>::run() {
   const size_t lg_min_stream_len(0);
   const size_t lg_max_stream_len(23);
   const size_t ppo(16);
@@ -75,20 +75,12 @@ void tdigest_timing_profile<T>::run() {
       auto finish_update(std::chrono::high_resolution_clock::now());
       update_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_update - start_update);
 
-//      auto start_get_rank(std::chrono::high_resolution_clock::now());
-//      for (size_t i = 0; i < num_queries; i++) {
-//        volatile double rank = sketch.get_rank(rank_query_values[i]); // volatile to prevent this from being optimized away
-//      }
-//      auto finish_get_rank(std::chrono::high_resolution_clock::now());
-//      get_rank_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_rank - start_get_rank);
-
       size_bytes += sketch.get_serialized_size_bytes();
     }
     std::cout << stream_length << "\t"
         << num_trials << "\t"
         << (double) build_time_ns.count() / num_trials << "\t"
         << (double) update_time_ns.count() / num_trials / stream_length << "\t"
-//        << (double) get_rank_time_ns.count() / num_trials / num_queries << "\t"
         << (double) size_bytes / num_trials << "\n";
 
     stream_length = pwr_2_law_next(ppo, stream_length);
@@ -96,7 +88,7 @@ void tdigest_timing_profile<T>::run() {
 }
 
 template<typename T>
-T tdigest_timing_profile<T>::sample() {
+T tdigest_merge_timing_profile<T>::sample() {
   return distribution(generator);
 }
 
