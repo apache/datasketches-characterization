@@ -88,8 +88,8 @@ void tdigest_merge_timing_profile<T>::run() {
     }
     std::cout << stream_length << "\t"
         << num_trials << "\t"
-        << (double) build_time_ns.count() / num_trials << "\t"
-        << (double) update_time_ns.count() / num_trials / stream_length << "\t"
+        << (double) build_time_ns.count() / num_trials / num_sketches << "\t"
+        << (double) update_time_ns.count() / num_trials / stream_length / num_sketches << "\t"
         << (double) merge_time_ns.count() / num_trials / num_sketches << "\t"
         << (double) size_bytes / num_trials << "\n";
 
