@@ -17,8 +17,8 @@
  * under the License.
  */
 
-#ifndef TDIGEST_TIMING_PROFILE_IMPL_HPP_
-#define TDIGEST_TIMING_PROFILE_IMPL_HPP_
+#ifndef TDIGEST_MERGE_TIMING_PROFILE_IMPL_HPP_
+#define TDIGEST_MERGE_TIMING_PROFILE_IMPL_HPP_
 
 #include <iostream>
 #include <algorithm>
@@ -30,13 +30,13 @@
 namespace datasketches {
 
 template<typename T>
-tdigest_timing_profile<T>::tdigest_timing_profile():
+tdigest_merge_timing_profile<T>::tdigest_merge_timing_profile():
 generator(std::chrono::system_clock::now().time_since_epoch().count()),
 distribution(0.0, 1.0)
 {}
 
 template<typename T>
-void tdigest_timing_profile<T>::run() {
+void tdigest_merge_timing_profile<T>::run() {
   const size_t lg_min_stream_len(0);
   const size_t lg_max_stream_len(23);
   const size_t ppo(16);
@@ -44,21 +44,18 @@ void tdigest_timing_profile<T>::run() {
   const size_t lg_max_trials(16);
   const size_t lg_min_trials(6);
 
-  const size_t num_queries(20);
+  const size_t num_sketches(32);
 
-  std::cout << "Stream\tTrials\tBuild\tUpdate\tRank" << std::endl;
+  std::cout << "Stream\tTrials\tBuild\tUpdate\tMerge\tSize" << std::endl;
 
   std::vector<T> values(1ULL << lg_max_stream_len, 0);
-
-  std::vector<T> rank_query_values(num_queries, 0);
-  for (size_t i = 0; i < num_queries; i++) rank_query_values[i] = sample();
 
   size_t stream_length(1 << lg_min_stream_len);
   while (stream_length <= (1 << lg_max_stream_len)) {
 
     std::chrono::nanoseconds build_time_ns(0);
     std::chrono::nanoseconds update_time_ns(0);
-    std::chrono::nanoseconds get_rank_time_ns(0);
+    std::chrono::nanoseconds merge_time_ns(0);
     size_t size_bytes = 0;
 
     const size_t num_trials = get_num_trials(stream_length, lg_min_stream_len, lg_max_stream_len, lg_min_trials, lg_max_trials);
@@ -66,29 +63,34 @@ void tdigest_timing_profile<T>::run() {
       std::generate(values.begin(), values.begin() + stream_length, [this] { return this->sample(); });
 
       auto start_build(std::chrono::high_resolution_clock::now());
-      tdigest<T> sketch;
+      std::vector<tdigest<T>> sketches;
+      for (size_t i = 0; i < num_sketches; ++i) sketches.push_back(tdigest<T>());
       auto finish_build(std::chrono::high_resolution_clock::now());
       build_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_build - start_build);
 
       auto start_update(std::chrono::high_resolution_clock::now());
-      for (size_t i = 0; i < stream_length; ++i) sketch.update(values[i]);
+      size_t s = 0;
+      for (size_t i = 0; i < stream_length; ++i) {
+        sketches[s].update(values[i]);
+        ++s;
+        if (s == num_sketches) s = 0;
+      }
       auto finish_update(std::chrono::high_resolution_clock::now());
       update_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_update - start_update);
 
-//      auto start_get_rank(std::chrono::high_resolution_clock::now());
-//      for (size_t i = 0; i < num_queries; i++) {
-//        volatile double rank = sketch.get_rank(rank_query_values[i]); // volatile to prevent this from being optimized away
-//      }
-//      auto finish_get_rank(std::chrono::high_resolution_clock::now());
-//      get_rank_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_get_rank - start_get_rank);
+      auto start_merge(std::chrono::high_resolution_clock::now());
+      tdigest<T> merge_sketch;
+      for (size_t i = 0; i < num_sketches; ++i) merge_sketch.merge(sketches[i]);
+      auto finish_merge(std::chrono::high_resolution_clock::now());
+      merge_time_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(finish_merge - start_merge);
 
-      size_bytes += sketch.get_serialized_size_bytes();
+      size_bytes += merge_sketch.get_serialized_size_bytes();
     }
     std::cout << stream_length << "\t"
         << num_trials << "\t"
-        << (double) build_time_ns.count() / num_trials << "\t"
-        << (double) update_time_ns.count() / num_trials / stream_length << "\t"
-//        << (double) get_rank_time_ns.count() / num_trials / num_queries << "\t"
+        << (double) build_time_ns.count() / num_trials / num_sketches << "\t"
+        << (double) update_time_ns.count() / num_trials / stream_length / num_sketches << "\t"
+        << (double) merge_time_ns.count() / num_trials / num_sketches << "\t"
         << (double) size_bytes / num_trials << "\n";
 
     stream_length = pwr_2_law_next(ppo, stream_length);
@@ -96,7 +98,7 @@ void tdigest_timing_profile<T>::run() {
 }
 
 template<typename T>
-T tdigest_timing_profile<T>::sample() {
+T tdigest_merge_timing_profile<T>::sample() {
   return distribution(generator);
 }
 

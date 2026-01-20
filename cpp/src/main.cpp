@@ -54,6 +54,7 @@
 #include "theta_union_accuracy_profile.hpp"
 
 #include "tdigest_timing_profile.hpp"
+#include "tdigest_merge_timing_profile.hpp"
 #include "tdigest_accuracy_profile_impl.hpp"
 #include "tdigest_sketch_accuracy_profile.hpp"
 #include "tdigest_merge_accuracy_profile.hpp"
@@ -104,6 +105,7 @@ int main(int argc, char **argv) {
   job_profile::add("req-error-vs-rank-double", job_profile_ptr(new req_error_vs_rank_profile<double>()));
 
   job_profile::add("tdigest-timing-double", job_profile_ptr(new tdigest_timing_profile<double>()));
+  job_profile::add("tdigest-merge-timing-double", job_profile_ptr(new tdigest_merge_timing_profile<double>()));
   job_profile::add("tdigest-sketch-accuracy-double", job_profile_ptr(new tdigest_sketch_accuracy_profile<double>()));
   job_profile::add("tdigest-merge-accuracy-double", job_profile_ptr(new tdigest_merge_accuracy_profile<double>()));
   job_profile::add("tdigest-timing-float", job_profile_ptr(new tdigest_timing_profile<float>()));

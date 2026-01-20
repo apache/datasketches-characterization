@@ -27,9 +27,9 @@
 namespace datasketches {
 
 template<typename T>
-class tdigest_timing_profile: public job_profile {
+class tdigest_merge_timing_profile: public job_profile {
 public:
-  tdigest_timing_profile();
+  tdigest_merge_timing_profile();
   void run();
   T sample();
 private:
