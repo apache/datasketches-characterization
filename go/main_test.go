@@ -68,3 +68,19 @@ func TestArrayOfNumbersUpdateSpeedRunner(t *testing.T) {
 func TestArrayOfNumbersUnionUpdateSpeedRunner(t *testing.T) {
 	jobs["array_of_numbers_union_update_speed_profile"].run()
 }
+
+func TestTDigestDoubleAccuracyRuner(t *testing.T) {
+	jobs["tdigest_double_accuracy_profile"].run()
+}
+
+func TestTDigestDoubleMergeAccuracyRunner(t *testing.T) {
+	jobs["tdigest_double_merge_accuracy_profile"].run()
+}
+
+func TestTDigestDoubleUpdateSpeedRunner(t *testing.T) {
+	jobs["tdigest_double_update_speed_profile"].run()
+}
+
+func TestTDigestDoubleMergeSpeedRunner(t *testing.T) {
+	jobs["tdigest_double_merge_speed_profile"].run()
+}

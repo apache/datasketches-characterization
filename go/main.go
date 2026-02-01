@@ -222,6 +222,50 @@ var (
 				numSketches: 32,
 			},
 		),
+		"tdigest_double_accuracy_profile": MustNewTDigestDoubleAccuracyProfile(
+			tdigestJobConfig{
+				lgMin:     0,
+				lgMax:     23,
+				ppo:       8,
+				numTrials: 1000,
+				errorPCT:  99,
+				k:         200,
+				ranks:     []float64{0.01, 0.05, 0.5, 0.95, 0.99},
+			},
+		),
+		"tdigest_double_merge_accuracy_profile": MustNewTDigestDoubleMergeAccuracyProfile(
+			tdigestJobConfig{
+				lgMin:       0,
+				lgMax:       23,
+				ppo:         8,
+				numTrials:   1000,
+				errorPCT:    99,
+				k:           200,
+				ranks:       []float64{0.01, 0.05, 0.5, 0.95, 0.99},
+				numSketches: 32,
+			},
+		),
+		"tdigest_double_update_speed_profile": MustNewTDigestDoubleUpdateSpeedProfile(
+			tdigestJobConfig{
+				lgMinStreamLength: 0,
+				lgMaxStreamLength: 23,
+				ppo:               16,
+				lgMinTrials:       6,
+				lgMaxTrials:       16,
+				k:                 200,
+			},
+		),
+		"tdigest_double_merge_speed_profile": MustNewTDigestDoubleMergeSpeedProfile(
+			tdigestJobConfig{
+				lgMinStreamLength: 0,
+				lgMaxStreamLength: 23,
+				ppo:               16,
+				lgMinTrials:       6,
+				lgMaxTrials:       16,
+				k:                 200,
+				numSketches:       32,
+			},
+		),
 	}
 )
 
