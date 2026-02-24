@@ -35,10 +35,10 @@ typedef count_min_sketch<int64_t> cms_int64;
 
 void cms_point_query_profile::run() {
   // Experiment parameters (small for verification; scale up later)
-  const unsigned lg_trials = 6;
-  const size_t num_trials = 1ULL << lg_trials;  // 64
-  const unsigned universe_size = 1 << 10;        // 1024
-  const size_t stream_length = 1ULL << 16;       // 65536
+  const unsigned lg_trials = 13;
+  const size_t num_trials = 1ULL << lg_trials;  
+  const unsigned universe_size = 1 << 10;        
+  const size_t stream_length = 1ULL << 16;       
   const double zipf_exponent = 0.7;
 
   // CMS parameters
