@@ -172,6 +172,8 @@ void cms_point_query_profile::run() {
             << actual_violation_frac << std::endl;
   std::cout << "# bound_violations=" << bound_violations << std::endl;
   std::cout << "# total_queries=" << total_queries << std::endl;
+  std::cout << "# zipf_exponent=" << std::setprecision(2)
+            << zipf_exponent << std::endl;
 
   // TSV header
   std::cout << "Item\tTrueFreq";

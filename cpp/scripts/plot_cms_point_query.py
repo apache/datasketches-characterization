@@ -168,8 +168,10 @@ def main():
 
     ax.set_xlabel("True frequency (log scale)", fontweight="semibold")
     ax.set_ylabel("Estimated frequency (log scale)", fontweight="semibold")
+    zipf_exp = meta.get("zipf_exponent", "?")
     ax.set_title(
-        "CMS Point Query Estimated Frequency Profile", fontweight="bold", pad=15
+        f"CMS Point Query Estimated Frequency Profile (Zipf exponent = {zipf_exp})",
+        fontweight="bold", pad=15,
     )
 
     ax.legend(loc="upper left", frameon=True, fancybox=False, framealpha=0.95)
