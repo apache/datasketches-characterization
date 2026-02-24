@@ -66,11 +66,16 @@ def main():
         f"error bound={error_bound:.2f}"
     )
 
-    # Identify quantile columns (Q_0.00135, Q_0.02275, ...)
-    q_cols = [c for c in df.columns if c.startswith("Q_")]
-    if len(q_cols) != 7:
-        logging.error(f"Expected 7 quantile columns, found {len(q_cols)}: {q_cols}")
-        sys.exit(1)
+    # All quantile columns from TSV
+    all_q_cols = [c for c in df.columns if c.startswith("Q_")]
+    all_q_levels = {float(c.split("_", 1)[1]): c for c in all_q_cols}
+
+    # Select 9 quantile levels: min, 3 sigma pairs, median, max
+    sigma_targets = [0.0, 0.00135, 0.02275, 0.15866, 0.5, 0.84134, 0.97725, 0.99865, 1.0]
+    q_cols = []
+    for target in sigma_targets:
+        closest = min(all_q_levels.keys(), key=lambda q: abs(q - target))
+        q_cols.append(all_q_levels[closest])
 
     # Convert error quantiles to estimated frequency: est = error + true_freq
     true_freq = df["TrueFreq"].values
@@ -120,38 +125,30 @@ def main():
                 label=r"Upper bound: $c_j + \varepsilon N$", zorder=10)
 
     # Shading between symmetric quantile pairs (outer to inner)
+    # Indices: 0=min, 1=-3σ, 2=-2σ, 3=-1σ, 4=median, 5=+1σ, 6=+2σ, 7=+3σ, 8=max
     band_specs = [
-        (est_cols[0], est_cols[6], "#dadaeb", 0.5, r"$\pm 3\sigma$"),
-        (est_cols[1], est_cols[5], "#bcbddc", 0.6, r"$\pm 2\sigma$"),
-        (est_cols[2], est_cols[4], "#9e9ac8", 0.7, r"$\pm 1\sigma$"),
+        (est_cols[0], est_cols[8], "#efedf5", 0.4, "Min/Max"),
+        (est_cols[1], est_cols[7], "#dadaeb", 0.5, "Q0.1% / Q99.9%"),
+        (est_cols[2], est_cols[6], "#bcbddc", 0.6, "Q2.3% / Q97.7%"),
+        (est_cols[3], est_cols[5], "#9e9ac8", 0.7, "Q15.9% / Q84.1%"),
     ]
     for lo, hi, color, alpha, label in band_specs:
         ax.fill_between(x_pos, df_pos[lo], df_pos[hi],
                         color=color, alpha=alpha, label=label)
 
     # Quantile lines
-    line_styles = [":", "--", "-.", "-", "-.", "--", ":"]
-    line_alphas = [0.5, 0.6, 0.8, 1.0, 0.8, 0.6, 0.5]
-    line_widths = [0.8, 0.8, 1.0, 2.0, 1.0, 0.8, 0.8]
+    line_styles = [":", ":", "--", "-.", "-", "-.", "--", ":", ":"]
+    line_alphas = [0.4, 0.5, 0.6, 0.8, 1.0, 0.8, 0.6, 0.5, 0.4]
+    line_widths = [0.6, 0.8, 0.8, 1.0, 2.0, 1.0, 0.8, 0.8, 0.6]
     line_color = "#54278f"
 
-    q_labels = [
-        r"$-3\sigma$",
-        r"$-2\sigma$",
-        r"$-1\sigma$",
-        "Median estimate",
-        r"$+1\sigma$",
-        r"$+2\sigma$",
-        r"$+3\sigma$",
-    ]
-
-    for i, (col, ls, a, lw, ql) in enumerate(
-        zip(est_cols, line_styles, line_alphas, line_widths, q_labels)
+    for i, (col, ls, a, lw) in enumerate(
+        zip(est_cols, line_styles, line_alphas, line_widths)
     ):
-        if i == 3:  # median gets special treatment
+        if i == 4:  # median gets special treatment
             ax.plot(
                 x_pos, df_pos[col], color="#e31a1c", linewidth=lw,
-                linestyle=ls, alpha=a, label=ql,
+                linestyle=ls, alpha=a, label="Median estimate",
             )
         else:
             ax.plot(
