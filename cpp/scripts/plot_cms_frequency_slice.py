@@ -8,11 +8,11 @@
 # ]
 # ///
 """
-Quantile plot for selected frequency slices of the CMS point query profile.
+Empirical CDF of absolute error at selected frequency slices.
 
 For each requested true frequency, finds the nearest item and plots
-its error quantile function from min to max. Multiple slices are
-overlaid for comparison.
+the error quantile function as an empirical CDF: log(absolute error)
+on the x-axis and quantile level (probability) on the y-axis.
 
 Usage:
     uv run plot_cms_frequency_slice.py <input.tsv> <freq1,freq2,...> [output.svg]
@@ -97,31 +97,33 @@ def main():
         # Error values at each quantile level
         error_values = np.array([row[c] for c in q_cols])
 
-        ax.plot(q_levels, error_values, "o-", color=color, linewidth=1.8,
-                markersize=4, label=f"$c_j$ = {true_freq:.0f}")
+        # Filter to positive errors for log scale
+        pos_mask = error_values > 0
+        ax.plot(error_values[pos_mask], q_levels[pos_mask],
+                "o-", color=color, linewidth=1.8, markersize=3,
+                label=f"$c_j$ = {true_freq:.0f}")
 
-    # Theoretical error bound
+    # Theoretical error bound as vertical line
     if not np.isnan(error_bound):
-        ax.axhline(error_bound, color="#2166ac", linewidth=2.0,
+        ax.axvline(error_bound, color="#2166ac", linewidth=2.0,
                    linestyle="-.", alpha=0.8,
                    label=r"$\varepsilon N$" + f" = {error_bound:.0f}")
 
-    # Zero error reference
-    ax.axhline(0, color="black", linewidth=0.8, linestyle="-", alpha=0.3)
+    ax.set_xscale("log")
 
-    # X-axis: percentile labels
-    ax.set_xlabel("Quantile level (percentile)", fontweight="semibold")
-    ax.set_ylabel("Absolute error (estimate $-$ true count)", fontweight="semibold")
+    ax.set_xlabel("Absolute error (log scale)", fontweight="semibold")
+    ax.set_ylabel("Quantile level (cumulative probability)", fontweight="semibold")
     ax.set_title(
-        f"CMS Error Quantile Profile at Selected Frequencies (Zipf = {zipf_exp})",
+        f"CMS Error CDF at Selected Frequencies (Zipf = {zipf_exp})",
         fontweight="bold", pad=15,
     )
 
-    # Format x-axis as percentages
-    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.0%}"))
+    # Format y-axis as percentages
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.0%}"))
 
-    ax.legend(loc="upper left", frameon=True, fancybox=False, framealpha=0.95)
+    ax.legend(loc="lower right", frameon=True, fancybox=False, framealpha=0.95)
     ax.grid(True, which="major", alpha=0.3, linewidth=0.8)
+    ax.grid(True, which="minor", alpha=0.15, linewidth=0.5, linestyle=":")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 

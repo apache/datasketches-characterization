@@ -49,14 +49,15 @@ void cms_point_query_profile::run() {
   // KLL parameters
   const uint16_t kll_k = 200;
 
-  // Output quantiles: dense coverage from near-min to near-max
-  // Includes the 7 sigma levels (0.00135, 0.02275, 0.15866, 0.5, 0.84134, 0.97725, 0.99865)
-  // plus standard percentiles for richer slice plots
+  // Output quantiles: sparse below median, dense in the upper tail
+  // CMS only overestimates so the interesting behavior is all in the right tail.
+  // Includes the 7 sigma levels for the main plot band selection.
   const double quantiles[] = {
-    0.0, 0.001, 0.00135, 0.005, 0.01, 0.02275, 0.05,
-    0.1, 0.15866, 0.2, 0.25, 0.3, 0.4, 0.5,
-    0.6, 0.7, 0.75, 0.8, 0.84134, 0.9,
-    0.95, 0.97725, 0.99, 0.995, 0.99865, 0.999, 1.0
+    0.0, 0.00135, 0.02275, 0.15866, 0.5,                      // min + lower sigma levels
+    0.84134, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95, 0.96, 0.97,  // upper body
+    0.97725, 0.98, 0.99,                                        // +2σ region
+    0.991, 0.992, 0.993, 0.994, 0.995, 0.996, 0.997, 0.998, 0.999, // upper tail
+    0.99865, 0.9999, 1.0                                        // +3σ, near-max, max
   };
   const size_t num_quantiles = sizeof(quantiles) / sizeof(quantiles[0]);
 
