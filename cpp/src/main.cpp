@@ -55,10 +55,9 @@
 
 #include "tdigest_timing_profile.hpp"
 #include "tdigest_merge_timing_profile.hpp"
-// ddsketch.hpp not available in installed datasketches version
-// #include "tdigest_accuracy_profile_impl.hpp"
-// #include "tdigest_sketch_accuracy_profile.hpp"
-// #include "tdigest_merge_accuracy_profile.hpp"
+#include "tdigest_accuracy_profile_impl.hpp"
+#include "tdigest_sketch_accuracy_profile.hpp"
+#include "tdigest_merge_accuracy_profile.hpp"
 #include "tdigest_memory_profile.hpp"
 
 #include "cpc_sketch_memory_profile.hpp"
@@ -110,12 +109,11 @@ int main(int argc, char **argv) {
 
   job_profile::add("tdigest-timing-double", job_profile_ptr(new tdigest_timing_profile<double>()));
   job_profile::add("tdigest-merge-timing-double", job_profile_ptr(new tdigest_merge_timing_profile<double>()));
-  // ddsketch.hpp not available in installed datasketches version
-  // job_profile::add("tdigest-sketch-accuracy-double", job_profile_ptr(new tdigest_sketch_accuracy_profile<double>()));
-  // job_profile::add("tdigest-merge-accuracy-double", job_profile_ptr(new tdigest_merge_accuracy_profile<double>()));
+  job_profile::add("tdigest-sketch-accuracy-double", job_profile_ptr(new tdigest_sketch_accuracy_profile<double>()));
+  job_profile::add("tdigest-merge-accuracy-double", job_profile_ptr(new tdigest_merge_accuracy_profile<double>()));
   job_profile::add("tdigest-timing-float", job_profile_ptr(new tdigest_timing_profile<float>()));
-  // job_profile::add("tdigest-sketch-accuracy-float", job_profile_ptr(new tdigest_sketch_accuracy_profile<float>()));
-  // job_profile::add("tdigest-merge-accuracy-float", job_profile_ptr(new tdigest_merge_accuracy_profile<float>()));
+  job_profile::add("tdigest-sketch-accuracy-float", job_profile_ptr(new tdigest_sketch_accuracy_profile<float>()));
+  job_profile::add("tdigest-merge-accuracy-float", job_profile_ptr(new tdigest_merge_accuracy_profile<float>()));
   job_profile::add("tdigest-memory-float", job_profile_ptr(new tdigest_memory_profile<float>()));
   job_profile::add("tdigest-memory-double", job_profile_ptr(new tdigest_memory_profile<double>()));
 
