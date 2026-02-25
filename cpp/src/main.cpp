@@ -71,7 +71,6 @@
 #include "req_merge_timing_profile.hpp"
 #include "req_error_vs_rank_profile.hpp"
 
-#include "count_min_sketch_frequency_profile.hpp"
 #include "cms_point_query_profile.hpp"
 
 using namespace datasketches;
@@ -125,7 +124,6 @@ int main(int argc, char **argv) {
 
   job_profile::add("hll-cross-lang", job_profile_ptr(new hll_cross_language_profile()));
 
-  job_profile::add("cms-frequency", job_profile_ptr(new count_min_sketch_frequency_profile()));
   job_profile::add("cms-point-query", job_profile_ptr(new cms_point_query_profile()));
 
   if (argc == 2) {
