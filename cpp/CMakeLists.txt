@@ -29,8 +29,6 @@ target_compile_options(characterization PRIVATE
 )
 target_link_libraries(characterization PRIVATE OpenMP::OpenMP_CXX)
 
-target_compile_features(common INTERFACE cxx_std_11)
-
 set_target_properties(characterization PROPERTIES
   CXX_STANDARD 11
   CXX_STANDARD_REQUIRED YES
@@ -106,4 +104,6 @@ target_sources(characterization
     src/tuple_union_timing_profile.hpp
     src/zipf_distribution.cpp
     src/zipf_distribution.hpp
+    src/cms_point_query_profile.cpp
+    src/cms_point_query_profile.hpp
 )
