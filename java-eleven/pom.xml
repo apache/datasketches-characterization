@@ -39,45 +39,39 @@ under the License.
   <description>Characterization code for the DataSketches library. (Java 11)</description>
 
   <properties>
-    <datasketches-memory.version>3.0.2</datasketches-memory.version>
-    <datasketches-java.version>6.2.0</datasketches-java.version>
-
-    <testng.version>7.11.0</testng.version>
-
     <java.version>11</java.version>
-    <!-- commented out to allow building all submodules from parent pom with any of java 8, 11, 17, 21, 25
-    <java.version.range>[11,12)</java.version.range>
-    -->
     <maven.compiler.release>11</maven.compiler.release>
-    <maven.javadoc.skip>true</maven.javadoc.skip>
+    <java-base.root>${project.basedir}/../java-base</java-base.root>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.apache.datasketches</groupId>
-      <artifactId>datasketches-memory</artifactId>
-      <version>${datasketches-memory.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.apache.datasketches</groupId>
       <artifactId>datasketches-java</artifactId>
-      <version>${datasketches-java.version}</version>
+      <version>6.2.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.datasketches</groupId>
+      <artifactId>datasketches-memory</artifactId>
+      <version>3.0.2</version>
     </dependency>
 
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>${testng.version}</version>
+      <version>7.12.0</version>
       <!-- <scope>test</scope> remove so we can run from main -->
     </dependency>
 
     <dependency>
       <groupId>org.apache.datasketches</groupId>
       <artifactId>datasketches-java</artifactId>
-      <version>${datasketches-java.version}</version>
+      <version>6.2.0</version>
       <type>test-jar</type>
     </dependency>
+
   </dependencies>
 
   <build>
@@ -85,39 +79,45 @@ under the License.
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy-sources-from-base</id>
+            <id>add-external-sources</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>copy-resources</goal>
+              <goal>add-source</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/generated-sources/java-base</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>../java-base/src/main/java</directory>
-                </resource>
-              </resources>
+              <sources>
+                <source>${java-base.root}/java-base/src/main/java</source>
+              </sources>
             </configuration>
           </execution>
           <execution>
-            <id>copy-resources-from-base</id>
+            <id>add-external-resources</id>
             <phase>generate-resources</phase>
             <goals>
-              <goal>copy-resources</goal>
+              <goal>add-resource</goal>
             </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/generated-resources</outputDirectory>
+           <configuration>
               <resources>
                 <resource>
-                  <directory>../java-base/src/main/resources</directory>
+                  <directory>${java-base.root}/java-base/src/main/resources</directory>
                 </resource>
               </resources>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
       </plugin>
 
       <plugin>
@@ -132,36 +132,6 @@ under the License.
         </configuration>
       </plugin>
 
-      <!--
-        Rat licence checks disabled here because they are handled by parent pom.
-        This avoids the need to configure exclusions redundantly at each level.
-      -->
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source-generated</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-             </goals>
-             <configuration>
-               <sources>
-                 <source>${project.build.directory}/generated-sources/java-base</source>
-               </sources>
-             </configuration>
-           </execution>
-        </executions>
-      </plugin>
 
     </plugins>
   </build>

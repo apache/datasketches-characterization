@@ -332,7 +332,7 @@ public class Job {
    * Run multiple jobs from the command line
    * @param args the configuration file names to be run
    */
-  @SuppressWarnings("unused")
+  //@SuppressWarnings("unused")
   public static void main(final String[] args) {
     for (int j = 0; j < args.length; j++) {
       new Job(args[j]);

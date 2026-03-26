@@ -26,12 +26,6 @@ under the License.
 
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>33</version>
-  </parent>
-
   <groupId>org.apache.datasketches</groupId>
   <artifactId>datasketches-characterization</artifactId>
   <version>1.0.0-SNAPSHOT</version>
@@ -39,7 +33,7 @@ under the License.
 
   <name>${project.artifactId}</name>
   <description>Characterization code for the DataSketches library.</description>
-  <url>https://datasketches.apache.org/</url>  
+  <url>https://datasketches.apache.org/</url>
   <inceptionYear>2015</inceptionYear>
 
   <mailingLists>
@@ -51,11 +45,11 @@ under the License.
       <archive>https://mail-archives.apache.org/mod_mbox/datasketches-dev</archive>
     </mailingList>
     <mailingList>
-      <name>sketches-user</name>
-      <archive>https://groups.google.com/forum/#!forum/sketches-user</archive>
-      <subscribe>mailto:sketches-user%2Bsubscribe@googlegroups.com</subscribe>
-      <unsubscribe>mailto:sketches-user%2Bunsubscribe@googlegroups.com</unsubscribe>
-      <post>mailto:sketches-user@googlegroups.com</post>
+      <name>DataSketches Users</name>
+      <subscribe>user-subscribe@datasketches.apache.org</subscribe>
+      <unsubscribe>user-unsubscribe@datasketches.apache.org</unsubscribe>
+      <post>user@datasketches.apache.org</post>
+      <archive>https://mail-archives.apache.org/mod_mbox/datasketches-user</archive>
     </mailingList>
   </mailingLists>
 
@@ -67,8 +61,6 @@ under the License.
   </scm>
 
   <issueManagement>
-    <!-- <system>jira</system>
-      <url>https://issues.apache.org/jira/browse/DATASKETCHES</url> -->
     <system>GitHub</system>
     <url>https://github.com/apache/${project.artifactId}/issues</url>
   </issueManagement>
@@ -84,63 +76,69 @@ under the License.
   </developers>
 
   <properties>
+    <!-- TestNG version depends on Java Version -->
     <!-- System-wide properties -->
-    <testng.version>7.11.0</testng.version> <!-- may be overridden -->
-    <java.version.range>[8,9),[11,12),[17,18),[21,22),[25,)</java.version.range>
-    <maven.version.range>[3.6.3,4.0.0)</maven.version.range>
-    <argLine>-Xmx4g -Duser.language=en -Duser.country=US -Dfile.encoding=UTF-8</argLine>
+    <maven.version>3.9.12</maven.version>
+
+    <jvm.mem>-Xmx4g</jvm.mem>
+    <jvm.locale.language>-Duser.language=en</jvm.locale.language>
+    <jvm.locale.country>-Duser.country=US</jvm.locale.country>
+    <jvm.locale.encoding>-Dfile.encoding=UTF-8</jvm.locale.encoding>
+    <jvm.args>${jvm.mem} ${jvm.locale.language} ${jvm.locale.country} ${jvm.locale.encoding}</jvm.args>
     <charset.encoding>UTF-8</charset.encoding>
     <project.build.sourceEncoding>${charset.encoding}</project.build.sourceEncoding>
     <project.build.resourceEncoding>${charset.encoding}</project.build.resourceEncoding>
     <project.reporting.outputEncoding>${charset.encoding}</project.reporting.outputEncoding>
+    <project.reporting.outputDirectory>${project.build.directory}/site</project.reporting.outputDirectory>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH-mm-ss'Z'</maven.build.timestamp.format>
 
-    <!-- org.apache.creadur plugins -->
-    <apache-rat-plugin.version>0.17</apache-rat-plugin.version>
-
-    <!-- org.apache.maven plugins -->
+    <!--    org.apache.maven plugins -->
+    <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
+    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version> <!-- parent 37: 3.14.1 -->
+    <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
     <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
-    <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version> <!--3.5.0 fails -->
+    <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+    <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+    <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+    <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
     <maven-resources-plugin.version></maven-resources-plugin.version>
-    <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-      <!-- for surefire, failsafe and surefire-report: -->
-    <maven-surefire-failsafe-plugins.version>3.5.4</maven-surefire-failsafe-plugins.version>
+    <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+    <maven-surefire-failsafe-plugins.version>3.5.4</maven-surefire-failsafe-plugins.version> <!-- for surefire, failsafe and surefire-report -->
     <maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
 
+    <!--    org.apache.rat plugins -->
+    <apache-rat-plugin.version>0.17</apache-rat-plugin.version>
+
     <!-- org.codehaus plugins -->   <!-- used for strict profile testing-->
-    <plexus-compiler-javac-errorprone.version>2.16.1</plexus-compiler-javac-errorprone.version>
-
-    <!-- org.eluder Maven Plugins -->
-    <coveralls-repo-token></coveralls-repo-token>
-    <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
-
-    <!-- org.mojohaus plugins -->
     <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
-    <versions-maven-plugin.version>2.19.1</versions-maven-plugin.version>
+
+    <!-- com.github maven plugins -->
+    <coveralls-repo-token></coveralls-repo-token>
+    <coveralls-maven-plugin.version>5.0.0</coveralls-maven-plugin.version>
+
+    <!-- io.github plugins -->
+    <git-commit-id-maven-plugin.version>9.0.2</git-commit-id-maven-plugin.version>
 
     <!-- org.jacoco Maven Plugins -->
     <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 
-    <!-- pl.project13.maven Plugins for java 8-->
-    <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-    
     <!-- other -->
     <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
 
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>${testng.version}</version>
-      <!-- <scope>test</scope> remove so we can run from main -->
-    </dependency>
-  </dependencies>
-
   <build>
     <pluginManagement>
       <plugins>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <fork>true</fork>
+          </configuration>
+        </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -154,11 +152,16 @@ under the License.
               </goals>
               <configuration>
                 <rules>
-                  <requireJavaVersion>
-                    <version>${java.version.range}</version>
-                  </requireJavaVersion>
+                  <!-- The normal Java enforcer rule out of the box is toolchain unaware
+                  and is really only useful for checking what java version is available
+                  via the users shell environment. It does not check that the java compiler
+                  version is sane or matches the java command version.
+                  In the context of toolchains this rule is useless.
+                  See: https://github.com/paulmoloney/maven-enforcer-toolchain-rules
+                  <requireJavaVersion> ... </requireJavaVersion>
+                  -->
                   <requireMavenVersion>
-                    <version>${maven.version.range}</version>
+                    <version>[${maven.version},4.0.0)</version>
                   </requireMavenVersion>
                   <bannedDependencies>
                     <excludes>
@@ -174,54 +177,8 @@ under the License.
         </plugin>
 
         <plugin>
-          <!-- Extends Apache Parent pom, pluginManagement-->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>${maven-jar-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>default-jar</id>
-              <phase>package</phase>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>default-test-jar</id>
-              <phase>package</phase>
-              <goals>
-                <goal>test-jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-        </plugin>
-
-        <plugin>
-          <!-- Extends Apache Parent pom, apache-release profile -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>${maven-source-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <phase>package</phase>
-              <goals>
-                <goal>jar-no-fork</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>attach-test-sources</id>
-              <phase>package</phase>
-              <goals>
-                <goal>test-jar-no-fork</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
 
         <plugin>
@@ -292,12 +249,6 @@ under the License.
         </plugin>
 
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>versions-maven-plugin</artifactId>
-          <version>${versions-maven-plugin.version}</version>
-        </plugin>
-
-        <plugin>
           <!-- Submit code coverage report to Coveralls.io. -->
           <groupId>org.eluder.coveralls</groupId>
           <artifactId>coveralls-maven-plugin</artifactId>
@@ -324,7 +275,7 @@ under the License.
               <goals>
                 <goal>report</goal>
               </goals>
-            </execution>  
+            </execution>
           </executions>
         </plugin>
       </plugins>
@@ -334,47 +285,7 @@ under the License.
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId> <!-- used by 11,17,21,25 -->
-        <artifactId>maven-resources-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId> <!-- used by 8,11,17,21,25 -->
-        <artifactId>maven-toolchains-plugin</artifactId>
       </plugin>
 
       <plugin>
@@ -382,88 +293,8 @@ under the License.
         <artifactId>apache-rat-plugin</artifactId>
       </plugin>
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId> <!-- used by 11,17,21,25 -->
-        <artifactId>build-helper-maven-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.eluder.coveralls</groupId>
-        <artifactId>coveralls-maven-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
     </plugins>
   </build>
-  
-  <profiles>
-    <!-- Ignore nuisance warning from Apache parent plugin: 
-          "maven-remote-resources-plugin (goal "process") is ignored by m2e".
-          This also should fix the Maven warning that it can't find the lifecycle-mapping jar.
-          This profile is only active when the property "m2e.version" is set, 
-          which is the case when building in Eclipse with m2e.
-          The 'none' below tells m2eclipse to skip the execution.
-    -->
-    <profile>
-      <id>only-eclipse</id>
-      <activation>
-        <property>
-          <name>m2e.version</name>
-        </property>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-remote-resources-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>process-resource-bundles</id>
-                  <phase>none</phase>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-remote-resources-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>strict</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>org.codehaus.plexus</groupId>
-                  <artifactId>plexus-compiler-javac-errorprone</artifactId>
-                  <version>${plexus-compiler-javac-errorprone.version}</version>
-                </dependency>
-              </dependencies>
-              <configuration>
-                <compilerId>javac-with-errorprone</compilerId>
-                <forceJavacCompilerUse>true</forceJavacCompilerUse>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
 
   <modules>
     <module>java-base</module>

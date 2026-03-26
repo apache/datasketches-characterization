@@ -81,10 +81,10 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
 
   // TEMPORARY
-  int INIT_NUMBER_OF_SECTIONS;
-  float NOM_CAPACITY_MULTIPLIER;
-  int MIN_K;
-  boolean LAZY_COMPRESSION;
+//  int INIT_NUMBER_OF_SECTIONS;
+//  float NOM_CAPACITY_MULTIPLIER;
+//  int MIN_K;
+//  boolean LAZY_COMPRESSION;
 
   //DERIVED globals
   private ReqSketch sk;
@@ -165,10 +165,10 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
     metricsRankRange = Double.parseDouble(prop.mustGet("MetricsRankRange"));
 
-    INIT_NUMBER_OF_SECTIONS = Integer.parseInt(prop.mustGet("INIT_NUMBER_OF_SECTIONS"));
-    NOM_CAPACITY_MULTIPLIER = Float.parseFloat(prop.mustGet("NOM_CAPACITY_MULTIPLIER"));
-    MIN_K = Integer.parseInt(prop.mustGet("MIN_K"));
-    LAZY_COMPRESSION = Boolean.parseBoolean(prop.mustGet("LAZY_COMPRESSION"));
+//    INIT_NUMBER_OF_SECTIONS = Integer.parseInt(prop.mustGet("INIT_NUMBER_OF_SECTIONS"));
+//    NOM_CAPACITY_MULTIPLIER = Float.parseFloat(prop.mustGet("NOM_CAPACITY_MULTIPLIER"));
+//    MIN_K = Integer.parseInt(prop.mustGet("MIN_K"));
+//    LAZY_COMPRESSION = Boolean.parseBoolean(prop.mustGet("LAZY_COMPRESSION"));
     //criterion = InequalitySearch.valueOf(prop.mustGet("Criterion"));
     final String reqDebugLevel = prop.get("ReqDebugLevel");
     final String reqDebugFmt = prop.get("ReqDebugFmt");
