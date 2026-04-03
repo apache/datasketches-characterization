@@ -298,7 +298,8 @@ public class ReqSketchAccuracyProfile implements JobProfile {
 
       //Plot the row.
       final double relPP = (double)(pp + 1) / numPlotPoints;
-      job.printfData(fFmt, relPP, v, tr,
+      job.printfData(fFmt,
+          relPP, v, tr,
           errQ[0], errQ[1], errQ[2], errQ[3], errQ[4], errQ[5], errQ[6],
           rlb, rub, uErrCnt);
 
