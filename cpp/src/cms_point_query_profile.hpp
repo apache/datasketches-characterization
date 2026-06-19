@@ -25,15 +25,15 @@
 namespace datasketches {
 
 /**
- * CMS point query error profile (Experiment 1).
+ * CMS point query error profile.
  *
- * Runs many trials over a fixed Zipf distribution. For each trial,
- * builds a fresh CMS, inserts the stream, and computes the absolute
- * error (estimate - true count) for every item. Errors are accumulated
- * in per-item KLL quantile sketches across all trials.
+ * For each of three Zipf skew settings (high=1.5, medium=1.0, low=0.5),
+ * generates a fixed Zipf stream ONCE, then runs 8192 trials varying only
+ * the CMS hash seed. Per-item absolute and relative errors are accumulated
+ * in KLL sketches across trials.
  *
- * Output: one TSV row per item (sorted by mean frequency ascending)
- * with quantile columns at -3s, -2s, -1s, median, +1s, +2s, +3s.
+ * Output: one TSV per skew regime with per-frequency-rank error quantiles
+ * at the 7 sigma levels, plus bound violation rate per item.
  */
 class cms_point_query_profile: public job_profile {
 public:
