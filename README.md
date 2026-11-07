@@ -17,7 +17,7 @@
     under the License.
 -->
 
-# Characterizations of Java, C++ & Go Library Components
+# Characterizations of Java, C++, Go & Rust Library Components
 
 Please visit the main [DataSketches website](https://datasketches.apache.org) for more information. 
 
@@ -42,7 +42,7 @@ our website and provide evidence for our speed and accuracy claims.
 This code is shared here so that others can duplicate our characterizations.
 
 This code is shared "as-is" and does not pretend to have the same level of quality as the 
-primary repositories (java, C++, Go).  This code is not formally released nor archived to Maven Central 
+primary repositories (java, C++, Go, Rust).  This code is not formally released nor archived to Maven Central 
 and will change from time-to-time as we grow these characterization suites. 
 At any point in time this code is not necessarily up-to-date with the latest releases and thus
 may require some tweeking to get it to compile.  
@@ -187,4 +187,37 @@ This will compile and link the C++ characterization executable.
   The list of available jobs can be found in the usage of the program:
     ```
     ./datasketches-characterization-go
+    ```
+
+## Build Instructions (Rust)
+
+### Dependencies
+* Rust 1.86.0 or later is required to compile the Rust code.
+* The `rust` directory is a Cargo project that depends on
+  [datasketches-rust](https://github.com/apache/datasketches-rust) from GitHub.
+
+### Build
+* From the `rust` directory:
+    ```
+    cargo build --release
+    ```
+
+### Run
+* Run a characterization by name:
+    ```
+    cargo run --release -- <job name>
+    ```
+  The list of available jobs is printed when no job name is given.
+
+* Job parameters can be overridden as `name=value` pairs, for example to shorten a run:
+    ```
+    cargo run --release -- theta_update_speed_profile lg_max_u=20 lg_max_t=18
+    ```
+
+* To characterize a local checkout of datasketches-rust, for example to compare a change
+  against the released code, override the dependency's source:
+    ```
+    cargo run --release \
+      --config 'patch."https://github.com/apache/datasketches-rust".datasketches.path="../../datasketches-rust/datasketches"' \
+      -- <job name>
     ```
