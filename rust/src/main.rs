@@ -19,14 +19,14 @@ mod accuracy;
 mod cpc_update_speed_profile;
 mod job;
 mod theta_accuracy_profile;
+mod theta_compact_serde_profile;
 mod theta_intersection_accuracy_profile;
-mod theta_serde_profile;
 mod theta_set_operations_speed_profile;
 mod theta_union_accuracy_profile;
 mod theta_union_update_speed_profile;
 mod theta_update_speed_profile;
 mod theta_utils;
-mod tuple_serde_profile;
+mod tuple_compact_serde_profile;
 mod tuple_set_operations_speed_profile;
 mod tuple_union_update_speed_profile;
 mod tuple_update_speed_profile;
@@ -37,14 +37,14 @@ use cpc_update_speed_profile::CpcUpdateSpeedProfile;
 use job::JobProfile;
 use job::Overrides;
 use theta_accuracy_profile::ThetaAccuracyProfile;
+use theta_compact_serde_profile::ThetaCompactSerDeProfile;
 use theta_intersection_accuracy_profile::ThetaIntersectionAccuracyProfile;
-use theta_serde_profile::ThetaSerDeProfile;
 use theta_set_operations_speed_profile::ThetaSetOperationsSpeedProfile;
 use theta_union_accuracy_profile::ThetaUnionAccuracyProfile;
 use theta_union_update_speed_profile::ThetaUnionUpdateSpeedProfile;
 use theta_update_speed_profile::ThetaUpdateSpeedProfile;
 use theta_utils::ThetaJobConfig;
-use tuple_serde_profile::TupleSerDeProfile;
+use tuple_compact_serde_profile::TupleCompactSerDeProfile;
 use tuple_set_operations_speed_profile::TupleSetOperationsSpeedProfile;
 use tuple_union_update_speed_profile::TupleUnionUpdateSpeedProfile;
 use tuple_update_speed_profile::TupleUpdateSpeedProfile;
@@ -145,10 +145,12 @@ fn jobs() -> Vec<(&'static str, JobFactory)> {
                 tppo: 4,
                 ..THETA_ACCURACY
             };
-            Box::new(ThetaIntersectionAccuracyProfile::new(config.with_overrides(o)))
+            Box::new(ThetaIntersectionAccuracyProfile::new(
+                config.with_overrides(o),
+            ))
         }),
-        ("theta_serde_profile", |o| {
-            Box::new(ThetaSerDeProfile::new(SERDE.with_overrides(o)))
+        ("theta_compact_serde_profile", |o| {
+            Box::new(ThetaCompactSerDeProfile::new(SERDE.with_overrides(o)))
         }),
         ("theta_set_operations_speed_profile", |o| {
             Box::new(ThetaSetOperationsSpeedProfile::new(
@@ -167,8 +169,8 @@ fn jobs() -> Vec<(&'static str, JobFactory)> {
                 THETA_UNION_SPEED.with_overrides(o),
             ))
         }),
-        ("tuple_serde_profile", |o| {
-            Box::new(TupleSerDeProfile::new(SERDE.with_overrides(o)))
+        ("tuple_compact_serde_profile", |o| {
+            Box::new(TupleCompactSerDeProfile::new(SERDE.with_overrides(o)))
         }),
         ("tuple_set_operations_speed_profile", |o| {
             Box::new(TupleSetOperationsSpeedProfile::new(

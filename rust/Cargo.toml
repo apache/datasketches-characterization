@@ -24,7 +24,7 @@ license = "Apache-2.0"
 publish = false
 
 [dependencies]
-datasketches = { git = "https://github.com/apache/datasketches-rust", features = ["cpc", "kll", "theta", "tuple"] }
+datasketches = { version = "0.6.0", features = ["cpc", "kll", "theta", "tuple"] }
 
 [profile.release]
 codegen-units = 1

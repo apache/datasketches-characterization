@@ -193,8 +193,9 @@ This will compile and link the C++ characterization executable.
 
 ### Dependencies
 * Rust 1.86.0 or later is required to compile the Rust code.
-* The `rust` directory is a Cargo project that depends on
-  [datasketches-rust](https://github.com/apache/datasketches-rust) from GitHub.
+* The `rust` directory is a Cargo project that depends on the
+  [datasketches](https://crates.io/crates/datasketches) crate released from
+  [datasketches-rust](https://github.com/apache/datasketches-rust).
 
 ### Build
 * From the `rust` directory:
@@ -215,9 +216,18 @@ This will compile and link the C++ characterization executable.
     ```
 
 * To characterize a local checkout of datasketches-rust, for example to compare a change
-  against the released code, override the dependency's source:
+  against the released crate, override the dependency's source:
     ```
     cargo run --release \
-      --config 'patch."https://github.com/apache/datasketches-rust".datasketches.path="../../datasketches-rust/datasketches"' \
+      --config 'patch.crates-io.datasketches.path="../../datasketches-rust/datasketches"' \
       -- <job name>
     ```
+
+### Notes
+* Speed profiles that time a single call, such as the serde and set-operation columns, read
+  the clock around each call. On Apple Silicon the clock advances in steps of about 42 ns and
+  each read costs about 20 ns, so results for sketches with only a few entries are dominated by
+  timer overhead.
+* The accuracy profiles summarize estimates with a KLL sketch, which compacts using random
+  bits. The quantile columns therefore vary slightly between identical runs; every other column
+  is deterministic and can be compared directly between runs.

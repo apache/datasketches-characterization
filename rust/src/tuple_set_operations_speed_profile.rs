@@ -30,7 +30,8 @@ use crate::tuple_utils::double_sketch;
 use crate::tuple_utils::double_union;
 
 /// Times each set operation on two tuple update sketches of `InU` uniques that overlap by half,
-/// including building the result.
+/// including building the result. Inputs are untrimmed update sketches and every result is
+/// requested ordered, so the timings include sorting the output.
 pub struct TupleSetOperationsSpeedProfile {
     config: ThetaJobConfig,
     v_in: u64,

@@ -56,30 +56,20 @@ impl JobProfile for ThetaUnionAccuracyProfile {
     fn run(&mut self) {
         let c = self.config.clone();
         let (union, sketch) = (&mut self.union, &mut self.sketch);
-        run_accuracy(
-            c.lg_min_t,
-            c.lg_max_t,
-            c.tppo,
-            c.inter_data,
-            1 << c.lg_max_u,
-            &mut self.stats,
-            false,
-            &format!("{c:?}"),
-            |stats, mut key| {
-                union.reset();
-                let mut last_uniques = 0;
-                for stat in stats {
-                    sketch.reset();
-                    for _ in last_uniques..stat.true_value {
-                        key += 1;
-                        sketch.update(key);
-                    }
-                    last_uniques = stat.true_value;
-                    union.update(&*sketch).unwrap();
-                    stat.update(&union.to_sketch(true));
+        run_accuracy(&c, &mut self.stats, false, |stats, mut key| {
+            union.reset();
+            let mut last_uniques = 0;
+            for stat in stats {
+                sketch.reset();
+                for _ in last_uniques..stat.true_value {
+                    key += 1;
+                    sketch.update(key);
                 }
-                key
-            },
-        );
+                last_uniques = stat.true_value;
+                union.update(&*sketch).unwrap();
+                stat.update(&union.to_sketch(true));
+            }
+            key
+        });
     }
 }

@@ -5,7 +5,8 @@ version = 4
 [[package]]
 name = "datasketches"
 version = "0.6.0"
-source = "git+https://github.com/apache/datasketches-rust#86eb143601ddbf12a332beddaeab9fbea73127ac"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17518a0e88b8a18c546a855d9db6455caaea7865774364bff759edf6a4731aca"
 
 [[package]]
 name = "datasketches-characterization-rust"

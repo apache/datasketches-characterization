@@ -77,7 +77,13 @@ pub fn pwr2_series_next(ppo: u32, cur_point: u64) -> u64 {
 
 /// Returns the number of trials at `cur_u`, decreasing from `2^lg_max_t` at `2^lg_min_bpu` to
 /// `2^lg_min_t` at `2^lg_max_bpu`.
-pub fn num_trials(cur_u: u64, lg_min_t: u32, lg_max_t: u32, lg_min_bpu: u32, lg_max_bpu: u32) -> usize {
+pub fn num_trials(
+    cur_u: u64,
+    lg_min_t: u32,
+    lg_max_t: u32,
+    lg_min_bpu: u32,
+    lg_max_bpu: u32,
+) -> usize {
     let max_t = 1usize << lg_max_t;
     let min_t = 1usize << lg_min_t;
     if lg_min_t == lg_max_t || cur_u <= 1u64 << lg_min_bpu {
@@ -148,7 +154,10 @@ mod tests {
     #[test]
     fn series_matches_go() {
         let points: Vec<u64> = u_points(0, 5, 4).collect();
-        assert_eq!(points, vec![1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, 16, 19, 23, 27, 32]);
+        assert_eq!(
+            points,
+            vec![1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, 16, 19, 23, 27, 32]
+        );
         assert_eq!(count_points(0, 5, 4), 16);
     }
 

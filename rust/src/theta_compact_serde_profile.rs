@@ -26,26 +26,33 @@ use crate::job::u_points;
 use crate::theta_utils::ThetaJobConfig;
 
 /// Times compaction, both serialization formats and estimation of one sketch per trial.
-pub struct ThetaSerDeProfile {
+///
+/// Serializes compact sketches, as the C++ timing profile does; Java's `ThetaSerDeProfile`
+/// serializes the update sketch instead. Ordered and unordered compaction alternate which runs
+/// first so neither always sees warm caches.
+pub struct ThetaCompactSerDeProfile {
     config: ThetaJobConfig,
     sketch: ThetaSketch,
     v_in: u64,
+    ordered_first: bool,
 }
 
-impl ThetaSerDeProfile {
+impl ThetaCompactSerDeProfile {
     pub fn new(config: ThetaJobConfig) -> Self {
         Self {
             sketch: config.sketch(),
             config,
             v_in: 0,
+            ordered_first: false,
         }
     }
 }
 
-impl JobProfile for ThetaSerDeProfile {
+impl JobProfile for ThetaCompactSerDeProfile {
     fn run(&mut self) {
         let c = self.config.clone();
-        let (sketch, v_in) = (&mut self.sketch, &mut self.v_in);
+        let (sketch, v_in, ordered_first) =
+            (&mut self.sketch, &mut self.v_in, &mut self.ordered_first);
         run_speed(
             "TrueU\tTrials\tCompact_nS\tCompactUnordered_nS\tSer_nS\tDeSer_nS\tSerCompressed_nS\tDeSerCompressed_nS\tEst_nS\tSize_B\tSizeCompressed_B",
             u_points(c.lg_min_u, c.lg_max_u, c.uppo),
@@ -57,15 +64,25 @@ impl JobProfile for ThetaSerDeProfile {
                     sketch.update(*v_in);
                 }
                 let (est_ns, est) = time_ns(|| sketch.estimate());
-                let (compact_u_ns, _) = time_ns(|| sketch.compact(false));
-                let (compact_ns, compact) = time_ns(|| sketch.compact(true));
+                *ordered_first = !*ordered_first;
+                let ((compact_ns, compact), (compact_u_ns, _)) = if *ordered_first {
+                    let ordered = time_ns(|| sketch.compact(true));
+                    (ordered, time_ns(|| sketch.compact(false)))
+                } else {
+                    let unordered = time_ns(|| sketch.compact(false));
+                    (time_ns(|| sketch.compact(true)), unordered)
+                };
                 let (ser_ns, bytes) = time_ns(|| compact.serialize());
                 let (de_ns, de) = time_ns(|| CompactThetaSketch::deserialize(&bytes).unwrap());
                 let (ser_c_ns, bytes_c) = time_ns(|| compact.serialize_compressed());
                 let (de_c_ns, de_c) =
                     time_ns(|| CompactThetaSketch::deserialize(&bytes_c).unwrap());
                 assert_eq!(de.estimate(), est, "estimate mismatch after deserialize");
-                assert_eq!(de_c.estimate(), est, "estimate mismatch after compressed deserialize");
+                assert_eq!(
+                    de_c.estimate(),
+                    est,
+                    "estimate mismatch after compressed deserialize"
+                );
                 [
                     compact_ns,
                     compact_u_ns,

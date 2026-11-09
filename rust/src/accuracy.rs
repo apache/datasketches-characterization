@@ -25,14 +25,15 @@ use datasketches::kll::KllSketch;
 
 use crate::job::count_points;
 use crate::job::pwr2_series_next;
+use crate::theta_utils::ThetaJobConfig;
 
 const M3SD: f64 = 0.0013498980316301;
 const M2SD: f64 = 0.0227501319481792;
-const M1SD: f64 = 0.1586552539314570;
+const M1SD: f64 = 0.158655253931457;
 const MED: f64 = 0.5;
-const P1SD: f64 = 0.8413447460685430;
-const P2SD: f64 = 0.9772498680518210;
-const P3SD: f64 = 0.9986501019683700;
+const P1SD: f64 = 0.841344746068543;
+const P2SD: f64 = 0.977249868051821;
+const P3SD: f64 = 0.99865010196837;
 pub const GAUSSIANS_3SD: [f64; 9] = [0.0, M3SD, M2SD, M1SD, MED, P1SD, P2SD, P3SD, 1.0];
 
 /// Estimate and bounds of one sketch result.
@@ -106,12 +107,22 @@ impl AccuracyStats {
     }
 }
 
+fn quantiles_k(lg_qk: u32) -> u16 {
+    assert!(lg_qk < 16, "lg_qk must be less than 16, got {lg_qk}");
+    1 << lg_qk
+}
+
 /// One stats point per x-axis value `2^lg_min ..= 2^lg_max`.
-pub fn build_log2_accuracy_stats(lg_min: u32, lg_max: u32, ppo: u32, lg_qk: u32) -> Vec<AccuracyStats> {
+pub fn build_log2_accuracy_stats(
+    lg_min: u32,
+    lg_max: u32,
+    ppo: u32,
+    lg_qk: u32,
+) -> Vec<AccuracyStats> {
     let mut p = 1u64 << lg_min;
     (0..count_points(lg_min, lg_max, ppo))
         .map(|_| {
-            let stats = AccuracyStats::new(1 << lg_qk, p, p);
+            let stats = AccuracyStats::new(quantiles_k(lg_qk), p, p);
             p = pwr2_series_next(ppo, p);
             stats
         })
@@ -129,7 +140,7 @@ pub fn build_log2_intersection_accuracy_stats(
     let mut p = true_value;
     (0..count_points(lg_min, lg_max, ppo))
         .map(|_| {
-            let stats = AccuracyStats::new(1 << lg_qk, true_value, p);
+            let stats = AccuracyStats::new(quantiles_k(lg_qk), true_value, p);
             p = pwr2_series_next(ppo, p);
             stats
         })
@@ -171,7 +182,9 @@ pub fn format_table(stats: &[AccuracyStats], cum_trials: usize, large_u: bool) -
         for quantile in quantiles {
             write!(out, "\t{:.6e}", quantile.into_inner() / true_u - 1.0).unwrap();
         }
-        for sum in [q.sum_lb3, q.sum_lb2, q.sum_lb1, q.sum_ub1, q.sum_ub2, q.sum_ub3] {
+        for sum in [
+            q.sum_lb3, q.sum_lb2, q.sum_lb1, q.sum_ub1, q.sum_ub2, q.sum_ub3,
+        ] {
             write!(out, "\t{:.6e}", sum / trials / true_u - 1.0).unwrap();
         }
         out.push('\n');
@@ -181,16 +194,14 @@ pub fn format_table(stats: &[AccuracyStats], cum_trials: usize, large_u: bool) -
 
 /// Runs trials in `tppo` steps, printing intermediate tables when `inter_data` is set.
 pub fn run_accuracy(
-    lg_min_t: u32,
-    lg_max_t: u32,
-    tppo: u32,
-    inter_data: bool,
-    max_u: u64,
+    c: &ThetaJobConfig,
     stats: &mut [AccuracyStats],
     large_u: bool,
-    config: &str,
     mut run_trial: impl FnMut(&mut [AccuracyStats], u64) -> u64,
 ) {
+    let (lg_min_t, lg_max_t, tppo, inter_data) = (c.lg_min_t, c.lg_max_t, c.tppo, c.inter_data);
+    let max_u = 1u64 << c.lg_max_u;
+    let config = format!("{c:?}");
     let start = Instant::now();
     let min_t = 1usize << lg_min_t;
     let max_t = 1usize << lg_max_t;
@@ -216,7 +227,10 @@ pub fn run_accuracy(
         println!("Cum Updates         : {v_in}");
         println!("Cum Time            : {:.3}s", cum_ms / 1e3);
         println!("Time Per Trial, mSec: {per_trial_ms:.6}");
-        println!("Avg Update Time, nSec: {:.6}", per_trial_ms * 1e6 / max_u as f64);
+        println!(
+            "Avg Update Time, nSec: {:.6}",
+            per_trial_ms * 1e6 / max_u as f64
+        );
         println!(
             "Est Time to Complete: {:.3}s",
             per_trial_ms * (max_t - last_t) as f64 / 1e3

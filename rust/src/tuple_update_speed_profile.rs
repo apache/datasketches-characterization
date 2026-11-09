@@ -53,7 +53,7 @@ impl JobProfile for TupleUpdateSpeedProfile {
                 let (ns, ()) = time_ns(|| {
                     for _ in 0..u {
                         *v_in += 1;
-                        sketch.update(*v_in, 0.0);
+                        sketch.update(*v_in, 1.0);
                     }
                 });
                 [ns / u as f64]

@@ -27,26 +27,32 @@ use crate::tuple_utils::DoubleSketch;
 use crate::tuple_utils::double_sketch;
 
 /// Times compaction, serialization and estimation of one tuple sketch per trial.
-pub struct TupleSerDeProfile {
+///
+/// Ordered and unordered compaction alternate which runs first so neither always sees warm
+/// caches.
+pub struct TupleCompactSerDeProfile {
     config: ThetaJobConfig,
     sketch: DoubleSketch,
     v_in: u64,
+    ordered_first: bool,
 }
 
-impl TupleSerDeProfile {
+impl TupleCompactSerDeProfile {
     pub fn new(config: ThetaJobConfig) -> Self {
         Self {
             sketch: double_sketch(&config),
             config,
             v_in: 0,
+            ordered_first: false,
         }
     }
 }
 
-impl JobProfile for TupleSerDeProfile {
+impl JobProfile for TupleCompactSerDeProfile {
     fn run(&mut self) {
         let c = self.config.clone();
-        let (sketch, v_in) = (&mut self.sketch, &mut self.v_in);
+        let (sketch, v_in, ordered_first) =
+            (&mut self.sketch, &mut self.v_in, &mut self.ordered_first);
         run_speed(
             "TrueU\tTrials\tCompact_nS\tCompactUnordered_nS\tSer_nS\tDeSer_nS\tEst_nS\tSize_B",
             u_points(c.lg_min_u, c.lg_max_u, c.uppo),
@@ -58,8 +64,14 @@ impl JobProfile for TupleSerDeProfile {
                     sketch.update(*v_in, 1.0);
                 }
                 let (est_ns, est) = time_ns(|| sketch.estimate());
-                let (compact_u_ns, _) = time_ns(|| sketch.compact(false));
-                let (compact_ns, compact) = time_ns(|| sketch.compact(true));
+                *ordered_first = !*ordered_first;
+                let ((compact_ns, compact), (compact_u_ns, _)) = if *ordered_first {
+                    let ordered = time_ns(|| sketch.compact(true));
+                    (ordered, time_ns(|| sketch.compact(false)))
+                } else {
+                    let unordered = time_ns(|| sketch.compact(false));
+                    (time_ns(|| sketch.compact(true)), unordered)
+                };
                 let (ser_ns, bytes) = time_ns(|| compact.serialize());
                 let (de_ns, de) =
                     time_ns(|| CompactTupleSketch::<f64>::deserialize(&bytes).unwrap());

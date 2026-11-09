@@ -40,14 +40,14 @@ impl JobProfile for TupleUnionUpdateSpeedProfile {
         let c = self.config.clone();
         let v_in = &mut self.v_in;
         run_speed(
-            "InU\tTrials\tnS/Sketch",
+            "InU\tTrials\tnS/Set",
             u_points(c.lg_min_u, c.lg_max_u, c.uppo),
             |u| num_trials(u, c.lg_min_t, c.lg_max_t, c.lg_min_bpu, c.lg_max_bpu),
             |u| {
                 let mut sketches: Vec<_> = (0..c.num_sketches).map(|_| double_sketch(&c)).collect();
                 for i in 0..u as usize {
                     *v_in += 1;
-                    sketches[i % c.num_sketches].update(*v_in, 0.0);
+                    sketches[i % c.num_sketches].update(*v_in, 1.0);
                 }
                 let compacts: Vec<_> = sketches
                     .iter_mut()
